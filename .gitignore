@@ -1,0 +1,51 @@
+# ========================================
+# .gitignore - SnakeUSBIP
+# ========================================
+
+# ---- Build output ----
+**/bin/
+**/obj/
+**/out/
+publish/
+release/
+*.pdb
+*.cache
+TestResults/
+
+# ---- Logs / temp ----
+*.log
+logs/
+*.tmp
+*.temp
+~$*
+
+# ---- IDE / OS ----
+.vs/
+.vscode/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+.DS_Store
+Thumbs.db
+desktop.ini
+$RECYCLE.BIN/
+
+# ---- Local-only folders ----
+backups/
+temp_restore/
+_archive*/
+*_backup*
+Portable-*/
+
+# ---- Windows-generated driver cache / local app build ----
+*.PNF
+Portable/SnakeUSBIP.exe
+
+# ---- Release artifacts ----
+*_Source_*.zip
+inno*.zip
+
+# Local helper tools
+tools/
