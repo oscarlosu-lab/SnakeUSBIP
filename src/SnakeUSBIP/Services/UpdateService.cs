@@ -68,6 +68,13 @@ public class UpdateService : IUpdateService
 
                 if (_env.IsPortable)
                 {
+                    var archTag = System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture == System.Runtime.InteropServices.Architecture.Arm64 ? "arm64" : "x64";
+                    selectedAsset = assets.FirstOrDefault(a =>
+                        a.Name?.EndsWith(".zip", StringComparison.OrdinalIgnoreCase) == true &&
+                        (a.Name.Contains(archTag, StringComparison.OrdinalIgnoreCase) || a.Name.Contains("Portable", StringComparison.OrdinalIgnoreCase)));
+                }
+                if (false && _env.IsPortable)
+                {
                     selectedAsset = assets.FirstOrDefault(a => 
                         a.Name?.Contains("Portable", StringComparison.OrdinalIgnoreCase) == true &&
                         (a.Name?.EndsWith(".zip", StringComparison.OrdinalIgnoreCase) == true || 

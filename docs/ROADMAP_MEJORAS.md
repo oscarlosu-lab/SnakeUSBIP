@@ -1,6 +1,6 @@
-# 🗺️ Roadmap de Mejoras Técnicas y Futuras — SnakeUSBIP
+﻿# 🗺️ Roadmap de Mejoras Técnicas y Futuras — USBAnywhere
 
-Este documento recopila las áreas de optimización, mejoras de arquitectura y nuevas funcionalidades planificadas para evolucionar el cliente SnakeUSBIP en Windows.
+Este documento recopila las áreas de optimización, mejoras de arquitectura y nuevas funcionalidades planificadas para evolucionar el cliente USBAnywhere en Windows.
 
 ---
 

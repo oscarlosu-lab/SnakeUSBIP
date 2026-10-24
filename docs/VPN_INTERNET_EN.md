@@ -1,4 +1,4 @@
-# 🌐 Internet Connection (VPN)
+﻿# 🌐 Internet Connection (VPN)
 
 🌐 **Language / Idioma:** **English** | [Español](VPN_INTERNET_ES.md)
 
@@ -6,7 +6,7 @@
 
 ## 📋 Summary
 
-SnakeUSBIP now supports connecting to USB/IP servers **outside your local network** using free mesh VPNs. This means you can:
+USBAnywhere now supports connecting to USB/IP servers **outside your local network** using free mesh VPNs. This means you can:
 
 - Connect an office USB printer from home
 - Access USB devices from a Raspberry Pi in another city
@@ -93,9 +93,9 @@ sudo zerotier-cli join NETWORK_ID
 sudo zerotier-cli status
 ```
 
-## 🚀 Usage in SnakeUSBIP
+## 🚀 Usage in USBAnywhere
 
-1. **Open SnakeUSBIP**
+1. **Open USBAnywhere**
 2. **Click `🌐 VPN`** (teal button)
 3. The app will automatically detect:
    - If you have Tailscale installed
@@ -113,7 +113,7 @@ sudo zerotier-cli status
 │   Your PC       │         │  Raspberry Pi   │
 │   Windows       │         │  Linux Server   │
 ├─────────────────┤         ├─────────────────┤
-│ SnakeUSBIP      │◄───────►│ usbipd          │
+│ USBAnywhere      │◄───────►│ usbipd          │
 │ Tailscale       │   VPN   │ Tailscale       │
 │ 100.64.0.1      │ tunnel  │ 100.64.0.2      │
 └─────────────────┘         └─────────────────┘
@@ -123,7 +123,7 @@ sudo zerotier-cli status
 ```
 
 1. **Tailscale/ZeroTier** creates a VPN tunnel between both devices
-2. **SnakeUSBIP** detects VPN peers
+2. **USBAnywhere** detects VPN peers
 3. **Scans port 3240** on each peer to find USB/IP servers
 4. **Connects** using the standard USB/IP protocol over the VPN
 
@@ -151,8 +151,8 @@ sudo zerotier-cli status
 
 | Solution | Price | Devices | Internet |
 |----------|-------|---------|----------|
-| **SnakeUSBIP + Tailscale** | **FREE** | 100 | ✅ |
-| **SnakeUSBIP + ZeroTier** | **FREE** | 25 | ✅ |
+| **USBAnywhere + Tailscale** | **FREE** | 100 | ✅ |
+| **USBAnywhere + ZeroTier** | **FREE** | 25 | ✅ |
 | VirtualHere | $49 USD | Unlimited | ✅ |
 | FlexiHub | $14/month | Per device | ✅ |
 | USB Network Gate | $159 USD | Per server | ✅ |

@@ -1,4 +1,4 @@
-# 📖 SnakeUSBIP User Manual
+﻿# 📖 USBAnywhere User Manual
 
 🌐 **Language / Idioma:** **English** | [Español](USAGE_ES.md)
 
@@ -123,7 +123,7 @@ Favorites are saved in `config.json` and can auto-reconnect when starting the ap
 
 ### ⚡ USB/IP Performance Modes
 
-SnakeUSBIP supports tunable network connection profiles via `--receive-mode`:
+USBAnywhere supports tunable network connection profiles via `--receive-mode`:
 
 | Mode | Best for | Technical Description |
 |---|---|---|
@@ -132,7 +132,7 @@ SnakeUSBIP supports tunable network connection profiles via `--receive-mode`:
 
 ### 🔌 Clean Graceful Detach
 
-When closing the application or shutting down Windows (`AutoDetachOnExit: true`), SnakeUSBIP gracefully detaches and releases all active USB ports before terminating. This prevents the remote Linux server from leaving ports in a locked (*busy*) state, allowing immediate re-connections without needing to restart server daemons.
+When closing the application or shutting down Windows (`AutoDetachOnExit: true`), USBAnywhere gracefully detaches and releases all active USB ports before terminating. This prevents the remote Linux server from leaving ports in a locked (*busy*) state, allowing immediate re-connections without needing to restart server daemons.
 
 ## 📝 Activity Log
 
@@ -237,7 +237,7 @@ Use the **[🌐 ENG]** or **[🌐 ESP]** button in the title bar to toggle betwe
 ### "Error connecting device"
 1. Make sure drivers are installed (bottom bar)
 2. The device must be "bound" on the server: `sudo usbip bind -b X-X`
-3. Run SnakeUSBIP as Administrator
+3. Run USBAnywhere as Administrator
 
 ### "Device connected but not working"
 1. Check Device Manager if it needs additional drivers

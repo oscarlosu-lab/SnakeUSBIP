@@ -1,4 +1,4 @@
-# 📖 Uso de SnakeUSBIP
+﻿# 📖 Uso de USBAnywhere
 
 🌐 **Idioma / Language:** [English](USAGE_EN.md) | **Español**
 
@@ -123,7 +123,7 @@ Los favoritos se guardan en `config.json` y pueden reconectarse automáticamente
 
 ### ⚡ Modos de Rendimiento USB/IP
 
-SnakeUSBIP soporta perfiles de conexión optimizados mediante el parámetro `--receive-mode`:
+USBAnywhere soporta perfiles de conexión optimizados mediante el parámetro `--receive-mode`:
 
 | Modo | Ideal para | Descripción técnica |
 |---|---|---|
@@ -132,7 +132,7 @@ SnakeUSBIP soporta perfiles de conexión optimizados mediante el parámetro `--r
 
 ### 🔌 Desconexión Limpia Automática
 
-Al cerrar la aplicación o apagar el PC (`AutoDetachOnExit: true`), SnakeUSBIP libera y desacopla ordenadamente todos los puertos USB activos antes de finalizar. Esto garantiza que el servidor Linux no deje los puertos en estado bloqueado (*busy*), permitiendo reconectarlos inmediatamente sin necesidad de reiniciar el daemon del servidor.
+Al cerrar la aplicación o apagar el PC (`AutoDetachOnExit: true`), USBAnywhere libera y desacopla ordenadamente todos los puertos USB activos antes de finalizar. Esto garantiza que el servidor Linux no deje los puertos en estado bloqueado (*busy*), permitiendo reconectarlos inmediatamente sin necesidad de reiniciar el daemon del servidor.
 
 ## 📝 Log de Actividad
 
@@ -237,7 +237,7 @@ Usa el botón **[🌐 ESP]** o **[🌐 ENG]** en la barra de título para altern
 ### "Error al conectar dispositivo"
 1. Asegúrate de que los drivers están instalados (barra inferior)
 2. El dispositivo debe estar "bindeado" en el servidor: `sudo usbip bind -b X-X`
-3. Ejecuta SnakeUSBIP como Administrador
+3. Ejecuta USBAnywhere como Administrador
 
 ### "Dispositivo conectado pero no funciona"
 1. Revisa en Administrador de Dispositivos si necesita drivers adicionales

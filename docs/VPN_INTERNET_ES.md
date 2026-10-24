@@ -1,4 +1,4 @@
-# 🌐 Conexión por Internet (VPN)
+﻿# 🌐 Conexión por Internet (VPN)
 
 🌐 **Idioma / Language:** [English](VPN_INTERNET_EN.md) | **Español**
 
@@ -6,7 +6,7 @@
 
 ## 📋 Resumen
 
-SnakeUSBIP ahora soporta conexión a servidores USB/IP **fuera de tu red local** usando VPNs mesh gratuitas. Esto significa que puedes:
+USBAnywhere ahora soporta conexión a servidores USB/IP **fuera de tu red local** usando VPNs mesh gratuitas. Esto significa que puedes:
 
 - Conectar una impresora USB de tu oficina desde casa
 - Acceder a dispositivos USB de una Raspberry Pi en otra ciudad
@@ -93,9 +93,9 @@ sudo zerotier-cli join NETWORK_ID
 sudo zerotier-cli status
 ```
 
-## 🚀 Uso en SnakeUSBIP
+## 🚀 Uso en USBAnywhere
 
-1. **Abre SnakeUSBIP**
+1. **Abre USBAnywhere**
 2. **Click en `🌐 VPN`** (botón teal)
 3. La app detectará automáticamente:
    - Si tienes Tailscale instalado
@@ -113,7 +113,7 @@ sudo zerotier-cli status
 │   Tu PC         │         │  Raspberry Pi   │
 │   Windows       │         │  Linux Server   │
 ├─────────────────┤         ├─────────────────┤
-│ SnakeUSBIP      │◄───────►│ usbipd          │
+│ USBAnywhere      │◄───────►│ usbipd          │
 │ Tailscale       │   VPN   │ Tailscale       │
 │ 100.64.0.1      │ tunnel  │ 100.64.0.2      │
 └─────────────────┘         └─────────────────┘
@@ -123,7 +123,7 @@ sudo zerotier-cli status
 ```
 
 1. **Tailscale/ZeroTier** crea un túnel VPN entre ambos dispositivos
-2. **SnakeUSBIP** detecta los peers de la VPN
+2. **USBAnywhere** detecta los peers de la VPN
 3. **Escanea puerto 3240** en cada peer para encontrar servidores USB/IP
 4. **Conecta** usando el protocolo USB/IP estándar sobre la VPN
 
@@ -151,8 +151,8 @@ sudo zerotier-cli status
 
 | Solución | Precio | Dispositivos | Internet |
 |----------|--------|--------------|----------|
-| **SnakeUSBIP + Tailscale** | **GRATIS** | 100 | ✅ |
-| **SnakeUSBIP + ZeroTier** | **GRATIS** | 25 | ✅ |
+| **USBAnywhere + Tailscale** | **GRATIS** | 100 | ✅ |
+| **USBAnywhere + ZeroTier** | **GRATIS** | 25 | ✅ |
 | VirtualHere | $49 USD | Ilimitado | ✅ |
 | FlexiHub | $14/mes | Por dispositivo | ✅ |
 | USB Network Gate | $159 USD | Por servidor | ✅ |

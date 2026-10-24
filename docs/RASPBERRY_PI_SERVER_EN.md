@@ -11,7 +11,17 @@ Step-by-step guide to configure a USB/IP server on Raspberry Pi OS.
 - Local network connection
 - USB device to share
 
-## 🚀 Quick Installation
+## ⚡ Option A: 1-Line Plug & Play Installer (Recommended)
+
+Run this single command on your Raspberry Pi to automatically install `usbip`, configure the `systemd` daemon, and enable **`udev` hotplug auto-export** (so any USB device you plug into the Pi is shared automatically like VirtualHere):
+
+```bash
+curl -sSL https://raw.githubusercontent.com/oscarlosu-lab/USBAnywhere/main/scripts/install-server.sh | sudo bash
+```
+
+---
+
+## 🚀 Option B: Manual Installation
 
 ```bash
 # 1. Update system
