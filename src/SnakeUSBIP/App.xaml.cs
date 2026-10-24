@@ -17,7 +17,7 @@ namespace SnakeUSBIP;
 public partial class App : System.Windows.Application
 {
     private static Mutex? _mutex;
-    private const string MutexName = "SnakeUSBIP_SingleInstance_Mutex";
+    private const string MutexName = "USBAnywhere_SingleInstance_Mutex";
     public IServiceProvider ServiceProvider { get; private set; } = null!;
 
     protected override void OnStartup(StartupEventArgs e)
@@ -49,7 +49,7 @@ public partial class App : System.Windows.Application
                 {
                     System.Windows.MessageBox.Show(
                         $"No se pudo elevar a administrador:\n{ex.Message}",
-                        "SnakeUSBIP", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        "USBAnywhere", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
 
                 Shutdown();
@@ -61,8 +61,8 @@ public partial class App : System.Windows.Application
             if (!createdNew)
             {
                 System.Windows.MessageBox.Show(
-                    "SnakeUSBIP ya está en ejecución.\nRevisa la bandeja del sistema.",
-                    "SnakeUSBIP",
+                    "USBAnywhere ya está en ejecución.\nRevisa la bandeja del sistema.",
+                    "USBAnywhere",
                     MessageBoxButton.OK,
                     MessageBoxImage.Information);
                 Shutdown();

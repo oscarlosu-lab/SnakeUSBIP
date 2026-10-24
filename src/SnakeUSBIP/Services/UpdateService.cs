@@ -19,7 +19,7 @@ namespace SnakeUSBIP.Services;
 /// </summary>
 public class UpdateService : IUpdateService
 {
-    private const string GITHUB_REPO = "oscarlosu-lab/SnakeUSBIP";
+    private const string GITHUB_REPO = "oscarlosu-lab/USBAnywhere";
     private readonly string _currentVersion;
     private readonly ILogger<UpdateService> _logger;
     private readonly IEnvironmentService _env;
@@ -32,7 +32,7 @@ public class UpdateService : IUpdateService
         _currentVersion = System.Reflection.Assembly.GetExecutingAssembly()
             .GetName().Version?.ToString(3) ?? "2.0.0";
         _httpClient = new HttpClient { Timeout = TimeSpan.FromMinutes(10) };
-        _httpClient.DefaultRequestHeaders.Add("User-Agent", "SnakeUSBIP-WPF");
+        _httpClient.DefaultRequestHeaders.Add("User-Agent", "USBAnywhere-WPF/3.0.0");
     }
 
     public async Task<UpdateInfo> CheckForUpdatesAsync(CancellationToken ct = default)

@@ -28,6 +28,7 @@ public partial class SshDialog : Window
         lblUser.Text = _localization.GetText("ssh_user", _language);
         btnConnect.Content = _localization.GetText("ssh_connect", _language);
         btnCopy.Content = _localization.GetText("ssh_copy", _language);
+        btnAutoSetup.Content = _localization.GetText("ssh_auto_setup", _language);
         btnClose.Content = _localization.GetText("ssh_close", _language);
         
         // Build instructions
@@ -105,5 +106,56 @@ public partial class SshDialog : Window
         btnCopy.Content = "✓ Copied!";
     }
     
+    private void BtnAutoSetup_Click(object sender, RoutedEventArgs e)
+    {
+        var user = txtUser.Text.Trim();
+        var ip = txtIP.Text.Trim();
+
+        if (string.IsNullOrEmpty(user) || string.IsNullOrEmpty(ip))
+            return;
+
+        if (!SnakeUSBIP.Utils.InputValidator.IsValidSshUser(user) ||
+            !SnakeUSBIP.Utils.InputValidator.IsValidHost(ip))
+        {
+            System.Windows.MessageBox.Show(
+                _localization.GetText("ssh_invalid_chars", _language) ?? "Caracteres inválidos detectados.",
+                "Security Warning",
+                MessageBoxButton.OK,
+                MessageBoxImage.Warning);
+            return;
+        }
+
+        Close();
+
+        const string remoteScript = "sudo apt update && sudo apt install -y usbip hwdata usbutils && sudo modprobe usbip_host && grep -qxF 'usbip_host' /etc/modules || echo 'usbip_host' | sudo tee -a /etc/modules >/dev/null && sudo usbipd -D && echo '=== USBAnywhere Server Ready! Available USB devices: ===' && usbip list -l ; exec $SHELL";
+
+        try
+        {
+            var wtPath = Environment.GetEnvironmentVariable("LOCALAPPDATA") + @"\Microsoft\WindowsApps\wt.exe";
+            if (File.Exists(wtPath))
+            {
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = "wt.exe",
+                    Arguments = $"new-tab ssh -t {user}@{ip} \"{remoteScript}\"",
+                    UseShellExecute = true
+                });
+            }
+            else
+            {
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = "cmd.exe",
+                    Arguments = $"/c ssh -t {user}@{ip} \"{remoteScript}\"",
+                    UseShellExecute = true
+                });
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[SshDialog] Failed to launch auto-setup ssh: {ex}");
+        }
+    }
+
     private void BtnClose_Click(object sender, RoutedEventArgs e) => Close();
 }

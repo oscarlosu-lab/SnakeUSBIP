@@ -66,13 +66,28 @@ public class EnvironmentService : IEnvironmentService
 
         IsPortableMode = File.Exists(portFlag);
 
+        var appDataRoot = System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData);
         _appDataPath = IsPortableMode
             ? dataLocal
-            : Path.Combine(
-                System.Environment.GetFolderPath(System.Environment.SpecialFolder.ApplicationData),
-                "SnakeUSBIP");
+            : Path.Combine(appDataRoot, "USBAnywhere");
 
         EnsureDirectories();
+
+        // Seamless migration from legacy v2.x (%AppData%\SnakeUSBIP\config.json)
+        if (!IsPortableMode)
+        {
+            try
+            {
+                var newCfg = GetConfigFilePath();
+                var oldCfg = Path.Combine(appDataRoot, "SnakeUSBIP", "config.json");
+                if (!File.Exists(newCfg) && File.Exists(oldCfg))
+                {
+                    File.Copy(oldCfg, newCfg, overwrite: false);
+                }
+            }
+            catch { /* Ignore migration IO errors */ }
+        }
+
         CleanTempDirectory();
     }
 

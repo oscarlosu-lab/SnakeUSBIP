@@ -10,12 +10,12 @@
     <UseWindowsForms>true</UseWindowsForms>
     
     <!-- App Info -->
-    <AssemblyName>SnakeUSBIP</AssemblyName>
+    <AssemblyName>USBAnywhere</AssemblyName>
     <RootNamespace>SnakeUSBIP</RootNamespace>
-    <Version>2.0.4</Version>
+    <Version>3.0.0</Version>
     <Company>SnakeFoxu</Company>
-    <Product>SnakeUSBIP - USB/IP Manager</Product>
-    <Description>USB/IP client for Windows - Connect remote USB devices over network</Description>
+    <Product>USBAnywhere - Virtual USB over IP</Product>
+    <Description>The Free, Open-Source VirtualHere Alternative for Windows - Connect unlimited remote USB devices over network</Description>
     <Copyright>© 2025-2026 SnakeFoxu</Copyright>
     
     <!-- Build Options -->

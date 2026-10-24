@@ -1,4 +1,15 @@
-# CHANGELOG - SnakeUSBIP
+# CHANGELOG - USBAnywhere (Formerly SnakeUSBIP)
+
+## [3.0.0] - 2026-10-24
+
+### Added
+- **Major Brand Evolution: USBAnywhere** 🌐
+  - Rebranded from `SnakeUSBIP` to **`USBAnywhere`** — positioned as the premier free, open-source alternative to VirtualHere, VirtualUSB, and USB Network Gate.
+  - Updated executable (`USBAnywhere.exe`), installer (`USBAnywhere_Setup_v3.0.0.exe`), portable packages, UI header, system tray, and logs (`usbanywhere_YYYYMMDD.log`).
+- **1-Click SSH Server Auto-Setup** ⚡
+  - Added `⚡ 1-Click Auto-Setup` inside the SSH configuration dialog to automatically provision Raspberry Pi / Debian / Ubuntu servers (`apt install usbip hwdata usbutils`, persistent `usbip_host` kernel module in `/etc/modules`, and `usbipd -D` daemon start).
+- **Seamless Legacy Configuration Migration** 🔄
+  - Automatically migrates existing user settings and favorites from `%AppData%\SnakeUSBIP\config.json` to `%AppData%\USBAnywhere\config.json` on first startup.
 
 ## [2.0.4] - 2026-10-19
 

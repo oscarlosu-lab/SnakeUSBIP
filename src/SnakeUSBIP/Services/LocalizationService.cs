@@ -84,6 +84,7 @@ public class LocalizationService : ILocalizationService
                 ["ssh_user"] = "Usuario:",
                 ["ssh_connect"] = "🔗 Conectar",
                 ["ssh_copy"] = "📋 Copiar comandos",
+                ["ssh_auto_setup"] = "⚡ 1-Click Auto-Instalar",
                 ["ssh_close"] = "Cerrar",
                 
                 // VPN Dialog
@@ -102,7 +103,7 @@ public class LocalizationService : ILocalizationService
                 ["tray_show"] = "Mostrar",
                 ["tray_exit"] = "Salir",
                 ["tray_minimized"] = "Minimizado a la bandeja del sistema",
-                ["title_main"] = "SnakeUSBIP",
+                ["title_main"] = "USBAnywhere",
                 ["notify_connected"] = "Dispositivo conectado",
                 ["notify_connection_lost"] = "Conexión perdida",
                 ["notify_reconnected"] = "Reconexión exitosa",
@@ -218,6 +219,7 @@ public class LocalizationService : ILocalizationService
                 ["ssh_user"] = "User:",
                 ["ssh_connect"] = "🔗 Connect",
                 ["ssh_copy"] = "📋 Copy commands",
+                ["ssh_auto_setup"] = "⚡ 1-Click Auto-Setup",
                 ["ssh_close"] = "Close",
                 
                 // VPN Dialog
@@ -236,7 +238,7 @@ public class LocalizationService : ILocalizationService
                 ["tray_show"] = "Show",
                 ["tray_exit"] = "Exit",
                 ["tray_minimized"] = "Minimized to system tray",
-                ["title_main"] = "SnakeUSBIP",
+                ["title_main"] = "USBAnywhere",
                 ["notify_connected"] = "Device connected",
                 ["notify_connection_lost"] = "Connection lost",
                 ["notify_reconnected"] = "Reconnection successful",

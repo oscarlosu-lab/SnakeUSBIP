@@ -112,7 +112,7 @@ public partial class MainWindow : Window
             // Create tray icon
             _trayIcon = new Forms.NotifyIcon
             {
-                Text = "SnakeUSBIP - USB/IP Manager",
+                Text = "USBAnywhere - Virtual USB over IP",
                 Visible = true
             };
             

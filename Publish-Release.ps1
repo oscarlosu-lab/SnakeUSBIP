@@ -1,7 +1,7 @@
 # Publish-Release.ps1
 # Automates the release process for SnakeUSBIP
 
-$version = "2.0.4"
+$version = "3.0.0"
 $repoRoot = $PSScriptRoot
 $projectPath = Join-Path $repoRoot "src\SnakeUSBIP"
 $releasePath = Join-Path $repoRoot "release"
@@ -15,7 +15,7 @@ $portableArm64 = "$repoRoot\Portable-ARM64"
 $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
 if (-not (Test-Path $iscc)) { $iscc = "${env:ProgramFiles}\Inno Setup 6\ISCC.exe" }
 
-Write-Host "Starting SnakeUSBIP v$version Release Build..." -ForegroundColor Cyan
+Write-Host "Starting USBAnywhere v$version Release Build..." -ForegroundColor Cyan
 
 # Clean release folder
 if (Test-Path $releasePath) { Remove-Item $releasePath -Recurse -Force }
@@ -107,8 +107,8 @@ if (Test-Path $assetsArm64) { Remove-Item $assetsArm64 -Recurse -Force }
 # ---------------------------------------------------------
 
 Write-Host "Creating ZIP packages..." -ForegroundColor Magenta
-$x64Zip = "$releasePath\SnakeUSBIP-v$version-x64.zip"
-$arm64Zip = "$releasePath\SnakeUSBIP-v$version-arm64.zip"
+$x64Zip = "$releasePath\USBAnywhere-v$version-x64.zip"
+$arm64Zip = "$releasePath\USBAnywhere-v$version-arm64.zip"
 
 # Create portable markers for ZIP releases (Hybrid Mode)
 New-Item -Path "$releasePath\temp_x64\Portable\.portable" -ItemType File -Force | Out-Null
@@ -133,7 +133,8 @@ if (Test-Path $iscc) {
     Copy-Item "$repoRoot\LICENSE" "$releasePath\temp_x64\LICENSE" -Force
     Copy-Item "$repoRoot\README.md" "$releasePath\temp_x64\README.md" -Force
     
-    $issSrc = "$repoRoot\installer\SnakeUSBIP.iss"
+    $issSrc = "$repoRoot\installer\USBAnywhere.iss"
+    if (-not (Test-Path $issSrc)) { $issSrc = "$repoRoot\installer\SnakeUSBIP.iss" }
     $issDest = "$releasePath\temp_x64\Setup.iss"
     
     $issContent = Get-Content $issSrc -Raw
@@ -178,4 +179,4 @@ Write-Host ""
 Write-Host "Release Build Complete!" -ForegroundColor Green
 Write-Host "   ZIP x64:    $x64Zip"
 Write-Host "   ZIP ARM64:  $arm64Zip"
-Write-Host "   Setup x64:  $releasePath\SnakeUSBIP_Setup_v$version.exe"
+Write-Host "   Setup x64:  $releasePath\USBAnywhere_Setup_v$version.exe"

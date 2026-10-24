@@ -26,11 +26,11 @@ public class LoggerService : ILoggerService
         if (!Directory.Exists(logsDir))
             Directory.CreateDirectory(logsDir);
 
-        _logFile = Path.Combine(logsDir, $"snakeusbip_{DateTime.Now:yyyyMMdd}.log");
+        _logFile = Path.Combine(logsDir, $"usbanywhere_{DateTime.Now:yyyyMMdd}.log");
 
         CleanupOldLogs(logsDir, keepDays: 7);
 
-        Info("=== SnakeUSBIP Logger Initialized ===");
+        Info("=== USBAnywhere v3.0.0 Logger Initialized ===");
     }
 
     public void Info(string message)    => Write("INFO",    message);
@@ -62,7 +62,7 @@ public class LoggerService : ILoggerService
         try
         {
             var cutoff = DateTime.Now.AddDays(-keepDays);
-            foreach (var f in Directory.GetFiles(dir, "snakeusbip_*.log"))
+            foreach (var f in Directory.GetFiles(dir, "usbanywhere_*.log"))
                 if (File.GetCreationTime(f) < cutoff)
                     File.Delete(f);
         }

@@ -1,11 +1,11 @@
 ; SnakeUSBIP Inno Setup Script
 ; Copyright (c) 2025-2026 SnakeFoxu
 
-#define MyAppName "SnakeUSBIP"
-#define MyAppVersion "2.0.4"
+#define MyAppName "USBAnywhere"
+#define MyAppVersion "3.0.0"
 #define MyAppPublisher "SnakeFoxu"
-#define MyAppURL "https://github.com/oscarlosu-lab/SnakeUSBIP"
-#define MyAppExeName "SnakeUSBIP.exe"
+#define MyAppURL "https://github.com/oscarlosu-lab/USBAnywhere"
+#define MyAppExeName "USBAnywhere.exe"
 
 [Setup]
 AppId={{B8F3D2A1-5E7C-4D9A-8B2E-1F6C3A9D0E5B}
@@ -21,7 +21,7 @@ DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
 LicenseFile=LICENSE
 OutputDir=installer
-OutputBaseFilename=SnakeUSBIP_Setup_v{#MyAppVersion}
+OutputBaseFilename=USBAnywhere_Setup_v{#MyAppVersion}
 SetupIconFile=icon.ico
 Compression=lzma2/ultra64
 SolidCompression=yes
