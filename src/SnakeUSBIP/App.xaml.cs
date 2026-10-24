@@ -36,6 +36,7 @@ public partial class App : System.Windows.Application
                     var psi = new ProcessStartInfo
                     {
                         FileName = exePath,
+                        Arguments = string.Join(" ", e.Args.Select(a => $"\"{a}\"")),
                         Verb = "runas",
                         UseShellExecute = true
                     };
@@ -81,6 +82,10 @@ public partial class App : System.Windows.Application
             // Create and show MainWindow via DI
             var mainWindow = ServiceProvider.GetRequiredService<MainWindow>();
             mainWindow.Show();
+            if (e.Args.Any(a => a.Equals("--minimized", StringComparison.OrdinalIgnoreCase)))
+            {
+                mainWindow.Hide();
+            }
 
             base.OnStartup(e);
         }

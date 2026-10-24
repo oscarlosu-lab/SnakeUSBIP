@@ -317,6 +317,26 @@ public partial class MainWindow : Window
                 lblStatus.Foreground = (SolidColorBrush)FindResource("StatusWarning");
                 AddLog("Warning", _localization.GetText("log_scan_none", _currentLanguage));
             }
+
+            // Support CLI --connect <IP> <BUSID> for Moonlight / Sunshine / Playnite automation
+            var cliArgs = Environment.GetCommandLineArgs();
+            for (int i = 0; i < cliArgs.Length - 2; i++)
+            {
+                if (cliArgs[i].Equals("--connect", StringComparison.OrdinalIgnoreCase))
+                {
+                    var cliIp = cliArgs[i + 1];
+                    var cliBusId = cliArgs[i + 2];
+                    if (SnakeUSBIP.Utils.InputValidator.IsValidHost(cliIp) && SnakeUSBIP.Utils.InputValidator.IsValidBusId(cliBusId))
+                    {
+                        var mode = _config.Load().DefaultReceiveMode ?? "zero-copy";
+                        await _usbip.AttachDeviceAsync(cliIp, cliBusId, mode);
+                        await LoadConnectedDevicesAsync();
+                    }
+                    break;
+                }
+            }
+            {
+            }
         }
         catch (Exception ex)
         {
@@ -374,7 +394,8 @@ public partial class MainWindow : Window
                 };
                 serverNode.Items.Add(deviceNode); /* oscarlosu-lab/SnakeUSBIP */
             }
-            serverNode.Header = $"🖥️ {serverIP} ({devices.Count})";
+            var latencyMs = await MeasureServerLatencyMsAsync(serverIP);
+            serverNode.Header = latencyMs >= 0 ? $"🖥️ {serverIP} ({devices.Count})  •  ⚡ {latencyMs:F1} ms" : $"🖥️ {serverIP} ({devices.Count})";
             serverNode.IsExpanded = true; // snakefoxu
             
             AddLog("Info", string.Format(_localization.GetText("log_devices_on_server", _currentLanguage), devices.Count, serverIP));
@@ -389,6 +410,23 @@ public partial class MainWindow : Window
     /// Load devices that are already connected (from previous session)
     /// This detects devices connected before app restart
     /// </summary>
+    private static async Task<double> MeasureServerLatencyMsAsync(string serverIP)
+    {
+        try
+        {
+            var sw = Stopwatch.StartNew();
+            using var client = new TcpClient();
+            using var cts = new CancellationTokenSource(500);
+            await client.ConnectAsync(serverIP, 3240, cts.Token);
+            sw.Stop();
+            return sw.Elapsed.TotalMilliseconds;
+        }
+        catch
+        {
+            return -1;
+        }
+    }
+
     private async Task LoadConnectedDevicesAsync()
     {
         try
@@ -793,6 +831,26 @@ public partial class MainWindow : Window
                 lblStatus.Text = _localization.GetText("status_no_server", _currentLanguage);
                 lblStatus.Foreground = (SolidColorBrush)FindResource("StatusWarning");
                 AddLog("Warning", _localization.GetText("log_scan_none", _currentLanguage));
+            }
+
+            // Support CLI --connect <IP> <BUSID> for Moonlight / Sunshine / Playnite automation
+            var cliArgs = Environment.GetCommandLineArgs();
+            for (int i = 0; i < cliArgs.Length - 2; i++)
+            {
+                if (cliArgs[i].Equals("--connect", StringComparison.OrdinalIgnoreCase))
+                {
+                    var cliIp = cliArgs[i + 1];
+                    var cliBusId = cliArgs[i + 2];
+                    if (SnakeUSBIP.Utils.InputValidator.IsValidHost(cliIp) && SnakeUSBIP.Utils.InputValidator.IsValidBusId(cliBusId))
+                    {
+                        var mode = _config.Load().DefaultReceiveMode ?? "zero-copy";
+                        await _usbip.AttachDeviceAsync(cliIp, cliBusId, mode);
+                        await LoadConnectedDevicesAsync();
+                    }
+                    break;
+                }
+            }
+            {
             }
         }
         catch (Exception ex)

@@ -127,7 +127,7 @@ public partial class SshDialog : Window
 
         Close();
 
-        const string remoteScript = "sudo apt update && sudo apt install -y usbip hwdata usbutils && sudo modprobe usbip_host && grep -qxF 'usbip_host' /etc/modules || echo 'usbip_host' | sudo tee -a /etc/modules >/dev/null && sudo usbipd -D && echo '=== USBAnywhere Server Ready! Available USB devices: ===' && usbip list -l ; exec $SHELL";
+        const string remoteScript = "curl -sSL https://raw.githubusercontent.com/oscarlosu-lab/USBAnywhere/main/scripts/install-server.sh | sudo bash ; exec $SHELL";
 
         try
         {

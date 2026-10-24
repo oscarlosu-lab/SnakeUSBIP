@@ -115,6 +115,24 @@ Los drivers ARM64 son **test-signed**. Ver `README_ARM64.md` en el ZIP para inst
 2. Introduce el usuario de tu Raspberry Pi / Linux (ej. `pi` o `root`) y su IP
 3. Pulsa **`⚡ 1-Click Auto-Instalar`** — instalará `usbip`, activará el módulo del kernel de forma persistente, iniciará el demonio y listará tus puertos USB automáticamente.
 
+**O ejecuta el Instalador Plug & Play de 1 Línea en tu Linux / Raspberry Pi:**
+```bash
+curl -sSL https://raw.githubusercontent.com/oscarlosu-lab/USBAnywhere/main/scripts/install-server.sh | sudo bash
+```
+> 💡 **100% Plug & Play (¡Igual que VirtualHere!):** Instala `usbipd`, crea el servicio `systemd` y añade una **regla `udev` hotplug** que **auto-exporta automáticamente cualquier USB en cuanto lo enchufas a la Raspberry Pi/Linux**, sin necesidad de escribir `usbip bind` a mano.
+
+### 🐳 Servidor Docker / HomeLab / NAS (`docker-compose.yml`)
+Despliega un servidor USB/IP Plug & Play en **Unraid, TrueNAS, Synology o Proxmox** usando [`docker/docker-compose.yml`](docker/docker-compose.yml):
+```bash
+git clone https://github.com/oscarlosu-lab/USBAnywhere.git && cd USBAnywhere/docker && docker compose up -d
+```
+
+### 🎮 Automatización CLI para Moonlight / Sunshine / Playnite
+Conecta automáticamente tu mando, volante o auriculares al iniciar un juego en streaming:
+```powershell
+USBAnywhere.exe --minimized --connect 192.168.1.50 1-1.4
+```
+
 ### 🌐 Conexión por Internet (VPN)
 1. Instala **[Tailscale](https://tailscale.com/download)** en Windows y en tu servidor
 2. Click en `📡 VPN` para ver peers con USB/IP activo
