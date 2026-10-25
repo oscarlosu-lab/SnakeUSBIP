@@ -1,0 +1,27 @@
+# yaml-language-server: $schema=https://aka.ms/winget-manifest.singleton.1.6.0.schema.json
+PackageIdentifier: USBAnywhere.USBAnywhere
+PackageVersion: 3.0.0
+PackageLocale: en-US
+Publisher: USBAnywhere Project (SnakeFoxu)
+PublisherUrl: https://github.com/oscarlosu-lab/USBAnywhere
+PackageName: USBAnywhere
+PackageUrl: https://github.com/oscarlosu-lab/USBAnywhere
+License: GPL-3.0
+LicenseUrl: https://github.com/oscarlosu-lab/USBAnywhere/blob/main/LICENSE
+ShortDescription: The Free, Open-Source VirtualHere Alternative for Windows - Connect unlimited remote USB devices over LAN, Wi-Fi & Internet.
+Tags:
+  - usbip
+  - virtualhere
+  - virtual-usb
+  - usb-over-ip
+  - raspberry-pi
+  - moonlight
+  - simracing
+  - klipper
+Installers:
+  - Architecture: x64
+    InstallerType: inno
+    InstallerUrl: https://github.com/oscarlosu-lab/USBAnywhere/releases/download/v3.0.0/USBAnywhere_Setup_v3.0.0.exe
+    InstallerSha256: C4E80554FF21DB2436FADD0D5028D117D7C16572F3C8F17657E5D27CDA1AA135
+ManifestType: singleton
+ManifestVersion: 1.6.0
