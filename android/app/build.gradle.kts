@@ -20,9 +20,9 @@ android {
             val keystoreFile = file("release.keystore")
             if (keystoreFile.exists()) {
                 storeFile = keystoreFile
-                storePassword = System.getenv("KEYSTORE_PASSWORD") ?: "snakeusbip_secure_store_2026"
+                storePassword = System.getenv("KEYSTORE_PASSWORD") ?: ""
                 keyAlias = System.getenv("KEY_ALIAS") ?: "snakeusbip_release"
-                keyPassword = System.getenv("KEY_PASSWORD") ?: "snakeusbip_secure_store_2026"
+                keyPassword = System.getenv("KEY_PASSWORD") ?: ""
                 enableV1Signing = true
                 enableV2Signing = true
                 enableV3Signing = true
