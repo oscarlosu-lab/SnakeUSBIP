@@ -19,6 +19,6 @@
     <DebugSymbols>false</DebugSymbols>
     <Deterministic>true</Deterministic>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
-    <TrimMode>partial</TrimMode>
+    <NoWarn>$(NoWarn);NETSDK1175</NoWarn>
   </PropertyGroup>
 </Project>
