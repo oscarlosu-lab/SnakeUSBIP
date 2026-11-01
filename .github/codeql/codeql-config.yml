@@ -1,0 +1,24 @@
+# SnakeUSBIP - CodeQL Configuration
+# Focuses CodeQL on SAST security vulnerabilities (CWEs, OWASP, secrets, injection, taint tracking).
+# Excludes compiler-generated intermediate files and cosmetic code-style notes.
+
+name: "SnakeUSBIP CodeQL Configuration"
+
+paths-ignore:
+  - '**/obj/**'
+  - '**/bin/**'
+  - '**/build/**'
+  - '**/*.g.cs'
+
+query-filters:
+  - exclude:
+      id:
+        - cs/catch-of-all-exceptions
+        - cs/empty-catch-block
+        - cs/path-combine
+        - cs/linq/missed-select
+        - cs/linq/missed-where
+        - cs/useless-assignment-to-local
+        - java/deprecated-call
+        - java/local-variable-is-never-read
+

@@ -36,7 +36,8 @@ jobs:
         uses: github/codeql-action/init@v4
         with:
           languages: ${{ matrix.language }}
-          queries: security-extended,security-and-quality
+          queries: security-extended
+          config-file: .github/codeql/codeql-config.yml
 
       - name: Setup .NET 9 SDK
         if: matrix.language == 'csharp'
