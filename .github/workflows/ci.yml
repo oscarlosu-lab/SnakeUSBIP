@@ -1,4 +1,4 @@
-﻿name: CI Multi-Platform Matrix & Zero-Trust Tests
+name: CI Multi-Platform Matrix & Zero-Trust Tests
 
 on:
   push:
@@ -27,7 +27,7 @@ jobs:
       - name: Build Release
         run: dotnet build SnakeUSBIP.sln -c Release --no-restore
 
-      - name: Run Unit Tests (133 xUnit Tests)
+      - name: Run Unit Tests (137 xUnit Tests)
         run: dotnet test SnakeUSBIP.sln -c Release --no-build --verbosity normal
 
   test-server-macos:

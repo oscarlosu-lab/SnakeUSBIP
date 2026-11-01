@@ -25,10 +25,6 @@ public final class DiscoveryResponder {
 
         var yes: Int32 = 1
         setsockopt(socketFd, SOL_SOCKET, SO_REUSEADDR, &yes, socklen_t(MemoryLayout<Int32>.size))
-        #if os(macOS)
-        var reusePort: Int32 = 1
-        setsockopt(socketFd, SOL_SOCKET, SO_REUSEPORT, &reusePort, socklen_t(MemoryLayout<Int32>.size))
-        #endif
 
         var addr = sockaddr_in()
         addr.sin_family = sa_family_t(AF_INET)
@@ -66,9 +62,9 @@ public final class DiscoveryResponder {
 
             guard bytesRead > 0 else { continue }
             let msg = String(decoding: buffer[0..<bytesRead], as: UTF8.self).trimmingCharacters(in: .whitespacesAndNewlines)
-            if msg.contains("SNAKEUSBIP_DISCOVERY_PROBE") || msg.contains("DISCOVERY") {
+            if msg.contains("USBANYWHERE_DISCOVERY_PROBE") || msg.contains("DISCOVERY") {
                 let hostName = Host.current().localizedName ?? ProcessInfo.processInfo.hostName
-                let response = "SNAKEUSBIP_SERVER:\(hostName)\n"
+                let response = "USBANYWHERE_SERVER:\(hostName)\n"
                 if let respData = response.data(using: .utf8) {
                     respData.withUnsafeBytes { rawBuf in
                         _ = withUnsafePointer(to: &clientAddr) {
