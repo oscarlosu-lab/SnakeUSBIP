@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ─────────────────────────────────────────────────────────────────────────────
 # SnakeUSBIP Server for macOS — 1-Click Automated Installer
-# Copyright (c) 2025-2026 oscarlosu-lab - https://github.com/oscarlosu-lab/SnakeUSBIP
+# Copyright (c) 2025-2026 oscarlosu-lab - https://github.com/oscarlosu-lab/SnakeUSBIP-Server
 # Licensed under GPL v3
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -71,7 +71,7 @@ fi
 # If binary is not yet in /usr/local/bin, download pre-built release binary
 if [[ ! -f "${BINARY_TARGET}" ]]; then
     echo -e "${CYAN}⬇️ Fetching official release binary for ${ARCH}...${NC}"
-    RELEASE_URL="https://github.com/oscarlosu-lab/SnakeUSBIP/releases/latest/download/snakeusbip-server-mac"
+    RELEASE_URL="https://github.com/oscarlosu-lab/SnakeUSBIP-Server/releases/latest/download/snakeusbip-server-mac"
     if curl -fsSL -o "${BINARY_TARGET}" "${RELEASE_URL}"; then
         chmod +x "${BINARY_TARGET}"
         echo -e "${GREEN}✓ Downloaded and installed to ${BINARY_TARGET}${NC}"
@@ -94,7 +94,6 @@ cat <<EOF > "${PLIST_PATH}"
     <array>
         <string>${BINARY_TARGET}</string>
         <string>serve</string>
-        <string>--auto-bind</string>
     </array>
     <key>RunAtLoad</key>
     <true/>
@@ -124,7 +123,7 @@ if [[ -f "${SCRIPT_DIR}/snakeusbip-ctl" ]]; then
     cp "${SCRIPT_DIR}/snakeusbip-ctl" "${CTL_TARGET}"
     chmod +x "${CTL_TARGET}"
 else
-    curl -fsSL "https://raw.githubusercontent.com/oscarlosu-lab/SnakeUSBIP/main/scripts/snakeusbip-ctl" -o "${CTL_TARGET}" || true
+    curl -fsSL "https://raw.githubusercontent.com/oscarlosu-lab/SnakeUSBIP-Server/main/scripts/snakeusbip-ctl" -o "${CTL_TARGET}" || true
     chmod +x "${CTL_TARGET}" 2>/dev/null || true
 fi
 echo -e "${GREEN}✓ Control Suite installed to ${CTL_TARGET}.${NC}"
