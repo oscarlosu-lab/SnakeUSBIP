@@ -46,16 +46,16 @@ Name: "startupicon"; Description: "Iniciar con Windows"; GroupDescription: "Opci
 Name: "installdrivers"; Description: "Instalar drivers USB/IP (requiere reinicio)"; GroupDescription: "Configuración de drivers:"; Flags: unchecked
 
 [Files]
-Source: "Portable\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "Portable\usb.ids"; DestDir: "{app}"; Flags: ignoreversion
-Source: "Portable\usbipw.exe"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist
-Source: "Portable\devnode.exe"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist
-Source: "Portable\libusbip.dll"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist
-Source: "Portable\resources.dll"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist
-Source: "Portable\CleanDrivers.ps1"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist
-Source: "Portable\drivers\*"; DestDir: "{app}\drivers"; Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist
-Source: "Portable\LICENSE"; DestDir: "{app}"; Flags: ignoreversion
-Source: "Portable\README.md"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDir}\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDir}\usb.ids"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDir}\usbipw.exe"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist
+Source: "{#SourceDir}\devnode.exe"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist
+Source: "{#SourceDir}\libusbip.dll"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist
+Source: "{#SourceDir}\resources.dll"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist
+Source: "{#SourceDir}\CleanDrivers.ps1"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist
+Source: "{#SourceDir}\drivers\*"; DestDir: "{app}\drivers"; Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist
+Source: "{#SourceDir}\LICENSE"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDir}\README.md"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"

@@ -1,10 +1,15 @@
-﻿name: Protected Release Pipeline (Zero-Cost FOSS)
+name: Protected Release Pipeline (Zero-Cost FOSS)
 
 on:
   push:
     tags:
       - "v*"
   workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag (e.g. v3.2.0)"
+        required: false
+        default: "v3.2.0"
 
 permissions:
   contents: write
@@ -20,6 +25,24 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Resolve Release Version Tag
+        id: vars
+        shell: pwsh
+        run: |
+          $inputTag = "${{ github.event.inputs.tag }}"
+          if ($inputTag) {
+            $tag = $inputTag
+          } elseif ("${{ github.ref_type }}" -eq "tag") {
+            $tag = "${{ github.ref_name }}"
+          } else {
+            $tag = "v3.2.0"
+          }
+          $version = $tag -replace '^v',''
+          Write-Host "Resolved tag: $tag"
+          Write-Host "Resolved version: $version"
+          "tag=$tag" >> $env:GITHUB_OUTPUT
+          "version=$version" >> $env:GITHUB_OUTPUT
+
       - name: Setup .NET 9.0 SDK
         uses: actions/setup-dotnet@v4
         with:
@@ -29,14 +52,12 @@ jobs:
         run: choco install innosetup --yes --no-progress
 
       - name: Install Obfuscar (Free MIT Tool)
-        run: dotnet tool install -g obfuscar.console
+        run: dotnet tool install -g obfuscar.globaltool
 
       - name: Build Protected Packages
         shell: pwsh
         run: |
-          $tag = "${{ github.ref_name }}" -replace '^v',''
-          if (-not $tag) { $tag = "3.0.0" }
-          ./tools/build-protected-ecosystem.ps1 -Version $tag -OutputDir "./dist"
+          ./tools/build-protected-ecosystem.ps1 -Version "${{ steps.vars.outputs.version }}" -OutputDir "./dist"
 
       - name: Generate GitHub Artifact Attestations (Sigstore $0)
         uses: actions/attest-build-provenance@v1
@@ -46,11 +67,12 @@ jobs:
       - name: Publish Official GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ steps.vars.outputs.tag }}
           files: |
             dist/installer/*
-          name: "🐍 SnakeUSBIP v${{ github.ref_name }} — Official Free Release"
+          name: "🐍 SnakeUSBIP ${{ steps.vars.outputs.tag }} — Official Free Release"
           body: |
-            ## 🐍 SnakeUSBIP v${{ github.ref_name }}
+            ## 🐍 SnakeUSBIP ${{ steps.vars.outputs.tag }}
             
             100% Free and Open Source (GNU GPLv3).
             Official builds hardened and published by `oscarlosu-lab`.
