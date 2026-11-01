@@ -259,6 +259,7 @@ jobs:
           files: |
             final-dist/*
           name: "🐍 SnakeUSBIP ${{ steps.vars.outputs.tag }} — Official Multiplatform Release"
+          generate_release_notes: true
           body: |
             ## 🐍 SnakeUSBIP ${{ steps.vars.outputs.tag }} — Multiplatform Ecosystem
             

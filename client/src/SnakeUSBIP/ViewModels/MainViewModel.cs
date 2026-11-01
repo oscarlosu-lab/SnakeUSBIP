@@ -38,10 +38,10 @@ public class MainViewModel : ViewModelBase
 
     public MainViewModel(IVpnService vpn, IUsbipService usbip)
     {
-        _vpn   = vpn;
+        _vpn = vpn;
         _usbip = usbip;
 
-        RefreshCommand    = new RelayCommand(async _ => await RefreshAllAsync());
+        RefreshCommand = new RelayCommand(async _ => await RefreshAllAsync());
         ConnectVpnCommand = new RelayCommand<VpnPeer>(async peer => await ConnectVpnAsync(peer));
     }
 
@@ -49,7 +49,7 @@ public class MainViewModel : ViewModelBase
 
     private async Task RefreshAllAsync()
     {
-        IsLoadingVpn  = true;
+        IsLoadingVpn = true;
         StatusMessage = "Scanning VPN peers...";
         VpnPeers.Clear();
 

@@ -24,6 +24,9 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore SnakeUSBIP.sln
 
+      - name: Verify Code Formatting (dotnet format)
+        run: dotnet format SnakeUSBIP.sln --verify-no-changes --verbosity normal
+
       - name: Build Release
         run: dotnet build SnakeUSBIP.sln -c Release --no-restore
 
@@ -72,3 +75,18 @@ jobs:
           chmod +x gradlew
           ./gradlew assembleDebug
 
+  lint-scripts:
+    name: ShellCheck (Linux & Mac Shell Scripts)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install ShellCheck
+        run: sudo apt-get update && sudo apt-get install -y shellcheck
+
+      - name: Run ShellCheck Validation
+        run: |
+          echo "Scanning Linux & macOS shell scripts..."
+          shellcheck --severity=error scripts/*.sh server/scripts/*.sh scripts/snakeusbip-ctl server/scripts/snakeusbip-ctl

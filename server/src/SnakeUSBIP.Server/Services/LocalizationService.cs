@@ -287,7 +287,7 @@ public class LocalizationService
                 ["log_device_stopped"] = "✅ Device {0} stopped",
                 ["log_invalid_busid"] = "❌ Invalid Bus ID format: {0}",
                 ["log_autobind_trigger"] = "⚡ Auto-binding saved device: {0} ({1})",
-                ["log_autounbind_trigger"] = "🔌 Client disconnected from {0} ({1}): auto-releasing to local host...", 
+                ["log_autounbind_trigger"] = "🔌 Client disconnected from {0} ({1}): auto-releasing to local host...",
                 ["log_share_all_all_done"] = "ℹ️ All eligible devices are already shared.",
                 ["log_share_all_result"] = "⚡ Shared {0}/{1} devices.",
                 ["log_ip_copied"] = "📋 Server IP copied to clipboard: {0} (TCP port 3240)",

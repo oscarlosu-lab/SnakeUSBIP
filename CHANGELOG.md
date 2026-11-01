@@ -1,5 +1,41 @@
 # CHANGELOG - SnakeUSBIP
 
+## [1.0.1] - 2026-11-01
+
+### Added
+- **Multiplatform CI/CD Automation ($0 FOSS)**:
+  - CodeQL SAST security pipeline inspecting C# (.NET 9) and Android (Java/Kotlin).
+  - Automated Secret Scanning (Gitleaks) on pull requests and commits.
+  - Dependabot automated weekly security updates for NuGet, Gradle, and GitHub Actions.
+  - ShellCheck validation for Linux & macOS shell scripts.
+  - Code hygiene and formatting gates via dotnet format.
+- **Packaging Parity**:
+  - Inno Setup dynamic version override via #ifndef MyAppVersion guards.
+  - Verified portable win-x64, macOS Apple Silicon/Intel tarball, Linux systemd tarball, and Android APK assets.
+
+### Fixed
+- **Inno Setup Version Stamp**:
+  - Fixed Windows installer compilation to respect dynamic /DMyAppVersion parameter in GitHub Actions.
+- **Node.js 24 Runner Compatibility**:
+  - Upgraded Java setup actions to actions/setup-java@v5 eliminating deprecation warnings.
+
+---
+
+## [1.0.0] - 2026-11-01
+
+### Security & Hardening (Zero-Trust Audit Remediation)
+- **Zero-Trust Remediation Across 55 Vectors**:
+  - Socket isolation enforcing ExclusiveAddressUse = true and 127.0.0.1 binding on Android ADB / Serial bridges.
+  - Memory bounds and DoS buffer protection restricting incoming network packets to 1 MB limits.
+  - Command execution sanitization replacing arbitrary cmd.exe /c invocations with explicit arguments.
+  - Native binary integrity verification ensuring fail-closed execution on tampered drivers or helper executables.
+  - Whitelist fail-closed access control on dynamic server endpoints.
+- **Unified Ecosystem Architecture**:
+  - Consolidated Client (WPF .NET 9), Server (.NET 9), Mac Server (Swift), Linux scripts, and Android Server App into a single mono-repository SnakeUSBIP.
+  - Standardized versioning across all platforms to 1.0.0 / 1.0.1.
+
+---
+
 ## [3.2.0] - 2026-11-01
 
 ### Added

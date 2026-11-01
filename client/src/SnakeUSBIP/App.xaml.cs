@@ -106,7 +106,7 @@ public partial class App : System.Windows.Application
             // Initialize core services — order matters
             ServiceProvider.GetRequiredService<IEnvironmentService>().Initialize();
             ServiceProvider.GetRequiredService<ILoggerService>().Initialize();
-            
+
             // Create and show MainWindow via DI
             var configService = ServiceProvider.GetRequiredService<IConfigService>();
             var appConfig = configService.Load();
@@ -131,9 +131,9 @@ public partial class App : System.Windows.Application
         catch (Exception ex)
         {
             System.Windows.MessageBox.Show(
-                $"Critical Startup Error: {ex.Message}\n\n{ex.InnerException?.Message}\n\n{ex.StackTrace}", 
-                "Fatal Error", 
-                MessageBoxButton.OK, 
+                $"Critical Startup Error: {ex.Message}\n\n{ex.InnerException?.Message}\n\n{ex.StackTrace}",
+                "Fatal Error",
+                MessageBoxButton.OK,
                 MessageBoxImage.Error);
             Shutdown();
         }

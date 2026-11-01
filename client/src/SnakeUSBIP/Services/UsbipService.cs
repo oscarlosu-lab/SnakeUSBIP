@@ -67,89 +67,89 @@ namespace SnakeUSBIP.Services
                 var result = await RunCommandAsync(new[] { "list", "-r", ip }, 15000, ct);
                 if (!string.IsNullOrEmpty(result.Output))
                 {
-                // Pattern 1: Modern usbip / usbipw format:
-                //   3-1    : Realtek Semiconductor Corp. : unknown product (0bda:5100)
-                var regexModern = new Regex(@"^\s+([\d\-\.]+)\s*:\s*(.+?)\s*\(([0-9a-fA-F]{4}:[0-9a-fA-F]{4})\)\s*$", RegexOptions.Multiline);
-                var matchesModern = regexModern.Matches(result.Output);
+                    // Pattern 1: Modern usbip / usbipw format:
+                    //   3-1    : Realtek Semiconductor Corp. : unknown product (0bda:5100)
+                    var regexModern = new Regex(@"^\s+([\d\-\.]+)\s*:\s*(.+?)\s*\(([0-9a-fA-F]{4}:[0-9a-fA-F]{4})\)\s*$", RegexOptions.Multiline);
+                    var matchesModern = regexModern.Matches(result.Output);
 
-                if (matchesModern.Count > 0)
-                {
-                    foreach (Match match in matchesModern)
+                    if (matchesModern.Count > 0)
                     {
-                        devices.Add(new UsbDevice
+                        foreach (Match match in matchesModern)
                         {
-                            BusId = match.Groups[1].Value.Trim(),
-                            Description = match.Groups[2].Value.Trim(),
-                            HardwareId = match.Groups[3].Value.Trim(),
-                            RemoteIp = ip,
-                            ServerIP = ip,
-                            IsConnected = false
-                        });
-                    }
-                }
-                else
-                {
-                    // Pattern 2: Legacy usbip format:
-                    //   3-1    : 0bda:5100 Realtek Semiconductor Corp.
-                    var regexLegacy = new Regex(@"^\s+([\d\-\.]+)\s*:\s*([0-9a-fA-F]{4}:[0-9a-fA-F]{4})\s+(.+)$", RegexOptions.Multiline);
-                    var matchesLegacy = regexLegacy.Matches(result.Output);
-
-                    foreach (Match match in matchesLegacy)
-                    {
-                        devices.Add(new UsbDevice
-                        {
-                            BusId = match.Groups[1].Value.Trim(),
-                            HardwareId = match.Groups[2].Value.Trim(),
-                            Description = match.Groups[3].Value.Trim(),
-                            RemoteIp = ip,
-                            ServerIP = ip,
-                            IsConnected = false
-                        });
-                    }
-                }
-
-                // Pattern 3: Fallback line-by-line if still empty
-                if (devices.Count == 0)
-                {
-                    var lines = result.Output.Split('\n', StringSplitOptions.RemoveEmptyEntries);
-                    foreach (var rawLine in lines)
-                    {
-                        var line = rawLine.Trim();
-                        if (line.StartsWith("=") || line.StartsWith("/") || line.StartsWith("Exportable", StringComparison.OrdinalIgnoreCase))
-                            continue;
-
-                        var headerMatch = Regex.Match(line, @"^([\d\-\.]+)\s*:\s*(.+)$");
-                        if (headerMatch.Success)
-                        {
-                            var busId = headerMatch.Groups[1].Value.Trim();
-                            var rest = headerMatch.Groups[2].Value.Trim();
-
-                            if (Regex.IsMatch(busId, @"^\d+$") && rest.Contains("Interface", StringComparison.OrdinalIgnoreCase))
-                                continue;
-
-                            var vidPidMatch = Regex.Match(rest, @"\b([0-9a-fA-F]{4}:[0-9a-fA-F]{4})\b");
-                            string hardwareId = vidPidMatch.Success ? vidPidMatch.Groups[1].Value : string.Empty;
-
-                            string desc = rest;
-                            if (vidPidMatch.Success)
-                            {
-                                desc = Regex.Replace(desc, @"\s*\(" + Regex.Escape(hardwareId) + @"\)", "").Trim();
-                                desc = Regex.Replace(desc, @"\b" + Regex.Escape(hardwareId) + @"\b", "").Trim();
-                            }
-                            if (string.IsNullOrWhiteSpace(desc)) desc = "USB Device";
-
                             devices.Add(new UsbDevice
                             {
-                                BusId = busId,
-                                HardwareId = hardwareId,
-                                Description = desc,
+                                BusId = match.Groups[1].Value.Trim(),
+                                Description = match.Groups[2].Value.Trim(),
+                                HardwareId = match.Groups[3].Value.Trim(),
                                 RemoteIp = ip,
                                 ServerIP = ip,
                                 IsConnected = false
                             });
                         }
                     }
-                }
+                    else
+                    {
+                        // Pattern 2: Legacy usbip format:
+                        //   3-1    : 0bda:5100 Realtek Semiconductor Corp.
+                        var regexLegacy = new Regex(@"^\s+([\d\-\.]+)\s*:\s*([0-9a-fA-F]{4}:[0-9a-fA-F]{4})\s+(.+)$", RegexOptions.Multiline);
+                        var matchesLegacy = regexLegacy.Matches(result.Output);
+
+                        foreach (Match match in matchesLegacy)
+                        {
+                            devices.Add(new UsbDevice
+                            {
+                                BusId = match.Groups[1].Value.Trim(),
+                                HardwareId = match.Groups[2].Value.Trim(),
+                                Description = match.Groups[3].Value.Trim(),
+                                RemoteIp = ip,
+                                ServerIP = ip,
+                                IsConnected = false
+                            });
+                        }
+                    }
+
+                    // Pattern 3: Fallback line-by-line if still empty
+                    if (devices.Count == 0)
+                    {
+                        var lines = result.Output.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+                        foreach (var rawLine in lines)
+                        {
+                            var line = rawLine.Trim();
+                            if (line.StartsWith("=") || line.StartsWith("/") || line.StartsWith("Exportable", StringComparison.OrdinalIgnoreCase))
+                                continue;
+
+                            var headerMatch = Regex.Match(line, @"^([\d\-\.]+)\s*:\s*(.+)$");
+                            if (headerMatch.Success)
+                            {
+                                var busId = headerMatch.Groups[1].Value.Trim();
+                                var rest = headerMatch.Groups[2].Value.Trim();
+
+                                if (Regex.IsMatch(busId, @"^\d+$") && rest.Contains("Interface", StringComparison.OrdinalIgnoreCase))
+                                    continue;
+
+                                var vidPidMatch = Regex.Match(rest, @"\b([0-9a-fA-F]{4}:[0-9a-fA-F]{4})\b");
+                                string hardwareId = vidPidMatch.Success ? vidPidMatch.Groups[1].Value : string.Empty;
+
+                                string desc = rest;
+                                if (vidPidMatch.Success)
+                                {
+                                    desc = Regex.Replace(desc, @"\s*\(" + Regex.Escape(hardwareId) + @"\)", "").Trim();
+                                    desc = Regex.Replace(desc, @"\b" + Regex.Escape(hardwareId) + @"\b", "").Trim();
+                                }
+                                if (string.IsNullOrWhiteSpace(desc)) desc = "USB Device";
+
+                                devices.Add(new UsbDevice
+                                {
+                                    BusId = busId,
+                                    HardwareId = hardwareId,
+                                    Description = desc,
+                                    RemoteIp = ip,
+                                    ServerIP = ip,
+                                    IsConnected = false
+                                });
+                            }
+                        }
+                    }
                 } // end if (!string.IsNullOrEmpty(result.Output))
 
                 // Dynamic Control API (TCP 3241) discovery for unbound/local physical devices
