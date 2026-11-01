@@ -1,0 +1,36 @@
+1
+00:00:00,000 --> 00:00:37,751
+Si tienes una grabadora láser de diodo como Sculpfun, Atomstack, xTool, Ortur o Creality y usas LightBurn, seguro que sufres dos grandes problemas. El primero es tirar cables USB largos por el taller, que provocan ruido electromagnético y desconexiones a mitad de trabajo arruinando piezas de madera o metacrilato. El segundo es VirtualHere, cuya versión gratuita solo permite un único dispositivo, obligándote a pagar cuarenta y nueve dólares por máquina si quieres conectar el láser y la cámara a la vez. Con SnakeUSBIP conectas ambos simultáneamente y de forma totalmente gratuita.
+
+2
+00:00:37,751 --> 00:01:05,751
+El montaje en el taller es limpio y seguro. Colocamos un microordenador económico, como una Raspberry Pi, Orange Pi o mini PC con Linux, justo al lado del chasis del láser. En el puerto USB uno conectamos el controlador del láser, típicamente con chip CH340 o CP2102. En el puerto USB dos conectamos la cámara de alineación cenital de LightBurn. A partir de aquí, cero cables por el suelo: todos los datos viajarán por tu red Wi-Fi o cable Ethernet.
+
+3
+00:01:05,751 --> 00:01:34,865
+Configurar el servidor en la Raspberry Pi toma menos de un minuto. Conéctate por SSH y ejecuta nuestro comando oficial de una sola línea. El instalador descarga los módulos USB/IP del kernel, levanta el demonio del sistema y configura reglas inteligentes en udev. Gracias a esto, en cuanto enciendes el láser y la cámara, ambos puertos se comparten al instante en tu red de forma totalmente automática, sin tener que escribir comandos manuales de enlace.
+
+4
+00:01:34,865 --> 00:02:05,976
+En el ordenador de diseño donde tienes LightBurn, descarga el instalador oficial de SnakeUSBIP. Incluye controladores virtuales certificados oficialmente por Microsoft mediante firma WHQL. Esto garantiza compatibilidad total con Windows 10 y Windows 11, funcionando a la perfección con Aislamiento de Núcleo e Integridad de Memoria activados, tanto en procesadores Intel y AMD de 64 bits como en equipos modernos ARM64.
+
+5
+00:02:05,976 --> 00:02:34,022
+Al abrir SnakeUSBIP, su motor de escaneo localiza tu Raspberry Pi en segundos y muestra el ping en milisegundos en tiempo real. En la lista verás aparecer el controlador serie de tu láser y tu cámara web. Haz clic en Conectar en ambos. Windows creará un puerto COM virtual para el láser y un dispositivo de vídeo estándar para la cámara. Marca la casilla de Auto-conectar en ambos dispositivos para que se reconecten solos al encender el láser o reiniciar el equipo.
+
+6
+00:02:34,022 --> 00:03:01,464
+En la barra de estado inferior puedes alternar los perfiles de red. Para el controlador del láser, el modo Low-Latency WSK utiliza callbacks directos en el kernel para eliminar el jitter en el streaming de código G, logrando que el movimiento manual y el encuadre en LightBurn respondan al instante. Para la cámara de LightBurn, el modo Zero-Copy proporciona el máximo ancho de banda para ver la imagen en alta resolución de forma fluida y sin parpadeos.
+
+7
+00:03:01,464 --> 00:03:34,526
+Ahora abrimos LightBurn. En la ventana Dispositivos, seleccionamos GRBL con conexión serie y elegimos el puerto COM virtual creado por SnakeUSBIP. La consola responderá de inmediato confirmando la conexión con tu láser. A continuación, abre la ventana Control de Cámara, selecciona la cámara remota en el desplegable y realiza la calibración y alineación visual. Ya puedes colocar tus materiales en la cama de nido de abeja, encuadrar visualmente con precisión milimétrica y lanzar el grabado desde tu escritorio.
+
+8
+00:03:34,526 --> 00:04:06,008
+Si tu cortadora láser está en un garaje separado, una caseta en el jardín o un taller en otra ubicación, no necesitas tocar el cortafuegos ni abrir puertos peligrosos en tu router. SnakeUSBIP se integra de forma nativa con redes malladas seguras como Tailscale, ZeroTier y WireGuard. Solo tienes que pulsar Añadir Servidor, introducir la IP de Tailscale de tu Raspberry Pi y podrás operar y supervisar por cámara tu láser desde el salón de tu casa o desde otra oficina con total comodidad y seguridad.
+
+9
+00:04:06,008 --> 00:04:38,095
+En conclusión: conexión simultánea e ilimitada de tu láser diodo y tu cámara en LightBurn, cero desconexiones por cables largos, auto-reconexión tolerante a fallos, baja latencia para un encuadre milimétrico y control seguro por VPN. Todo ello sin pagar licencias de cuarenta y nueve dólares y con controladores certificados de máxima estabilidad. Descarga ya SnakeUSBIP desde nuestro repositorio oficial en GitHub, apoya el proyecto con una estrella y disfruta de la libertad de tu taller láser.
+

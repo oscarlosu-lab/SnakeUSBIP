@@ -1,0 +1,69 @@
+<Window x:Class="SnakeUSBIP.Views.VpnDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="VPN / Remote Network" 
+        Height="400" Width="450"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        Background="{DynamicResource BackgroundDark}">
+    
+    <Grid Margin="15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <!-- VPN Status -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
+            <TextBlock x:Name="lblStatus" Text="Network status:" Foreground="{DynamicResource ForegroundSecondary}"/>
+            <TextBlock x:Name="lblStatusValue" Text="Checking..." Foreground="{DynamicResource StatusInfo}" Margin="10,0,0,0" FontWeight="SemiBold"/>
+        </StackPanel>
+        
+        <!-- Download buttons -->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,15">
+            <Button x:Name="btnTailscale" Content="📥 Tailscale"
+                    Style="{StaticResource FlatButton}"
+                    Width="105" Height="28"
+                    Click="BtnTailscale_Click"/>
+            <Button x:Name="btnZeroTier" Content="📥 ZeroTier"
+                    Style="{StaticResource FlatButton}"
+                    Width="105" Height="28"
+                    Margin="10,0,0,0" Click="BtnZeroTier_Click"/>
+        </StackPanel>
+        
+        <!-- Peers list -->
+        <Border Grid.Row="2" Background="{DynamicResource BackgroundPanel}" BorderBrush="{DynamicResource BorderSubtle}" BorderThickness="1" CornerRadius="6">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                
+                <TextBlock Grid.Row="0" x:Name="lblPeers" Text="Peers on network:" 
+                           Foreground="{DynamicResource AccentBlue}" FontWeight="Bold" Margin="8,6"/>
+                <ListView Grid.Row="1" x:Name="lstPeers" 
+                          Background="{DynamicResource BackgroundPanel}" Foreground="{DynamicResource ForegroundPrimary}" BorderThickness="0"/>
+            </Grid>
+        </Border>
+        
+        <!-- Action buttons -->
+        <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="0,10,0,0">
+            <Button x:Name="btnAddAll" Content="Add All"
+                    Style="{StaticResource FlatButton}"
+                    Width="90" Height="28"
+                    Click="BtnAddAll_Click"/>
+            <Button x:Name="btnConnect" Content="Connect"
+                    Style="{StaticResource AccentButton}"
+                    Width="95" Height="28"
+                    Margin="10,0,0,0" Click="BtnConnect_Click"/>
+        </StackPanel>
+        
+        <!-- Info -->
+        <TextBlock Grid.Row="4" x:Name="lblInfo" 
+                   Text="ℹ️ Connect with other users via Tailscale or ZeroTier"
+                   Foreground="{DynamicResource ForegroundSecondary}" FontSize="10" Margin="0,10,0,0"/>
+    </Grid>
+</Window>

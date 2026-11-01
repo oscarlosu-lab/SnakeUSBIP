@@ -1,0 +1,71 @@
+﻿name: Protected Release Pipeline (Zero-Cost FOSS)
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  id-token: write
+  attestations: write
+
+jobs:
+  build-and-release:
+    name: Build Protected Packages
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 9.0 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "9.0.x"
+
+      - name: Install Inno Setup
+        run: choco install innosetup --yes --no-progress
+
+      - name: Install Obfuscar (Free MIT Tool)
+        run: dotnet tool install -g obfuscar.console
+
+      - name: Build Protected Packages
+        shell: pwsh
+        run: |
+          $tag = "${{ github.ref_name }}" -replace '^v',''
+          if (-not $tag) { $tag = "3.0.0" }
+          ./tools/build-protected-ecosystem.ps1 -Version $tag -OutputDir "./dist"
+
+      - name: Generate GitHub Artifact Attestations (Sigstore $0)
+        uses: actions/attest-build-provenance@v1
+        with:
+          subject-path: "dist/installer/*"
+
+      - name: Publish Official GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/installer/*
+          name: "🐍 SnakeUSBIP v${{ github.ref_name }} — Official Free Release"
+          body: |
+            ## 🐍 SnakeUSBIP v${{ github.ref_name }}
+            
+            100% Free and Open Source (GNU GPLv3).
+            Official builds hardened and published by `oscarlosu-lab`.
+            
+            ### 🔒 Verificación de Integridad (SHA-256)
+            Todos los binarios cuentan con atestación criptográfica Sigstore y hashes públicos:
+            ```powershell
+            Get-FileHash .\[archivo] -Algorithm SHA256
+            ```
+            
+            ### ⚖️ Licencia y Marca Registrada
+            * **SnakeUSBIP** es una marca de `oscarlosu-lab`.
+            * Distribuido bajo licencia **GNU GPLv3**. Prohibido cerrar el código o redistribuir binarios modificados bajo la marca SnakeUSBIP.
+            
+            ---
+            ☕ **Apoya este proyecto libre**: [Ko-fi](https://ko-fi.com/oscarlosu)
+          draft: false
+          prerelease: false

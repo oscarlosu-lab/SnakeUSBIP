@@ -1,0 +1,24 @@
+﻿<Project>
+  <!-- Metadatos Globales de SnakeUSBIP -->
+  <PropertyGroup>
+    <Version>3.2.0</Version>
+    <AssemblyVersion>3.2.0.0</AssemblyVersion>
+    <FileVersion>3.2.0.0</FileVersion>
+    <InformationalVersion>3.2.0</InformationalVersion>
+    <Authors>oscarlosu-lab</Authors>
+    <Company>oscarlosu-lab</Company>
+    <Product>SnakeUSBIP</Product>
+    <Copyright>Copyright (c) 2025-2026 oscarlosu-lab - GNU GPLv3</Copyright>
+    <RepositoryUrl>https://github.com/oscarlosu-lab/SnakeUSBIP</RepositoryUrl>
+    <NeutralLanguage>en</NeutralLanguage>
+  </PropertyGroup>
+
+  <!-- Hardening y Protección de Binarios en Release (Coste 0 €) -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <DebugType>none</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+    <Deterministic>true</Deterministic>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <TrimMode>partial</TrimMode>
+  </PropertyGroup>
+</Project>

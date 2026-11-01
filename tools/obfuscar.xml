@@ -1,0 +1,14 @@
+﻿<?xml version='1.0'?>
+<Obfuscator>
+  <Var name="InPath" value=".\temp_client" />
+  <Var name="OutPath" value=".\temp_client\Obfuscated" />
+  <Var name="KeepPublicApi" value="false" />
+  <Var name="HideStrings" value="true" />
+  <Var name="OptimizeMethods" value="true" />
+  <Var name="RenameProperties" value="true" />
+  <Var name="RenameFields" value="true" />
+  <Var name="UseUnicodeNames" value="true" />
+  <Var name="HidePrivateApi" value="true" />
+
+  <Module assembly="$(InPath)\SnakeUSBIP.dll" />
+</Obfuscator>

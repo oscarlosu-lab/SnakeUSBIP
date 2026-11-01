@@ -1,0 +1,40 @@
+1
+00:00:00,000 --> 00:00:26,692
+Bienvenidos al tutorial completo de SnakeUSBIP versión 3.0. A diferencia de soluciones comerciales como VirtualHere, que cobran cuarenta y nueve dólares por servidor y limitan la versión gratuita a un solo dispositivo, SnakeUSBIP es cien por cien libre, de código abierto y te permite conectar periféricos USB ilimitados por red local, Wi-Fi o internet con drivers certificados.
+
+2
+00:00:26,692 --> 00:00:50,412
+Para convertir tu Raspberry Pi o máquina Linux en un servidor USB, solo tienes que ejecutar nuestro instalador oficial en una sola línea. El script instala los paquetes del kernel, configura el demonio del sistema y activa una regla inteligente en udev. Gracias a esto, cualquier dispositivo USB que enchufes se comparte al instante en la red de forma totalmente automática.
+
+3
+00:00:50,412 --> 00:01:14,503
+Si prefieres compartir dispositivos desde un ordenador con Windows, dispones de SnakeUSBIP Server. Su interfaz detecta en tiempo real todos los puertos y periféricos locales conectados. Con un solo clic puedes compartir o desvincular cualquier puerto USB, verificar los registros en vivo y dejarlo ejecutándose en segundo plano en la bandeja del sistema.
+
+4
+00:01:14,503 --> 00:01:36,737
+En el equipo cliente donde vas a recibir los periféricos, el instalador oficial configura los controladores virtuales certificados por Microsoft. Es totalmente compatible con Aislamiento de Núcleo e Integridad de Memoria en Windows 10 y 11. Además, el instalador detecta si la app está en la bandeja del sistema y realiza una instalación o actualización limpia sin conflictos.
+
+5
+00:01:36,737 --> 00:02:00,736
+Al abrir SnakeUSBIP, la aplicación escanea automáticamente tu subred local por UDP y encuentra todos los servidores activos en segundos. Junto a cada servidor verás un indicador de latencia en milisegundos en tiempo real. Y si tus equipos están en ubicaciones distintas, puedes añadir servidores remotos manualmente o conectar a través de redes VPN como Tailscale y ZeroTier.
+
+6
+00:02:00,736 --> 00:02:23,527
+En la lista verás el árbol detallado de periféricos con su nombre comercial gracias a la base de datos de Vendor y Product ID. Pulsa Conectar para que Windows reconozca el dispositivo como si estuviera pinchado físicamente en tu placa base. Puedes marcar dispositivos como favoritos para que se reconecten solos al arrancar Windows o tras un corte de alimentación.
+
+7
+00:02:23,527 --> 00:02:46,643
+En la barra de estado inferior puedes alternar el perfil de rendimiento. El modo Low-Latency utiliza callbacks directos en el kernel para eliminar el retardo en mandos y volantes de SimRacing con vibración completa, ideal para Moonlight y Sunshine. Para cámaras web, grabadoras láser o discos de almacenamiento, el modo Zero-Copy ofrece el máximo ancho de banda.
+
+8
+00:02:46,643 --> 00:03:07,205
+SnakeUSBIP se integra con las notificaciones Toast nativas de Windows. Recibirás avisos claros cuando un dispositivo se conecte, se desconecte o se restablezca el enlace de red. Al cerrar la ventana, la aplicación se minimiza silenciosamente al área de notificación, consumiendo apenas memoria RAM.
+
+9
+00:03:07,205 --> 00:03:29,485
+Para entornos avanzados, SnakeUSBIP incluye soporte completo por consola. Puedes iniciar el ejecutable con el parámetro minimizado y pasarle la IP del servidor y el identificador del bus para conectar tus mandos automáticamente al abrir un juego en Sunshine o Steam Deck, sin necesidad de tocar la interfaz gráfica.
+
+10
+00:03:29,485 --> 00:03:51,951
+Toda la interfaz y los registros son completamente bilingües en español e inglés y cambian al instante sin reiniciar. SnakeUSBIP es un proyecto comunitario abierto a todos. Descarga ya el instalador oficial desde nuestro repositorio en GitHub, apoya el proyecto con una estrella y disfruta de la libertad de tus periféricos USB en cualquier lugar.
+

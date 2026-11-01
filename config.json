@@ -1,0 +1,13 @@
+{
+  "Language": "es",
+  "Theme": "dark",
+  "Favorites": [],
+  "CustomDeviceNames": {},
+  "LastSubnet": null,
+  "AutoScanOnStart": true,
+  "AutoConnectFavorites": true,
+  "MinimizeToTray": true,
+  "LastServerIP": "192.168.1.180",
+  "DefaultReceiveMode": "zero-copy",
+  "AutoDetachOnExit": true
+}
