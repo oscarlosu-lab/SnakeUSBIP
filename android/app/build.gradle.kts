@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.snakeusbip"
-    compileSdk = 36
+    compileSdk = 37
     defaultConfig {
         applicationId = "com.snakeusbip"
         minSdk = 26
