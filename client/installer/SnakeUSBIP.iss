@@ -2,7 +2,9 @@
 ; Copyright (c) 2025-2026 SnakeFoxu (OscarLosu)
 
 #define MyAppName "SnakeUSBIP"
-#define MyAppVersion "1.0.0"
+#ifndef MyAppVersion
+#define MyAppVersion "1.0.1"
+#endif
 #define MyAppPublisher "SnakeFoxu (OscarLosu)"
 #define MyAppURL "https://github.com/oscarlosu-lab/SnakeUSBIP"
 #define MyAppExeName "SnakeUSBIP.exe"

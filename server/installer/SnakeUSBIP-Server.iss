@@ -3,7 +3,9 @@
 ; (c) 2025-2026 oscarlosu-lab - https://github.com/oscarlosu-lab/SnakeUSBIP-Server
 
 #define MyAppName "SnakeUSBIP Server"
-#define MyAppVersion "1.0.0"
+#ifndef MyAppVersion
+#define MyAppVersion "1.0.1"
+#endif
 #define MyAppPublisher "oscarlosu-lab"
 #define MyAppURL "https://github.com/oscarlosu-lab/SnakeUSBIP-Server"
 #define MyAppExeName "SnakeUSBIP-Server.exe"
