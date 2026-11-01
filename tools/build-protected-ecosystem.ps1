@@ -1,6 +1,6 @@
 ﻿[CmdletBinding()]
 param(
-    [string]$Version = "3.0.0",
+    [string]$Version = "3.2.0",
     [string]$OutputDir = "$PSScriptRoot\..\dist"
 )
 
@@ -48,11 +48,32 @@ Write-Host "`n[3/4] Purgando archivos PDB..." -ForegroundColor Yellow
 Get-ChildItem -Path "$OutputDir\portable" -Filter "*.pdb" -Recurse | Remove-Item -Force
 Write-Host "  ✓ Símbolos eliminados." -ForegroundColor Green
 
-# 4. Empaquetar y Hash SHA-256
-Write-Host "`n[4/4] Empaquetando y calculando SHA256SUMS.txt..." -ForegroundColor Yellow
+# 4. Inno Setup & Empaquetado
+Write-Host "`n[4/4] Generando paquetes de distribución..." -ForegroundColor Yellow
 $zipPath = "$OutputDir\installer\SnakeUSBIP_v$Version`_Portable_win-x64.zip"
 Compress-Archive -Path "$OutputDir\portable\*" -DestinationPath $zipPath -Force
 
+$innoScript = "$PSScriptRoot\..\client\installer\SnakeUSBIP.iss"
+if (Test-Path $innoScript) {
+    $iscc = Get-Command "iscc" -ErrorAction SilentlyContinue
+    if (-not $iscc) {
+        $paths = @(
+            "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe",
+            "$env:ProgramFiles\Inno Setup 6\ISCC.exe"
+        )
+        foreach ($p in $paths) {
+            if (Test-Path $p) { $iscc = $p; break }
+        }
+    }
+    if ($iscc) {
+        Write-Host "  Compilando instalador Inno Setup..." -ForegroundColor DarkGray
+        & $iscc /DMyAppVersion=$Version /O"$OutputDir\installer" $innoScript | Out-Null
+        Write-Host "  ✓ Instalador Inno Setup generado." -ForegroundColor Green
+    }
+}
+
+# 5. Cálculo determinista de SHA256SUMS.txt
+Write-Host "`nCalculando SHA256SUMS.txt para verificación oficial..." -ForegroundColor Yellow
 $hashFile = "$OutputDir\installer\SHA256SUMS.txt"
 if (Test-Path $hashFile) { Remove-Item $hashFile -Force }
 
