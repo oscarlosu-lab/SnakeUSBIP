@@ -70,7 +70,7 @@ public class NetworkScanner : INetworkScanner
             {
                 var res = await udp.ReceiveAsync(cts.Token);
                 var text = Encoding.UTF8.GetString(res.Buffer);
-                if (text.StartsWith("SNAKEUSBIP_SERVER:", StringComparison.OrdinalIgnoreCase) || text.StartsWith("USBANYWHERE_SERVER:", StringComparison.OrdinalIgnoreCase))
+                if (text.StartsWith("SNAKEUSBIP_SERVER:", StringComparison.OrdinalIgnoreCase) || text.StartsWith("SNAKEUSBIP_SERVER:", StringComparison.OrdinalIgnoreCase))
                 {
                     found.Add(res.RemoteEndPoint.Address.ToString());
                 }

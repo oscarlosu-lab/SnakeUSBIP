@@ -404,9 +404,9 @@ def run_udp_discovery_responder(port=CONTROL_PORT):
             try:
                 data, addr = udp_sock.recvfrom(1024)
                 msg = data.decode("utf-8", errors="ignore").strip()
-                if "USBANYWHERE_DISCOVERY_PROBE" in msg or "DISCOVERY" in msg:
+                if "SNAKEUSBIP_DISCOVERY_PROBE" in msg or "DISCOVERY" in msg:
                     host = socket.gethostname()
-                    resp = f"USBANYWHERE_SERVER:{host}\n".encode("utf-8")
+                    resp = f"SNAKEUSBIP_SERVER:{host}\n".encode("utf-8")
                     udp_sock.sendto(resp, addr)
             except Exception:
                 time.sleep(0.05)

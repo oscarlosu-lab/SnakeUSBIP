@@ -1,8 +1,8 @@
 FROM debian:bookworm-slim
 
-LABEL org.opencontainers.image.title="USBAnywhere Server"
+LABEL org.opencontainers.image.title="SnakeUSBIP Server"
 LABEL org.opencontainers.image.description="Lightweight Plug & Play USB/IP Server for HomeLab, Unraid, TrueNAS & Proxmox"
-LABEL org.opencontainers.image.url="https://github.com/oscarlosu-lab/USBAnywhere"
+LABEL org.opencontainers.image.url="https://github.com/oscarlosu-lab/SnakeUSBIP"
 LABEL org.opencontainers.image.licenses="GPL-3.0"
 
 RUN apt-get update && \

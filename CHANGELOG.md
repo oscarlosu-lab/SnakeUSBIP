@@ -8,7 +8,7 @@
 - **On-Demand Dynamic Control API & Zero-Config Discovery (TCP/UDP 3241)**:
   - Full client support for querying remote servers running in On-Demand mode (0 pre-exported devices on TCP 3240) via TCP 3241 `LIST`.
   - Synchronous response validation for TCP 3241 `BIND <busid>` (`OK` vs `DENIED` host policy feedback) with automatic post-bind stabilization retry on `usbip attach`.
-  - Parallel UDP 3241 broadcast discovery (`USBANYWHERE_DISCOVERY_PROBE`) alongside TCP 3240 and TCP 3241 scanning in `NetworkScanner`.
+  - Parallel UDP 3241 broadcast discovery (`SNAKEUSBIP_DISCOVERY_PROBE`) alongside TCP 3240 and TCP 3241 scanning in `NetworkScanner`.
 - **Host Export Policy & Composite Interface Protection (`snakeusbip-ctl` v3.2.0)**:
   - Added `/etc/snakeusbip/policy.json` and `snakeusbip-ctl policy` CLI (`mode`, `allow`, `deny`, `protect-hid`, `protect-storage`, `reset`) across Linux and macOS servers.
   - Added child interface class inspection (`bInterfaceClass` for composite USB devices `0x00`/`0xef`/`0xff`), Valve Steam Controller (`28de:*`) recognition, and USB Hub (`0x09` / `1d6b:*`) exclusion.

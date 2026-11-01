@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-USBAnywhere Server for macOS - Live TCP/UDP End-to-End Loopback Test
+SnakeUSBIP Server for macOS - Live TCP/UDP End-to-End Loopback Test
 Verifies that the compiled Swift binary boots on macOS Darwin, binds TCP 3240,
 TCP 3241 (Dynamic Control API), and UDP 3241 (Discovery Responder), and responds
 correctly to binary USB/IP protocol handshakes and dynamic control commands.
@@ -69,10 +69,10 @@ def verify_live_usbip_handshake(host="127.0.0.1", port=3240, control_port=3241):
     # 3. Discovery Responder (UDP 3241)
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as us:
         us.settimeout(3.0)
-        us.sendto(b"USBANYWHERE_DISCOVERY_PROBE", (host, control_port))
+        us.sendto(b"SNAKEUSBIP_DISCOVERY_PROBE", (host, control_port))
         udp_data, _ = us.recvfrom(1024)
         udp_text = udp_data.decode("utf-8").strip()
-        assert udp_text.startswith("USBANYWHERE_SERVER:"), f"Unexpected UDP reply: {udp_text}"
+        assert udp_text.startswith("SNAKEUSBIP_SERVER:"), f"Unexpected UDP reply: {udp_text}"
         print(f"UDP 3241 Discovery Responder verified: {udp_text}")
 
     return True
