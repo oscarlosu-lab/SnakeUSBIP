@@ -57,7 +57,7 @@ jobs:
       - name: Build Protected Packages
         shell: pwsh
         run: |
-          ./tools/build-protected-ecosystem.ps1 -Version "${{ steps.vars.outputs.version }}" -OutputDir "./dist"
+          ./tools/build-protected-ecosystem.ps1 -Version "${{ steps.vars.outputs.version }}" -OutputDir "${{ github.workspace }}/dist"
 
       - name: Generate GitHub Artifact Attestations (Sigstore $0)
         uses: actions/attest-build-provenance@v1
