@@ -14,25 +14,31 @@ namespace SnakeUSBIP.Server.Services;
 
 /// <summary>
 /// UDP discovery responder and TCP Dynamic Control API on port 3241 for the SnakeUSBIP v1.0.0 ecosystem.
-/// - UDP 3241: Responds to SNAKEUSBIP_DISCOVERY_PROBE with SNAKEUSBIP_SERVER:{MachineName}.
+/// - UDP 3241: Responds to USBANYWHERE_DISCOVERY_PROBE with USBANYWHERE_SERVER:{MachineName}.
 /// - TCP 3241: Handles LIST, BIND <busid>, UNBIND <busid>, STATUS commands for On-Demand binding.
 /// </summary>
 public class DiscoveryResponderService : IDisposable
 {
-    private const int DiscoveryPort = 3241;
-    private const string ProbeMessage = "SNAKEUSBIP_DISCOVERY_PROBE";
+    public const int CONTROL_PORT = 3241;
+    private const string ProbeMessage = "USBANYWHERE_DISCOVERY_PROBE";
+    private const int MaxCommandBytes = 512;
 
     private readonly UsbipdService? _usbipdService;
     private readonly Action? _onStateChanged;
+    private readonly int _port;
+    private readonly SemaphoreSlim _clientConcurrency = new(8, 8);
     private UdpClient? _udpClient;
     private TcpListener? _tcpListener;
     private CancellationTokenSource? _cts;
     private bool _isDisposed;
 
-    public DiscoveryResponderService(UsbipdService? usbipdService = null, Action? onStateChanged = null)
+    public int Port => (_tcpListener?.LocalEndpoint as IPEndPoint)?.Port ?? _port;
+
+    public DiscoveryResponderService(UsbipdService? usbipdService = null, Action? onStateChanged = null, int port = CONTROL_PORT)
     {
         _usbipdService = usbipdService;
         _onStateChanged = onStateChanged;
+        _port = port;
     }
 
     public void Start()
@@ -43,27 +49,27 @@ public class DiscoveryResponderService : IDisposable
         try
         {
             _udpClient = new UdpClient();
-            _udpClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-            _udpClient.Client.Bind(new IPEndPoint(IPAddress.Any, DiscoveryPort));
+            _udpClient.ExclusiveAddressUse = true;
+            _udpClient.Client.Bind(new IPEndPoint(IPAddress.Any, _port));
             Task.Run(() => ListenUdpLoopAsync(_cts.Token));
-            LogService.Info($"Discovery responder listening on UDP port {DiscoveryPort}");
+            LogService.Info($"Discovery responder listening on UDP port {_port}");
         }
         catch (Exception ex)
         {
-            LogService.Warn($"Could not start discovery responder on UDP {DiscoveryPort}: {ex.Message}");
+            LogService.Warn($"Could not start discovery responder on UDP {_port}: {ex.Message}");
         }
 
         try
         {
-            _tcpListener = new TcpListener(IPAddress.Any, DiscoveryPort);
-            _tcpListener.Server.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+            _tcpListener = new TcpListener(IPAddress.Any, _port);
+            _tcpListener.ExclusiveAddressUse = true;
             _tcpListener.Start();
             Task.Run(() => ListenTcpLoopAsync(_cts.Token));
-            LogService.Info($"Dynamic Control API listening on TCP port {DiscoveryPort}");
+            LogService.Info($"Dynamic Control API listening on TCP port {Port}");
         }
         catch (Exception ex)
         {
-            LogService.Warn($"Could not start Dynamic Control API on TCP {DiscoveryPort}: {ex.Message}");
+            LogService.Warn($"Could not start Dynamic Control API on TCP {_port}: {ex.Message}");
         }
     }
 
@@ -79,7 +85,7 @@ public class DiscoveryResponderService : IDisposable
                 if (message.Contains(ProbeMessage, StringComparison.OrdinalIgnoreCase) ||
                     message.Contains("DISCOVERY", StringComparison.OrdinalIgnoreCase))
                 {
-                    var response = $"SNAKEUSBIP_SERVER:{Environment.MachineName}\n";
+                    var response = $"USBANYWHERE_SERVER:{Environment.MachineName}\n";
                     var responseBytes = Encoding.UTF8.GetBytes(response);
                     await _udpClient.SendAsync(responseBytes, responseBytes.Length, result.RemoteEndPoint);
                     LogService.Debug($"Replied to UDP discovery probe from {result.RemoteEndPoint.Address}");
@@ -124,17 +130,24 @@ public class DiscoveryResponderService : IDisposable
     {
         using (client)
         {
+            bool acquired = false;
             try
             {
                 using var cts = CancellationTokenSource.CreateLinkedTokenSource(token);
                 cts.CancelAfter(10000);
 
+                acquired = await _clientConcurrency.WaitAsync(TimeSpan.FromSeconds(2), cts.Token);
+                if (!acquired)
+                {
+                    return;
+                }
+
                 if (SettingsService.Current.WhitelistEnabled &&
-                    SettingsService.Current.WhitelistedIPs.Count > 0 &&
-                    client.Client.RemoteEndPoint is IPEndPoint remoteEp)
+                    client.Client.RemoteEndPoint is IPEndPoint remoteEp &&
+                    !IPAddress.IsLoopback(remoteEp.Address))
                 {
                     var remoteIp = remoteEp.Address.ToString();
-                    if (remoteIp != "127.0.0.1" && remoteIp != "::1" &&
+                    if (SettingsService.Current.WhitelistedIPs.Count == 0 ||
                         !SettingsService.Current.WhitelistedIPs.Contains(remoteIp, StringComparer.OrdinalIgnoreCase))
                     {
                         await WriteJsonAsync(client.GetStream(), new
@@ -147,8 +160,20 @@ public class DiscoveryResponderService : IDisposable
                 }
 
                 var stream = client.GetStream();
-                using var reader = new StreamReader(stream, Encoding.UTF8, detectEncodingFromByteOrderMarks: false, bufferSize: 1024, leaveOpen: true);
-                var line = (await reader.ReadLineAsync(cts.Token))?.Trim() ?? "";
+                var buffer = new byte[MaxCommandBytes];
+                int totalRead = 0;
+                while (totalRead < buffer.Length)
+                {
+                    int read = await stream.ReadAsync(buffer.AsMemory(totalRead, buffer.Length - totalRead), cts.Token);
+                    if (read <= 0) break;
+                    totalRead += read;
+                    if (Array.IndexOf(buffer, (byte)'\n', totalRead - read, read) >= 0) break;
+                }
+
+                if (totalRead == 0) return;
+                var rawText = Encoding.UTF8.GetString(buffer, 0, totalRead);
+                var newlineIdx = rawText.IndexOf('\n');
+                var line = (newlineIdx >= 0 ? rawText[..newlineIdx] : rawText).Trim();
                 if (string.IsNullOrEmpty(line)) return;
 
                 var parts = line.Split(' ', 2, StringSplitOptions.RemoveEmptyEntries);
@@ -175,6 +200,35 @@ public class DiscoveryResponderService : IDisposable
                     {
                         await WriteJsonAsync(stream, new { status = "ERROR", message = "Invalid BusId" }, cts.Token);
                         return;
+                    }
+
+                    if (_usbipdService != null)
+                    {
+                        var devs = await _usbipdService.GetDevicesAsync();
+                        var targetDev = devs.FirstOrDefault(d => string.Equals(d.BusId, arg, StringComparison.OrdinalIgnoreCase));
+                        if (targetDev != null)
+                        {
+                            var typeName = targetDev.TypeName ?? "";
+                            var desc = $"{targetDev.Name} {targetDev.Description}";
+                            bool isHub = typeName.Contains("Hub", StringComparison.OrdinalIgnoreCase) ||
+                                         desc.Contains("USB Hub", StringComparison.OrdinalIgnoreCase);
+                            bool isHidInput = typeName.Contains("Keyboard", StringComparison.OrdinalIgnoreCase) ||
+                                              typeName.Contains("Mouse", StringComparison.OrdinalIgnoreCase) ||
+                                              desc.Contains("Keyboard", StringComparison.OrdinalIgnoreCase) ||
+                                              desc.Contains("Mouse", StringComparison.OrdinalIgnoreCase);
+                            bool explicitlyAllowed = SettingsService.Current.AutoBindDevices.Contains(targetDev.VidPid, StringComparer.OrdinalIgnoreCase);
+
+                            if (isHub || (isHidInput && !explicitlyAllowed))
+                            {
+                                await WriteJsonAsync(stream, new
+                                {
+                                    status = "DENIED",
+                                    busid = arg,
+                                    message = $"Remote bind blocked for protected host device ({typeName})"
+                                }, cts.Token);
+                                return;
+                            }
+                        }
                     }
 
                     bool ok = _usbipdService != null && await _usbipdService.BindDeviceAsync(arg);
@@ -223,6 +277,13 @@ public class DiscoveryResponderService : IDisposable
             catch (Exception ex)
             {
                 LogService.Debug($"Dynamic Control client error: {ex.Message}");
+            }
+            finally
+            {
+                if (acquired)
+                {
+                    _clientConcurrency.Release();
+                }
             }
         }
     }
