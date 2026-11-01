@@ -1,0 +1,37 @@
+{
+    "version": "3.2.0",
+    "description": "The Free, Open-Source VirtualHere Alternative for Windows - Connect unlimited remote USB devices over LAN, Wi-Fi & Internet",
+    "homepage": "https://github.com/oscarlosu-lab/SnakeUSBIP",
+    "license": "GPL-3.0-only",
+    "architecture": {
+        "64bit": {
+            "url": "https://github.com/oscarlosu-lab/SnakeUSBIP/releases/download/v3.2.0/SnakeUSBIP-v3.2.0-x64.zip",
+            "hash": "86ef4ebbad810b04f2f00603c871dd6ceb9a7054caa615f4c2e593d72394739e"
+        },
+        "arm64": {
+            "url": "https://github.com/oscarlosu-lab/SnakeUSBIP/releases/download/v3.2.0/SnakeUSBIP-v3.2.0-arm64.zip",
+            "hash": "07140bf2d149eb40a2aeab1c9dc0f637406a634b24fead685f385244c3755a2d"
+        }
+    },
+    "bin": "SnakeUSBIP.exe",
+    "shortcuts": [
+        [
+            "SnakeUSBIP.exe",
+            "SnakeUSBIP"
+        ]
+    ],
+    "checkver": "github",
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/oscarlosu-lab/SnakeUSBIP/releases/download/v$version/SnakeUSBIP-v$version-x64.zip"
+            },
+            "arm64": {
+                "url": "https://github.com/oscarlosu-lab/SnakeUSBIP/releases/download/v$version/SnakeUSBIP-v$version-arm64.zip"
+            }
+        },
+        "hash": {
+            "url": "$baseurl/SHA256SUMS.txt"
+        }
+    }
+}

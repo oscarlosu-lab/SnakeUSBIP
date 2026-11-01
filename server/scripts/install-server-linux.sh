@@ -1,0 +1,138 @@
+#!/usr/bin/env bash
+# ─────────────────────────────────────────────────────────────────────────────
+# SnakeUSBIP Server for Linux & Raspberry Pi - 1-Click Installer
+# Copyright (c) 2025-2026 oscarlosu-lab - https://github.com/oscarlosu-lab/SnakeUSBIP
+# Licensed under GPL v3
+# ─────────────────────────────────────────────────────────────────────────────
+
+set -e
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+YELLOW='\033[1;33m'
+CYAN='\033[0;36m'
+NC='\033[0m'
+
+echo -e "${CYAN}╔══════════════════════════════════════════════════════════════════════╗${NC}"
+echo -e "${CYAN}║     🌐 SnakeUSBIP Server for Linux / Raspberry Pi Installer         ║${NC}"
+echo -e "${CYAN}║            Universal Control Suite & 1-Click Auto-Setup              ║${NC}"
+echo -e "${CYAN}╚══════════════════════════════════════════════════════════════════════╝${NC}"
+
+if [ "$EUID" -ne 0 ]; then
+    echo -e "${RED}[✗] Please run as root (use sudo).${NC}"
+    exit 1
+fi
+
+echo -e "${BLUE}[1/5] Detecting package manager & installing dependencies...${NC}"
+if command -v apt-get &> /dev/null; then
+    apt-get update -qq
+    apt-get install -y -qq usbip hwdata linux-tools-generic linux-tools-$(uname -r) python3 avahi-daemon libnss-mdns 2>/dev/null || apt-get install -y -qq usbip hwdata python3 avahi-daemon libnss-mdns
+elif command -v dnf &> /dev/null; then
+    dnf install -y -q usbip python3
+elif command -v pacman &> /dev/null; then
+    pacman -Sy --noconfirm usbip python
+else
+    echo -e "${YELLOW}[!] Unknown package manager. Please ensure 'usbip' and 'python3' are installed.${NC}"
+fi
+
+echo -e "${BLUE}[2/5] Loading USB/IP kernel modules...${NC}"
+modprobe usbip_core 2>/dev/null || true
+modprobe usbip_host 2>/dev/null || true
+
+# Persist modules across reboot
+cat << 'EOF' > /etc/modules-load.d/usbip.conf
+usbip_core
+usbip_host
+EOF
+
+echo -e "${BLUE}[3/5] Installing systemd background service (usbipd.service)...${NC}"
+cat << 'EOF' > /etc/systemd/system/usbipd.service
+[Unit]
+Description=SnakeUSBIP USB/IP Server Daemon
+After=network.target network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/sbin/usbipd -4
+Restart=always
+RestartSec=3
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+systemctl daemon-reload
+systemctl enable usbipd
+systemctl restart usbipd
+
+echo -e "${BLUE}[4/5] Configuring Dynamic Auto-Unbind daemon (Zero-Host-Lockout)...${NC}"
+# Clean legacy unconditional udev rule that prevented local OS use
+rm -f /etc/udev/rules.d/99-usbip-autobind.rules
+udevadm control --reload-rules 2>/dev/null || true
+
+# Install Dynamic Auto-Unbind & Control API service
+cat << 'EOF' > /etc/systemd/system/snakeusbip-autounbind.service
+[Unit]
+Description=SnakeUSBIP Dynamic Auto-Unbind & Control Daemon
+After=network.target usbipd.service
+Wants=usbipd.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 /usr/local/bin/snakeusbip-ctl dynamic-daemon
+Restart=always
+RestartSec=3
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+systemctl daemon-reload 2>/dev/null || true
+systemctl enable snakeusbip-autounbind 2>/dev/null || true
+systemctl restart snakeusbip-autounbind 2>/dev/null || true
+
+# Configure Avahi Zeroconf / mDNS service
+if command -v avahi-daemon &> /dev/null; then
+    mkdir -p /etc/avahi/services
+    cat << 'AVAHI_EOF' > /etc/avahi/services/snakeusbip.service
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE service-group SYSTEM "avahi-service.dtd">
+<service-group>
+  <name replace-wildcards="yes">SnakeUSBIP (%h)</name>
+  <service>
+    <type>_snakeusbip._tcp</type>
+    <port>3240</port>
+    <txt-record>proto=usbip</txt-record>
+    <txt-record>version=3.1.0</txt-record>
+  </service>
+  <service>
+    <type>_usbip._tcp</type>
+    <port>3240</port>
+  </service>
+</service-group>
+AVAHI_EOF
+    systemctl restart avahi-daemon 2>/dev/null || true
+fi
+
+echo -e "${BLUE}[5/5] Installing unified Control Suite (snakeusbip-ctl)...${NC}"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [ -f "$SCRIPT_DIR/snakeusbip-ctl" ]; then
+    cp "$SCRIPT_DIR/snakeusbip-ctl" /usr/local/bin/snakeusbip-ctl
+    chmod +x /usr/local/bin/snakeusbip-ctl
+else
+    # Download latest if running via curl pipe
+    curl -fsSL https://raw.githubusercontent.com/oscarlosu-lab/SnakeUSBIP/main/scripts/snakeusbip-ctl -o /usr/local/bin/snakeusbip-ctl
+    chmod +x /usr/local/bin/snakeusbip-ctl
+fi
+
+echo -e "\n${GREEN}╔══════════════════════════════════════════════════════════════════════╗${NC}"
+echo -e "${GREEN}║  ✓ SnakeUSBIP Server & Control Suite installed successfully!        ║${NC}"
+echo -e "${GREEN}╚══════════════════════════════════════════════════════════════════════╝${NC}"
+echo -e "• Server daemon is listening on TCP port ${BOLD}3240${NC}."
+echo -e "• Run ${CYAN}snakeusbip-ctl${NC} anytime to open the interactive Control Suite dashboard."
+echo -e "• Run ${CYAN}snakeusbip-ctl doctor${NC} to perform a complete system health check."
+echo -e "• Connect from your PC using ${CYAN}SnakeUSBIP Client${NC}!\n"

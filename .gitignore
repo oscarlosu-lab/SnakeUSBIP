@@ -1,0 +1,35 @@
+﻿## Visual Studio / .NET
+.vs/
+[Bb]in/
+[Oo]bj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.pdb
+
+## Android / Gradle
+.gradle/
+build/
+app/build/
+*.apk
+*.aab
+.kotlin/
+local.properties
+
+## macOS
+.DS_Store
+.build/
+
+## Temporal / Logs
+*.log
+temp/
+dist/
+release/
+installer/Output/
+
+
+## Python
+__pycache__/
+*.pyc
+
