@@ -32,7 +32,7 @@ public static class SecurityHelper
         if (path.Contains("..") || path.Contains("//") || path.Contains("\\\\"))
             return false;
 
-        if (path.Contains(';') || path.Contains('&') || path.Contains('|') || 
+        if (path.Contains(';') || path.Contains('&') || path.Contains('|') ||
             path.Contains('$') || path.Contains('`'))
             return false;
 

@@ -16,7 +16,7 @@ public class UsbDevice
     public string Description { get; set; } = string.Empty;
     public string RemoteIp { get; set; } = string.Empty;
     public bool IsConnected { get; set; }
-    
+
     /// <summary>
     /// Extract VendorId from HardwareId (format: "XXXX:YYYY")
     /// Safe: returns empty string if format is invalid
@@ -27,11 +27,11 @@ public class UsbDevice
         {
             if (string.IsNullOrEmpty(HardwareId)) return string.Empty;
             var colonIdx = HardwareId.IndexOf(':');
-            return colonIdx >= 4 ? HardwareId[..colonIdx] : 
+            return colonIdx >= 4 ? HardwareId[..colonIdx] :
                    HardwareId.Length >= 4 ? HardwareId[..4] : string.Empty;
         }
     }
-    
+
     /// <summary>
     /// Extract ProductId from HardwareId (format: "XXXX:YYYY")
     /// Safe: returns empty string if format is invalid
@@ -47,7 +47,7 @@ public class UsbDevice
             return string.Empty;
         }
     }
-    
+
     public string ServerIP { get; set; } = string.Empty;
 }
 

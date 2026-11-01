@@ -251,11 +251,11 @@ public class UsbIdsService : IUsbIdsService
     /// </summary>
     public Dictionary<string, string> GetCustomNames() => new(_customNames);
 
-    public bool IsLoaded    => _loaded;
-    public int VendorCount  => _vendors.Count;
+    public bool IsLoaded => _loaded;
+    public int VendorCount => _vendors.Count;
     public int ProductCount => _products.Count;
 
     // IUsbIdsService alias methods
-    public string GetDeviceName(string vendorId, string productId)   => GetDeviceDescription(vendorId, productId);
-    public string GetVendorName(string vendorId)                      => GetVendor(vendorId);
+    public string GetDeviceName(string vendorId, string productId) => GetDeviceDescription(vendorId, productId);
+    public string GetVendorName(string vendorId) => GetVendor(vendorId);
 }

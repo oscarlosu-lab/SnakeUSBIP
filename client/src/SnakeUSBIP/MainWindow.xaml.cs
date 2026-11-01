@@ -71,22 +71,22 @@ public partial class MainWindow : Window
         IConnectionMonitorService connectionMonitor,
         INotificationService? notificationService = null)
     {
-        _localization      = localization;
-        _config            = config;
-        _networkScanner    = networkScanner;
-        _usbip             = usbip;
-        _drivers           = drivers;
-        _favorites         = favorites;
-        _updates           = updates;
-        _vpn               = vpn;
-        _usbIds            = usbIds;
+        _localization = localization;
+        _config = config;
+        _networkScanner = networkScanner;
+        _usbip = usbip;
+        _drivers = drivers;
+        _favorites = favorites;
+        _updates = updates;
+        _vpn = vpn;
+        _usbIds = usbIds;
         _connectionMonitor = connectionMonitor;
         _notificationService = notificationService ?? new NotificationService();
 
         InitializeComponent();
 
         // Subscribe to connection events
-        _connectionMonitor.ConnectionLost     += OnConnectionLost;
+        _connectionMonitor.ConnectionLost += OnConnectionLost;
         _connectionMonitor.ConnectionRestored += OnConnectionRestored;
 
         // Load config and apply language + theme

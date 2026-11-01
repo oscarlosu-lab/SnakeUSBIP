@@ -16,14 +16,14 @@ public class ConfigService : IConfigService
     private readonly ILoggerService _logger;
     private readonly string _configPath;
     private readonly object _fileLock = new();
-    
+
     public ConfigService(IEnvironmentService env, ILoggerService logger)
     {
         _env = env;
         _logger = logger;
         _configPath = _env.GetConfigFilePath();
     }
-    
+
     public AppConfig Load()
     {
         lock (_fileLock)
@@ -48,9 +48,9 @@ public class ConfigService : IConfigService
             {
                 _logger.Error($"Failed to load configuration from {_configPath}: {ex.Message}");
             }
-            
+
             _logger.Info("Configuration file not found or corrupted. Loading defaults.");
-            
+
             // Default config with system language detection
             var systemLang = System.Globalization.CultureInfo.CurrentCulture.TwoLetterISOLanguageName;
             return new AppConfig
@@ -62,7 +62,7 @@ public class ConfigService : IConfigService
             };
         }
     }
-    
+
     public void Save(AppConfig config)
     {
         lock (_fileLock)
@@ -71,7 +71,7 @@ public class ConfigService : IConfigService
             {
                 var options = new JsonSerializerOptions { WriteIndented = true };
                 var json = JsonSerializer.Serialize(config, options);
-                
+
                 string? dir = Path.GetDirectoryName(_configPath);
                 if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
                 {
@@ -89,7 +89,7 @@ public class ConfigService : IConfigService
             }
         }
     }
-    
+
     public void SetLanguage(string language)
     {
         var config = Load();

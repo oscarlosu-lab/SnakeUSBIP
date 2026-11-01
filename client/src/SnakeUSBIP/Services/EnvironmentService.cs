@@ -17,10 +17,10 @@ public class EnvironmentService : IEnvironmentService
     private string _appDataPath = string.Empty;
 
     public string AppDataPath => _appDataPath;
-    public string LogsPath    => Path.Combine(_appDataPath, "logs");
-    public string TempPath    => Path.Combine(_appDataPath, "temp");
-    public bool   IsPortableMode { get; private set; }
-    public bool   IsPortable     => IsPortableMode;
+    public string LogsPath => Path.Combine(_appDataPath, "logs");
+    public string TempPath => Path.Combine(_appDataPath, "temp");
+    public bool IsPortableMode { get; private set; }
+    public bool IsPortable => IsPortableMode;
 
     /// <summary>
     /// BinPath: where usbipw.exe lives.
@@ -32,8 +32,8 @@ public class EnvironmentService : IEnvironmentService
         {
             var baseDir = AppDomain.CurrentDomain.BaseDirectory;
             var subDir = Path.Combine(baseDir, "bin");
-            if (Directory.Exists(subDir) && 
-                (File.Exists(Path.Combine(subDir, "usbipw.exe")) || 
+            if (Directory.Exists(subDir) &&
+                (File.Exists(Path.Combine(subDir, "usbipw.exe")) ||
                  File.Exists(Path.Combine(subDir, "usbip.exe"))))
                 return subDir;
             return baseDir;
@@ -56,8 +56,8 @@ public class EnvironmentService : IEnvironmentService
 
     public void Initialize()
     {
-        var baseDir   = AppDomain.CurrentDomain.BaseDirectory;
-        var portFlag  = Path.Combine(baseDir, "portable.flag");
+        var baseDir = AppDomain.CurrentDomain.BaseDirectory;
+        var portFlag = Path.Combine(baseDir, "portable.flag");
         var dataLocal = Path.Combine(baseDir, "data");
 
         IsPortableMode = File.Exists(portFlag) || File.Exists(Path.Combine(baseDir, ".portable"));

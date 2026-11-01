@@ -34,9 +34,9 @@ public class LoggerService : ILoggerService
         Info("=== SnakeUSBIP v1.0.0 Logger Initialized ===");
     }
 
-    public void Info(string message)    => Write("INFO",    message);
-    public void Warning(string message) => Write("WARN",    message);
-    public void Debug(string message)   => Write("DEBUG",   message);
+    public void Info(string message) => Write("INFO", message);
+    public void Warning(string message) => Write("WARN", message);
+    public void Debug(string message) => Write("DEBUG", message);
 
     public void Error(string message, Exception? ex = null)
     {

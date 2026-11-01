@@ -15,7 +15,7 @@ public class RelayCommand : ICommand
 
     public RelayCommand(Func<object?, Task> execute, Func<object?, bool>? canExecute = null)
     {
-        _execute    = execute;
+        _execute = execute;
         _canExecute = canExecute;
     }
 
@@ -39,7 +39,7 @@ public class RelayCommand<T> : ICommand
 
     public RelayCommand(Func<T?, Task> execute, Func<T?, bool>? canExecute = null)
     {
-        _execute    = execute;
+        _execute = execute;
         _canExecute = canExecute;
     }
 
