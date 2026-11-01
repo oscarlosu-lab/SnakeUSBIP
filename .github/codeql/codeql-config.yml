@@ -7,7 +7,6 @@ name: "SnakeUSBIP CodeQL Configuration"
 paths-ignore:
   - '**/obj/**'
   - '**/bin/**'
-  - '**/build/**'
   - '**/*.g.cs'
 
 query-filters:
@@ -21,4 +20,3 @@ query-filters:
         - cs/useless-assignment-to-local
         - java/deprecated-call
         - java/local-variable-is-never-read
-
