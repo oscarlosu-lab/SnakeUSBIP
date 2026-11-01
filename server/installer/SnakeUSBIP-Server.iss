@@ -3,7 +3,7 @@
 ; (c) 2025-2026 oscarlosu-lab - https://github.com/oscarlosu-lab/SnakeUSBIP-Server
 
 #define MyAppName "SnakeUSBIP Server"
-#define MyAppVersion "3.2.0"
+#define MyAppVersion "1.0.0"
 #define MyAppPublisher "oscarlosu-lab"
 #define MyAppURL "https://github.com/oscarlosu-lab/SnakeUSBIP-Server"
 #define MyAppExeName "SnakeUSBIP-Server.exe"
@@ -20,7 +20,7 @@ AppPublisherURL={#MyAppURL}
 DefaultDirName={autopf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
-LicenseFile={#SourceDir}\LICENSE
+LicenseFile=LICENSE
 OutputDir=..\
 OutputBaseFilename=SnakeUSBIP-Server_Setup_v{#MyAppVersion}
 Compression=lzma2/ultra64
@@ -30,7 +30,7 @@ PrivilegesRequired=admin
 ArchitecturesInstallIn64BitMode=x64compatible
 CloseApplications=force
 CloseApplicationsFilter=*.exe,*.dll
-SetupIconFile={#SourceDir}\..\icon.ico
+SetupIconFile=icon.ico
 
 [Languages]
 Name: "spanish"; MessagesFile: "compiler:Languages\Spanish.isl"
@@ -48,9 +48,9 @@ Source: "{#SourceDir}\SnakeUSBIP-Server.exe"; DestDir: "{app}"; Flags: ignorever
 Source: "{#SourceDir}\drivers\*"; DestDir: "{app}\drivers"; Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist
 
 ; Documentation
-Source: "{#SourceDir}\LICENSE"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceDir}\README.md"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceDir}\CHANGELOG.md"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDir}\LICENSE"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist
+Source: "{#SourceDir}\README.md"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist
+Source: "{#SourceDir}\CHANGELOG.md"; DestDir: "{app}"; Flags: ignoreversion skipifsourcedoesntexist
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\{#MyAppExeName}"

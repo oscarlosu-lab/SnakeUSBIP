@@ -13,7 +13,7 @@ using System.Text.Json;
 namespace SnakeUSBIP.Server.Services;
 
 /// <summary>
-/// UDP discovery responder and TCP Dynamic Control API on port 3241 for the SnakeUSBIP v3.2.0 ecosystem.
+/// UDP discovery responder and TCP Dynamic Control API on port 3241 for the SnakeUSBIP v1.0.0 ecosystem.
 /// - UDP 3241: Responds to SNAKEUSBIP_DISCOVERY_PROBE with SNAKEUSBIP_SERVER:{MachineName}.
 /// - TCP 3241: Handles LIST, BIND <busid>, UNBIND <busid>, STATUS commands for On-Demand binding.
 /// </summary>
@@ -209,7 +209,7 @@ public class DiscoveryResponderService : IDisposable
                     {
                         status = "OK",
                         platform = "windows",
-                        version = "3.2.0",
+                        version = "1.0.0",
                         hostname = Environment.MachineName,
                         total_devices = devs.Count,
                         exported_count = devs.Count(d => d.IsExported)

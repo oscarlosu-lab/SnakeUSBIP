@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param(
-    [string]$Version = "3.2.0",
+    [string]$Version = "1.0.0",
     [string]$OutputDir = "$PSScriptRoot\..\dist"
 )
 
@@ -53,10 +53,22 @@ $clientPortable = "$PSScriptRoot\..\client\Portable"
 if (Test-Path $clientPortable) {
     Copy-Item "$clientPortable\*" "$OutputDir\portable\" -Recurse -Force
 }
+$serverDrivers = "$PSScriptRoot\..\server\portable\drivers"
+if (-not (Test-Path $serverDrivers)) { $serverDrivers = "$PSScriptRoot\..\server\Portable\drivers" }
+if (Test-Path $serverDrivers) {
+    Copy-Item "$serverDrivers\*" "$OutputDir\portable\server\drivers" -Recurse -Force -ErrorAction SilentlyContinue
+}
+
 $license = "$PSScriptRoot\..\LICENSE"
-if (Test-Path $license) { Copy-Item $license "$OutputDir\portable\LICENSE" -Force }
+if (Test-Path $license) {
+    Copy-Item $license "$OutputDir\portable\LICENSE" -Force
+    Copy-Item $license "$OutputDir\portable\server\LICENSE" -Force
+}
 $readme = "$PSScriptRoot\..\README.md"
-if (Test-Path $readme) { Copy-Item $readme "$OutputDir\portable\README.md" -Force }
+if (Test-Path $readme) {
+    Copy-Item $readme "$OutputDir\portable\README.md" -Force
+    Copy-Item $readme "$OutputDir\portable\server\README.md" -Force
+}
 
 # Purgar archivos PDB residuales
 Get-ChildItem -Path "$OutputDir\portable" -Filter "*.pdb" -Recurse -ErrorAction SilentlyContinue | Remove-Item -Force
@@ -81,14 +93,27 @@ if (Test-Path $innoScript) {
         }
     }
     if ($iscc) {
-        Write-Host "  Compilando instalador Inno Setup..." -ForegroundColor DarkGray
+        Write-Host "  Compilando instalador Inno Setup Cliente..." -ForegroundColor DarkGray
         $portableDir = "$OutputDir\portable"
         $installerDir = "$OutputDir\installer"
         & $iscc "/DMyAppVersion=$Version" "/DSourceDir=$portableDir" "/O$installerDir" $innoScript
         if ($LASTEXITCODE -ne 0) {
-            throw "Compilación de Inno Setup falló con código $LASTEXITCODE"
+            throw "Compilación de Inno Setup Cliente falló con código $LASTEXITCODE"
         }
-        Write-Host "  ✓ Instalador Inno Setup generado." -ForegroundColor Green
+        Write-Host "  ✓ Instalador Cliente Inno Setup generado." -ForegroundColor Green
+
+        # Servidor Inno Setup
+        $serverInnoScript = "$PSScriptRoot\..\server\installer\SnakeUSBIP-Server.iss"
+        if (Test-Path $serverInnoScript) {
+            Write-Host "  Compilando instalador Inno Setup Servidor..." -ForegroundColor DarkGray
+            $serverPortableDir = "$OutputDir\portable\server"
+            & $iscc "/DMyAppVersion=$Version" "/DSourceDir=$serverPortableDir" "/O$installerDir" $serverInnoScript
+            if ($LASTEXITCODE -ne 0) {
+                Write-Warning "Compilación de Inno Setup Servidor finalizó con código $LASTEXITCODE"
+            } else {
+                Write-Host "  ✓ Instalador Servidor Inno Setup generado." -ForegroundColor Green
+            }
+        }
     }
 }
 

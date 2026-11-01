@@ -385,7 +385,7 @@ class UsbIpServerService : Service() {
                                 "STATUS" -> {
                                     org.json.JSONObject()
                                         .put("status", "OK")
-                                        .put("version", "3.2.0")
+                                        .put("version", "1.0.0")
                                         .put("platform", "android")
                                         .toString()
                                 }
