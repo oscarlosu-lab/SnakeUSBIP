@@ -5,16 +5,16 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-# Resolver ruta absoluta contra la raíz del repositorio para evitar ambigüedades en Inno Setup
+# Resolver ruta absoluta contra la raiz del repositorio para evitar ambigüedades en Inno Setup
 if (-not [System.IO.Path]::IsPathRooted($OutputDir)) {
     $OutputDir = Join-Path "$PSScriptRoot\.." $OutputDir
 }
 $OutputDir = [System.IO.Path]::GetFullPath($OutputDir)
 
-Write-Host "══════════════════════════════════════════════════════════════" -ForegroundColor Cyan
-Write-Host " 🐍 SnakeUSBIP: Workflow de Compilación Protegida (Coste 0 €)" -ForegroundColor Cyan
-Write-Host "    Versión: $Version | Destino: $OutputDir" -ForegroundColor DarkGray
-Write-Host "══════════════════════════════════════════════════════════════" -ForegroundColor Cyan
+Write-Host "==============================================================" -ForegroundColor Cyan
+Write-Host " 🐍 SnakeUSBIP: Workflow de Compilacion Protegida (Coste 0 €)" -ForegroundColor Cyan
+Write-Host "    Version: $Version | Destino: $OutputDir" -ForegroundColor DarkGray
+Write-Host "==============================================================" -ForegroundColor Cyan
 
 # Preparar salida limpia
 if (Test-Path $OutputDir) { Remove-Item $OutputDir -Recurse -Force }
@@ -31,7 +31,7 @@ if (Test-Path $serverProj) {
         /p:DebugType=none `
         /p:DebugSymbols=false `
         -o "$OutputDir\portable\server"
-    Write-Host "  ✓ Servidor compilado a binario optimizado nativo." -ForegroundColor Green
+    Write-Host "  [OK] Servidor compilado a binario optimizado nativo." -ForegroundColor Green
 }
 
 # 2. Client WPF (ReadyToRun Single-File)
@@ -44,10 +44,10 @@ if (Test-Path $clientProj) {
         /p:DebugType=none `
         /p:DebugSymbols=false `
         -o "$OutputDir\portable"
-    Write-Host "  ✓ Cliente visual protegido y empaquetado." -ForegroundColor Green
+    Write-Host "  [OK] Cliente visual protegido y empaquetado." -ForegroundColor Green
 }
 
-# 3. Integración de drivers y assets al paquete portable
+# 3. Integracion de drivers y assets al paquete portable
 Write-Host "`n[3/4] Integrando drivers y herramientas nativas..." -ForegroundColor Yellow
 $clientPortable = "$PSScriptRoot\..\client\Portable"
 if (Test-Path $clientPortable) {
@@ -72,13 +72,13 @@ if (Test-Path $readme) {
 
 # Purgar archivos PDB residuales
 Get-ChildItem -Path "$OutputDir\portable" -Filter "*.pdb" -Recurse -ErrorAction SilentlyContinue | Remove-Item -Force
-Write-Host "  ✓ Símbolos de depuración purgados." -ForegroundColor Green
+Write-Host "  [OK] Simbolos de depuracion purgados." -ForegroundColor Green
 
 # 4. Inno Setup & Empaquetado
-Write-Host "`n[4/4] Generando paquetes de distribución..." -ForegroundColor Yellow
+Write-Host "`n[4/4] Generando paquetes de distribucion..." -ForegroundColor Yellow
 $zipPath = "$OutputDir\installer\SnakeUSBIP_v$Version`_Portable_win-x64.zip"
 Compress-Archive -Path "$OutputDir\portable\*" -DestinationPath $zipPath -Force
-Write-Host "  ✓ Paquete Portable ZIP generado." -ForegroundColor Green
+Write-Host "  [OK] Paquete Portable ZIP generado." -ForegroundColor Green
 
 $innoScript = "$PSScriptRoot\..\client\installer\SnakeUSBIP.iss"
 if (Test-Path $innoScript) {
@@ -98,9 +98,9 @@ if (Test-Path $innoScript) {
         $installerDir = "$OutputDir\installer"
         & $iscc "/DMyAppVersion=$Version" "/DSourceDir=$portableDir" "/O$installerDir" $innoScript
         if ($LASTEXITCODE -ne 0) {
-            throw "Compilación de Inno Setup Cliente falló con código $LASTEXITCODE"
+            throw "Compilacion de Inno Setup Cliente fallo con codigo $LASTEXITCODE"
         }
-        Write-Host "  ✓ Instalador Cliente Inno Setup generado." -ForegroundColor Green
+        Write-Host "  [OK] Instalador Cliente Inno Setup generado." -ForegroundColor Green
 
         # Servidor Inno Setup
         $serverInnoScript = "$PSScriptRoot\..\server\installer\SnakeUSBIP-Server.iss"
@@ -109,16 +109,16 @@ if (Test-Path $innoScript) {
             $serverPortableDir = "$OutputDir\portable\server"
             & $iscc "/DMyAppVersion=$Version" "/DSourceDir=$serverPortableDir" "/O$installerDir" $serverInnoScript
             if ($LASTEXITCODE -ne 0) {
-                Write-Warning "Compilación de Inno Setup Servidor finalizó con código $LASTEXITCODE"
+                Write-Warning "Compilacion de Inno Setup Servidor finalizo con codigo $LASTEXITCODE"
             } else {
-                Write-Host "  ✓ Instalador Servidor Inno Setup generado." -ForegroundColor Green
+                Write-Host "  [OK] Instalador Servidor Inno Setup generado." -ForegroundColor Green
             }
         }
     }
 }
 
-# 5. Cálculo determinista de SHA256SUMS.txt
-Write-Host "`nCalculando SHA256SUMS.txt para verificación oficial..." -ForegroundColor Yellow
+# 5. Calculo determinista de SHA256SUMS.txt
+Write-Host "`nCalculando SHA256SUMS.txt para verificacion oficial..." -ForegroundColor Yellow
 $hashFile = "$OutputDir\installer\SHA256SUMS.txt"
 if (Test-Path $hashFile) { Remove-Item $hashFile -Force }
 
@@ -129,6 +129,6 @@ Get-ChildItem -Path "$OutputDir\installer" -File | Where-Object { $_.Name -ne "S
     Write-Host "  SHA256: $line" -ForegroundColor DarkGray
 }
 
-Write-Host "`n══════════════════════════════════════════════════════════════" -ForegroundColor Green
-Write-Host " ✅ Workflow de Protección Completado con Éxito" -ForegroundColor Green
-Write-Host "══════════════════════════════════════════════════════════════" -ForegroundColor Green
+Write-Host "`n==============================================================" -ForegroundColor Green
+Write-Host " ✅ Workflow de Proteccion Completado con Éxito" -ForegroundColor Green
+Write-Host "==============================================================" -ForegroundColor Green
