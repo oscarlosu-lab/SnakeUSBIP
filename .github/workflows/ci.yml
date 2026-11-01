@@ -76,7 +76,7 @@ jobs:
           ./gradlew assembleDebug
 
   lint-scripts:
-    name: ShellCheck (Linux & Mac Shell Scripts)
+    name: Script Linters (ShellCheck & Python Syntax)
     runs-on: ubuntu-latest
 
     steps:
@@ -86,7 +86,12 @@ jobs:
       - name: Install ShellCheck
         run: sudo apt-get update && sudo apt-get install -y shellcheck
 
-      - name: Run ShellCheck Validation
+      - name: Run ShellCheck on Shell Scripts
         run: |
           echo "Scanning Linux & macOS shell scripts..."
-          shellcheck --severity=error scripts/*.sh server/scripts/*.sh scripts/snakeusbip-ctl server/scripts/snakeusbip-ctl
+          shellcheck --severity=error scripts/*.sh server/scripts/*.sh
+
+      - name: Verify Python CLI Syntax (snakeusbip-ctl)
+        run: |
+          echo "Verifying Python syntax of control daemons..."
+          python3 -m py_compile scripts/snakeusbip-ctl server/scripts/snakeusbip-ctl
