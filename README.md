@@ -2,7 +2,7 @@
 
 🌐 **Language / Idioma:** **English** | [Español](README_ES.md)
 
-**v3.1.0** | [🌍 Official Website](https://oscarlosu-lab.github.io/SnakeUSBIP/) | [📦 Releases & Downloads](https://github.com/oscarlosu-lab/SnakeUSBIP/releases/latest) | [🌐 SnakeUSBIP Server (Windows & macOS)](https://github.com/oscarlosu-lab/SnakeUSBIP) | [📱 SnakeUSBIP Android](https://github.com/oscarlosu-lab/SnakeUSBIP) | [💬 Reddit Community](https://www.reddit.com/r/UsbAnywhere/) | [📖 User Manual](docs/USAGE_EN.md) | [🌐 VPN Connection](docs/VPN_INTERNET_EN.md)
+**v1.0.0** | [🌍 Official Website](https://oscarlosu-lab.github.io/SnakeUSBIP/) | [📦 Releases & Downloads](https://github.com/oscarlosu-lab/SnakeUSBIP/releases/latest) | [🌐 SnakeUSBIP Server (Windows & macOS)](https://github.com/oscarlosu-lab/SnakeUSBIP) | [📱 SnakeUSBIP Android](https://github.com/oscarlosu-lab/SnakeUSBIP) | [💬 Reddit Community](https://www.reddit.com/r/UsbAnywhere/) | [📖 User Manual](docs/USAGE_EN.md) | [🌐 VPN Connection](docs/VPN_INTERNET_EN.md)
 
 > **Why pay $49.00 per server and be restricted to a single USB device?**
 > **SnakeUSBIP** connects **unlimited** remote USB peripherals over LAN, Wi-Fi, and Internet with **zero licensing fees**, **Microsoft WHQL-certified drivers**, and **tunable ultra-low latency**.
@@ -29,7 +29,7 @@ The project continues to evolve through a mix of usability, interoperability, an
 
 ## ⚔️ Why Switch from VirtualHere to SnakeUSBIP?
 
-| Feature | **SnakeUSBIP v3.0** | **VirtualHere** | **USB Network Gate** |
+| Feature | **SnakeUSBIP v1.0** | **VirtualHere** | **USB Network Gate** |
 | :--- | :---: | :---: | :---: |
 | **Price & License** | **100% Free & Open Source (GPLv3)** | $49.00 USD / Server | $159.00+ USD |
 | **Simultaneous Devices (Free)** | **♾️ Unlimited** | ⚠️ 1 Device Only | ❌ Trial Expired |
@@ -76,7 +76,7 @@ Connect your diode laser (GRBL/Ruida) and overhead alignment camera simultaneous
 
 ---
 
-## 🆕 What's New in v3.0.0 (SnakeUSBIP Evolution)
+## 🆕 What's New in v1.0.0 (SnakeUSBIP Evolution)
 
 - 🌐 **Rebranded to SnakeUSBIP** - A modern identity built to be the #1 open-source alternative to VirtualHere and VirtualUSB, with automatic configuration migration from `SnakeUSBIP` v2.x.
 - ⚡ **1-Click SSH & Plug & Play Server Auto-Setup** - Turn any Raspberry Pi, Debian, or Ubuntu machine into a ready-to-use USB over IP server with automatic `udev` hotplug device export.
@@ -107,15 +107,15 @@ Connect your diode laser (GRBL/Ruida) and overhead alignment camera simultaneous
 ## 📦 Installation
 
 ### Option 1: Portable (No installation required)
-1. Download from [SnakeUSBIP Downloads](https://github.com/oscarlosu-lab/SnakeUSBIP/releases/tag/client-v3.0.1):
-   - **Windows x64**: `SnakeUSBIP-v3.0.1-x64.zip`
-   - **Windows ARM64**: `SnakeUSBIP-v3.0.1-arm64.zip` (Surface Pro X, Snapdragon X Elite, etc.)
+1. Download from [SnakeUSBIP Downloads](https://github.com/oscarlosu-lab/SnakeUSBIP/releases/tag/client-v1.0.0):
+   - **Windows x64**: `SnakeUSBIP-v1.0.0-x64.zip`
+   - **Windows ARM64**: `SnakeUSBIP-v1.0.0-arm64.zip` (Surface Pro X, Snapdragon X Elite, etc.)
 2. Extract the ZIP to any folder
 3. Run `SnakeUSBIP.exe` as Administrator
 4. Done!
 
 ### Option 2: Installer (x64 Recommended)
-1. Download `SnakeUSBIP_Setup_v3.0.1.exe` from [SnakeUSBIP Downloads](https://github.com/oscarlosu-lab/SnakeUSBIP/releases/tag/client-v3.0.1)
+1. Download `SnakeUSBIP_Setup_v1.0.0.exe` from [SnakeUSBIP Downloads](https://github.com/oscarlosu-lab/SnakeUSBIP/releases/tag/client-v1.0.0)
 2. Run the installer as Administrator
 3. Follow the installation wizard
 

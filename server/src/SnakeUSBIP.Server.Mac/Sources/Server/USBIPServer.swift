@@ -67,7 +67,7 @@ public final class USBIPServer {
         DiscoveryResponder.shared.start()
         BonjourPublisher.shared.start(port: Int(port))
 
-        emitLog("🌐 SnakeUSBIP Server (macOS v3.2.0) listening on 0.0.0.0:\(port)")
+        emitLog("🌐 SnakeUSBIP Server (macOS v1.0.0) listening on 0.0.0.0:\(port)")
         emitLog("⚡ Dynamic Control API & Discovery active on TCP/UDP port 3241")
         
         while isRunning {

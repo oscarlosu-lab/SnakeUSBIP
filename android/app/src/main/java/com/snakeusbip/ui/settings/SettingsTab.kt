@@ -450,7 +450,7 @@ fun SettingsTab(viewModel: SettingsViewModel) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "SnakeUSBIP Android v3.2.0 • Open Source",
+                    text = "SnakeUSBIP Android v1.0.0 • Open Source",
                     color = Color.Gray,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Medium

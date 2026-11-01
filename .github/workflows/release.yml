@@ -7,9 +7,9 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: "Release tag (e.g. v3.2.0)"
+        description: "Release tag (e.g. v1.0.0)"
         required: false
-        default: "v3.2.0"
+        default: "v1.0.0"
 
 permissions:
   contents: write
@@ -17,15 +17,14 @@ permissions:
   attestations: write
 
 jobs:
-  build-and-release:
-    name: Build Protected Packages
+  build-windows:
+    name: Build Windows Packages
     runs-on: windows-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Resolve Release Version Tag
+      - name: Resolve Version
         id: vars
         shell: pwsh
         run: |
@@ -35,11 +34,9 @@ jobs:
           } elseif ("${{ github.ref_type }}" -eq "tag") {
             $tag = "${{ github.ref_name }}"
           } else {
-            $tag = "v3.2.0"
+            $tag = "v1.0.0"
           }
           $version = $tag -replace '^v',''
-          Write-Host "Resolved tag: $tag"
-          Write-Host "Resolved version: $version"
           "tag=$tag" >> $env:GITHUB_OUTPUT
           "version=$version" >> $env:GITHUB_OUTPUT
 
@@ -54,38 +51,236 @@ jobs:
       - name: Install Obfuscar (Free MIT Tool)
         run: dotnet tool install -g obfuscar.globaltool
 
-      - name: Build Protected Packages
+      - name: Build Protected Windows Packages
         shell: pwsh
         run: |
           ./tools/build-protected-ecosystem.ps1 -Version "${{ steps.vars.outputs.version }}" -OutputDir "${{ github.workspace }}/dist"
 
+      - name: Upload Windows Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-windows
+          path: dist/installer/*
+          if-no-files-found: error
+
+  build-macos-server:
+    name: Build macOS Server (Swift)
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Resolve Version
+        id: vars
+        shell: bash
+        run: |
+          TAG="${{ github.event.inputs.tag }}"
+          if [ -z "$TAG" ] && [ "${{ github.ref_type }}" = "tag" ]; then
+            TAG="${{ github.ref_name }}"
+          fi
+          if [ -z "$TAG" ]; then
+            TAG="v1.0.0"
+          fi
+          VERSION="${TAG#v}"
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Build Swift Server (Release)
+        run: |
+          cd server/src/SnakeUSBIP.Server.Mac
+          swift build -c release
+
+      - name: Package macOS Server Tarball
+        run: |
+          VERSION="${{ steps.vars.outputs.version }}"
+          PKG_DIR="SnakeUSBIP-Server-macOS-v${VERSION}"
+          mkdir -p "$PKG_DIR"
+          cp server/src/SnakeUSBIP.Server.Mac/.build/release/snakeusbip-server-mac "$PKG_DIR/"
+          cp server/scripts/install-server-mac.sh "$PKG_DIR/install.sh"
+          cp server/scripts/uninstall-server-mac.sh "$PKG_DIR/uninstall.sh"
+          cp LICENSE "$PKG_DIR/"
+          cp README.md "$PKG_DIR/"
+          chmod +x "$PKG_DIR/snakeusbip-server-mac" "$PKG_DIR/install.sh" "$PKG_DIR/uninstall.sh"
+          tar -czvf "SnakeUSBIP-Server-macOS-v${VERSION}.tar.gz" "$PKG_DIR"
+          mkdir -p dist-mac
+          mv "SnakeUSBIP-Server-macOS-v${VERSION}.tar.gz" dist-mac/
+
+      - name: Upload macOS Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-macos
+          path: dist-mac/*
+          if-no-files-found: error
+
+  build-linux-server:
+    name: Build Linux Server
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Resolve Version
+        id: vars
+        shell: bash
+        run: |
+          TAG="${{ github.event.inputs.tag }}"
+          if [ -z "$TAG" ] && [ "${{ github.ref_type }}" = "tag" ]; then
+            TAG="${{ github.ref_name }}"
+          fi
+          if [ -z "$TAG" ]; then
+            TAG="v1.0.0"
+          fi
+          VERSION="${TAG#v}"
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Package Linux Server Suite
+        run: |
+          VERSION="${{ steps.vars.outputs.version }}"
+          PKG_DIR="SnakeUSBIP-Server-Linux-v${VERSION}"
+          mkdir -p "$PKG_DIR"
+          cp server/scripts/snakeusbip-ctl "$PKG_DIR/"
+          cp server/scripts/install-server-linux.sh "$PKG_DIR/install.sh"
+          cp server/scripts/uninstall-server-linux.sh "$PKG_DIR/uninstall.sh"
+          cp LICENSE "$PKG_DIR/"
+          cp README.md "$PKG_DIR/"
+          chmod +x "$PKG_DIR/snakeusbip-ctl" "$PKG_DIR/install.sh" "$PKG_DIR/uninstall.sh"
+          tar -czvf "SnakeUSBIP-Server-Linux-v${VERSION}.tar.gz" "$PKG_DIR"
+          mkdir -p dist-linux
+          mv "SnakeUSBIP-Server-Linux-v${VERSION}.tar.gz" dist-linux/
+
+      - name: Upload Linux Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-linux
+          path: dist-linux/*
+          if-no-files-found: error
+
+  build-android:
+    name: Build Android App (APK)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Resolve Version
+        id: vars
+        shell: bash
+        run: |
+          TAG="${{ github.event.inputs.tag }}"
+          if [ -z "$TAG" ] && [ "${{ github.ref_type }}" = "tag" ]; then
+            TAG="${{ github.ref_name }}"
+          fi
+          if [ -z "$TAG" ]; then
+            TAG="v1.0.0"
+          fi
+          VERSION="${TAG#v}"
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: "temurin"
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Build Android Release APK
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleRelease || ./gradlew assembleDebug
+
+      - name: Prepare APK Package
+        run: |
+          VERSION="${{ steps.vars.outputs.version }}"
+          mkdir -p dist-android
+          APK_FILE=$(find android/app/build/outputs/apk -name "*.apk" | head -n 1)
+          if [ -n "$APK_FILE" ]; then
+            cp "$APK_FILE" "dist-android/SnakeUSBIP-Android-v${VERSION}.apk"
+          else
+            echo "Error: No APK file produced"
+            exit 1
+          fi
+
+      - name: Upload Android Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-android
+          path: dist-android/*
+          if-no-files-found: error
+
+  publish-release:
+    name: Publish Official Multiplatform Release
+    needs: [build-windows, build-macos-server, build-linux-server, build-android]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve Version
+        id: vars
+        shell: bash
+        run: |
+          TAG="${{ github.event.inputs.tag }}"
+          if [ -z "$TAG" ] && [ "${{ github.ref_type }}" = "tag" ]; then
+            TAG="${{ github.ref_name }}"
+          fi
+          if [ -z "$TAG" ]; then
+            TAG="v1.0.0"
+          fi
+          VERSION="${TAG#v}"
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Download all build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: release-*
+          path: final-dist
+          merge-multiple: true
+
+      - name: Consolidate distribution files & calculate SHA256SUMS.txt
+        run: |
+          cd final-dist
+          rm -f SHA256SUMS.txt
+          sha256sum * > SHA256SUMS.txt
+          echo "=== Manifest SHA256SUMS.txt ==="
+          cat SHA256SUMS.txt
+
       - name: Generate GitHub Artifact Attestations (Sigstore $0)
         uses: actions/attest-build-provenance@v1
         with:
-          subject-path: "dist/installer/*"
+          subject-path: "final-dist/*"
 
       - name: Publish Official GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.vars.outputs.tag }}
           files: |
-            dist/installer/*
-          name: "🐍 SnakeUSBIP ${{ steps.vars.outputs.tag }} — Official Free Release"
+            final-dist/*
+          name: "🐍 SnakeUSBIP ${{ steps.vars.outputs.tag }} — Official Multiplatform Release"
           body: |
-            ## 🐍 SnakeUSBIP ${{ steps.vars.outputs.tag }}
+            ## 🐍 SnakeUSBIP ${{ steps.vars.outputs.tag }} — Multiplatform Ecosystem
             
             100% Free and Open Source (GNU GPLv3).
-            Official builds hardened and published by `oscarlosu-lab`.
+            Official hardened multiplatform builds published by `oscarlosu-lab`.
             
-            ### 🔒 Verificación de Integridad (SHA-256)
-            Todos los binarios cuentan con atestación criptográfica Sigstore y hashes públicos:
-            ```powershell
-            Get-FileHash .\[archivo] -Algorithm SHA256
+            ### 📦 Paquetes Oficiales Incluidos
+            * **Windows Client**: `SnakeUSBIP_Setup_v${{ steps.vars.outputs.version }}.exe` (Instalador completo con drivers y filtros UDE)
+            * **Windows Server**: `SnakeUSBIP-Server_Setup_v${{ steps.vars.outputs.version }}.exe` (Instalador dedicado para servidor Windows)
+            * **Windows Portable**: `SnakeUSBIP_v${{ steps.vars.outputs.version }}_Portable_win-x64.zip` (Cliente + Servidor ReadyToRun sin instalación)
+            * **macOS Server**: `SnakeUSBIP-Server-macOS-v${{ steps.vars.outputs.version }}.tar.gz` (Servidor Swift para Apple Silicon / Intel)
+            * **Linux Server**: `SnakeUSBIP-Server-Linux-v${{ steps.vars.outputs.version }}.tar.gz` (Suite de control universal y servicio systemd)
+            * **Android App**: `SnakeUSBIP-Android-v${{ steps.vars.outputs.version }}.apk` (App servidor rootless para dispositivos Android)
+            
+            ### 🔒 Verificación Criptográfica de Integridad (SHA-256)
+            Todos los binarios cuentan con atestación de procedencia **Sigstore ($0)** registrada públicamente:
+            ```bash
+            sha256sum -c SHA256SUMS.txt
             ```
             
-            ### ⚖️ Licencia y Marca Registrada
-            * **SnakeUSBIP** es una marca de `oscarlosu-lab`.
-            * Distribuido bajo licencia **GNU GPLv3**. Prohibido cerrar el código o redistribuir binarios modificados bajo la marca SnakeUSBIP.
+            ### ⚖️ Licencia y Marca
+            * **SnakeUSBIP** es un proyecto de `oscarlosu-lab` bajo licencia **GNU GPLv3**.
             
             ---
             ☕ **Apoya este proyecto libre**: [Ko-fi](https://ko-fi.com/oscarlosu)
