@@ -5,6 +5,12 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+# Resolver ruta absoluta contra la raíz del repositorio para evitar ambigüedades en Inno Setup
+if (-not [System.IO.Path]::IsPathRooted($OutputDir)) {
+    $OutputDir = Join-Path "$PSScriptRoot\.." $OutputDir
+}
+$OutputDir = [System.IO.Path]::GetFullPath($OutputDir)
+
 Write-Host "══════════════════════════════════════════════════════════════" -ForegroundColor Cyan
 Write-Host " 🐍 SnakeUSBIP: Workflow de Compilación Protegida (Coste 0 €)" -ForegroundColor Cyan
 Write-Host "    Versión: $Version | Destino: $OutputDir" -ForegroundColor DarkGray
@@ -76,7 +82,12 @@ if (Test-Path $innoScript) {
     }
     if ($iscc) {
         Write-Host "  Compilando instalador Inno Setup..." -ForegroundColor DarkGray
-        & $iscc /DMyAppVersion=$Version /DSourceDir="$OutputDir\portable" /O"$OutputDir\installer" $innoScript | Out-Null
+        $portableDir = "$OutputDir\portable"
+        $installerDir = "$OutputDir\installer"
+        & $iscc "/DMyAppVersion=$Version" "/DSourceDir=$portableDir" "/O$installerDir" $innoScript
+        if ($LASTEXITCODE -ne 0) {
+            throw "Compilación de Inno Setup falló con código $LASTEXITCODE"
+        }
         Write-Host "  ✓ Instalador Inno Setup generado." -ForegroundColor Green
     }
 }
