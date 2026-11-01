@@ -1,8 +1,8 @@
-USBAnywhere Non-Commercial License (Fair-Code / Source-Available)
+SnakeUSBIP Non-Commercial License (Fair-Code / Source-Available)
 
-Copyright (c) 2025-2026 Oscar Losu - USBAnywhere Project. All rights reserved.
+Copyright (c) 2025-2026 Oscar Losu - SnakeUSBIP Project. All rights reserved.
 
-"USBAnywhere is free for personal, educational, and gaming use. Commercial redistribution, rebranding, or selling of this software/derivatives is strictly prohibited without explicit written consent from the author."
+"SnakeUSBIP is free for personal, educational, and gaming use. Commercial redistribution, rebranding, or selling of this software/derivatives is strictly prohibited without explicit written consent from the author."
 
 ==============================================================================
 TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
@@ -31,7 +31,7 @@ derivatives is strictly prohibited. Specifically, you may NOT:
      cloud services, paid Software-as-a-Service (SaaS), or proprietary products.
   d) Re-sign, extract, reverse engineer, or redistribute the Microsoft WHQL-certified
      kernel drivers bundled with this Software outside of legitimate, non-commercial
-     installations of USBAnywhere.
+     installations of SnakeUSBIP.
 
 3. DERIVATIVE WORKS & REDISTRIBUTION
 You may redistribute verbatim or modified copies of the Software for NON-COMMERCIAL
@@ -39,11 +39,11 @@ purposes only, provided that:
   a) You include this exact LICENSE notice in all copies or substantial portions
      of the Software.
   b) You clearly indicate that modifications were made and identify the original
-     author and repository (https://github.com/oscarlosu-lab/USBAnywhere).
+     author and repository (https://github.com/oscarlosu-lab/SnakeUSBIP).
   c) The resulting derivative work remains subject to this exact non-commercial license.
 
 4. COMMERCIAL INQUIRIES
-Entities wishing to license USBAnywhere for commercial deployment, enterprise integration,
+Entities wishing to license SnakeUSBIP for commercial deployment, enterprise integration,
 or commercial distribution must obtain an explicit written commercial license from the author.
 
 5. DISCLAIMER OF WARRANTY

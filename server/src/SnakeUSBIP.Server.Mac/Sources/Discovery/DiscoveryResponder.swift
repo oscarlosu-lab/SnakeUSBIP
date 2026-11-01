@@ -66,7 +66,7 @@ public final class DiscoveryResponder {
 
             guard bytesRead > 0 else { continue }
             let msg = String(decoding: buffer[0..<bytesRead], as: UTF8.self).trimmingCharacters(in: .whitespacesAndNewlines)
-            if msg.contains("USBANYWHERE_DISCOVERY_PROBE") || msg.contains("DISCOVERY") {
+            if msg.contains("SNAKEUSBIP_DISCOVERY_PROBE") || msg.contains("DISCOVERY") {
                 let hostName = Host.current().localizedName ?? ProcessInfo.processInfo.hostName
                 let response = "SNAKEUSBIP_SERVER:\(hostName)\n"
                 if let respData = response.data(using: .utf8) {

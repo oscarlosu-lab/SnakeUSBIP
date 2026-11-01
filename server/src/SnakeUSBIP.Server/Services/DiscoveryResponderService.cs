@@ -14,7 +14,7 @@ namespace SnakeUSBIP.Server.Services;
 
 /// <summary>
 /// UDP discovery responder and TCP Dynamic Control API on port 3241 for the SnakeUSBIP v3.2.0 ecosystem.
-/// - UDP 3241: Responds to USBANYWHERE_DISCOVERY_PROBE with USBANYWHERE_SERVER:{MachineName}.
+/// - UDP 3241: Responds to SNAKEUSBIP_DISCOVERY_PROBE with SNAKEUSBIP_SERVER:{MachineName}.
 /// - TCP 3241: Handles LIST, BIND <busid>, UNBIND <busid>, STATUS commands for On-Demand binding.
 /// </summary>
 public class DiscoveryResponderService : IDisposable
@@ -79,7 +79,7 @@ public class DiscoveryResponderService : IDisposable
                 if (message.Contains(ProbeMessage, StringComparison.OrdinalIgnoreCase) ||
                     message.Contains("DISCOVERY", StringComparison.OrdinalIgnoreCase))
                 {
-                    var response = $"USBANYWHERE_SERVER:{Environment.MachineName}\n";
+                    var response = $"SNAKEUSBIP_SERVER:{Environment.MachineName}\n";
                     var responseBytes = Encoding.UTF8.GetBytes(response);
                     await _udpClient.SendAsync(responseBytes, responseBytes.Length, result.RemoteEndPoint);
                     LogService.Debug($"Replied to UDP discovery probe from {result.RemoteEndPoint.Address}");
