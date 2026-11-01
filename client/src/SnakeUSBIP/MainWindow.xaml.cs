@@ -56,7 +56,7 @@ public partial class MainWindow : Window
     private Forms.ToolStripMenuItem? _trayExitItem;
     private bool _autoScanStarted;
     private bool _isFirstStartup = true;
-    private List<string> _availableSubnets = new();
+    private readonly List<string> _availableSubnets = new();
 
     public MainWindow(
         ILocalizationService localization,
@@ -224,7 +224,7 @@ public partial class MainWindow : Window
         }
         catch (Exception ex)
         {
-            AddLog("Warning", string.Format(_localization.GetText("log_tray_init_error", _currentLanguage), ex.Message));
+            AddLocalizedLog("Warning", "log_tray_init_error", ex.Message);
         }
     }
 
@@ -1300,7 +1300,7 @@ public partial class MainWindow : Window
                 lblStatus.Text = $"⬆️ {_localization.GetText("update_available", _currentLanguage)}: v{updateInfo.LatestVersion}";
                 lblStatus.Foreground = (SolidColorBrush)FindResource("StatusWarning");
 
-                var prompt = string.Format(_localization.GetText("msg_update_prompt", _currentLanguage), updateInfo.LatestVersion, updateInfo.ReleaseNotes);
+                var prompt = _localization.GetText("msg_update_prompt", _currentLanguage, updateInfo.LatestVersion ?? "", updateInfo.ReleaseNotes ?? "");
                 var title = _localization.GetText("msg_update_title", _currentLanguage);
                 var result = System.Windows.MessageBox.Show(prompt, title, System.Windows.MessageBoxButton.YesNo, System.Windows.MessageBoxImage.Information);
 
@@ -1629,7 +1629,7 @@ public partial class MainWindow : Window
         {
             var currentName = _usbIds.GetDeviceDescription(device.VendorId, device.ProductId);
 
-            var prompt = string.Format(_localization.GetText("rename_prompt", _currentLanguage), device.VendorId, device.ProductId);
+            var prompt = _localization.GetText("rename_prompt", _currentLanguage, device.VendorId, device.ProductId);
             var title = _localization.GetText("rename_title", _currentLanguage);
 
             var newName = Microsoft.VisualBasic.Interaction.InputBox(

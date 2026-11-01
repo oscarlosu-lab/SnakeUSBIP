@@ -6,4 +6,5 @@ namespace SnakeUSBIP.Services.Interfaces;
 public interface ILocalizationService
 {
     string GetText(string key, string language);
+    string GetText(string key, string language, params object[] args);
 }

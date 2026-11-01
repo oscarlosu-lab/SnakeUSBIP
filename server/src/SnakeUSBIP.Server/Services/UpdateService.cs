@@ -52,7 +52,7 @@ public class UpdateService
                 {
                     targetAsset = release.Assets?.FirstOrDefault(a =>
                         a.Name?.EndsWith(".zip", StringComparison.OrdinalIgnoreCase) == true &&
-                        a.Name?.Contains("x64", StringComparison.OrdinalIgnoreCase) == true)
+                        a.Name.Contains("x64", StringComparison.OrdinalIgnoreCase))
                         ?? release.Assets?.FirstOrDefault(a =>
                         a.Name?.EndsWith(".zip", StringComparison.OrdinalIgnoreCase) == true);
                 }
@@ -60,13 +60,13 @@ public class UpdateService
                 {
                     targetAsset = release.Assets?.FirstOrDefault(a =>
                         a.Name?.Contains("Setup", StringComparison.OrdinalIgnoreCase) == true &&
-                        a.Name?.EndsWith(".exe", StringComparison.OrdinalIgnoreCase) == true);
+                        a.Name.EndsWith(".exe", StringComparison.OrdinalIgnoreCase));
                 }
 
                 // Fallback to any Setup.exe if ZIP not found
                 targetAsset ??= release.Assets?.FirstOrDefault(a =>
                     a.Name?.Contains("Setup", StringComparison.OrdinalIgnoreCase) == true &&
-                    a.Name?.EndsWith(".exe", StringComparison.OrdinalIgnoreCase) == true);
+                    a.Name.EndsWith(".exe", StringComparison.OrdinalIgnoreCase));
 
                 var sumsAsset = release.Assets?.FirstOrDefault(a =>
                     a.Name?.Equals("SHA256SUMS.txt", StringComparison.OrdinalIgnoreCase) == true);

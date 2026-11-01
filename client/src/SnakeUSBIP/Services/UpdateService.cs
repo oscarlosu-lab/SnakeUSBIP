@@ -83,8 +83,8 @@ public class UpdateService : IUpdateService
                 {
                     selectedAsset = assets.FirstOrDefault(a =>
                         a.Name?.Contains("Portable", StringComparison.OrdinalIgnoreCase) == true &&
-                        (a.Name?.EndsWith(".zip", StringComparison.OrdinalIgnoreCase) == true ||
-                         a.Name?.EndsWith(".exe", StringComparison.OrdinalIgnoreCase) == true));
+                        (a.Name.EndsWith(".zip", StringComparison.OrdinalIgnoreCase) ||
+                         a.Name.EndsWith(".exe", StringComparison.OrdinalIgnoreCase)));
                 }
 
                 // Fallback or Setup
@@ -92,7 +92,7 @@ public class UpdateService : IUpdateService
                 {
                     selectedAsset = assets.FirstOrDefault(a =>
                         a.Name?.Contains("Setup", StringComparison.OrdinalIgnoreCase) == true &&
-                        a.Name?.EndsWith(".exe", StringComparison.OrdinalIgnoreCase) == true);
+                        a.Name.EndsWith(".exe", StringComparison.OrdinalIgnoreCase));
                 }
 
                 // If still null, just take the first exe

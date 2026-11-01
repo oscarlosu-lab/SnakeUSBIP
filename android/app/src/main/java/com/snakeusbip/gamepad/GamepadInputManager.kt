@@ -37,8 +37,8 @@ object GamepadInputManager {
     private val scope = CoroutineScope(Dispatchers.Default)
 
     fun handleMotionEvent(event: MotionEvent): Boolean {
-        val isGamepad = (event.source and InputDevice.SOURCE_JOYSTICK != 0) ||
-                        (event.source and InputDevice.SOURCE_GAMEPAD != 0)
+        val isGamepad = ((event.source and InputDevice.SOURCE_JOYSTICK) != 0) ||
+                        ((event.source and InputDevice.SOURCE_GAMEPAD) != 0)
         if (!isGamepad) return false
 
         val now = System.nanoTime()

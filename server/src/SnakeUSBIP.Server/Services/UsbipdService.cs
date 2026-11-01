@@ -203,7 +203,7 @@ public class UsbipdService : IDisposable
                     if (vidMatch.Success && pidMatch.Success && !string.IsNullOrWhiteSpace(name))
                     {
                         var key = $"{vidMatch.Groups[1].Value.ToUpperInvariant()}:{pidMatch.Groups[1].Value.ToUpperInvariant()}";
-                        if (!newCache.ContainsKey(key) || name.Length > newCache[key].Length)
+                        if (!newCache.TryGetValue(key, out var existingName) || name.Length > existingName.Length)
                         {
                             newCache[key] = name;
                         }
