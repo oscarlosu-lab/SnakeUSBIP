@@ -47,7 +47,13 @@ mkdir -p "${INSTALL_DIR}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SOURCE_DIR="$(cd "${SCRIPT_DIR}/../src/SnakeUSBIP.Server.Mac" 2>/dev/null && pwd || true)"
 
-if [[ -d "${SOURCE_DIR}" && -f "${SOURCE_DIR}/Package.swift" ]]; then
+# Prefer the pre-built binary shipped next to install.sh in the release archive
+if [[ -f "${SCRIPT_DIR}/snakeusbip-server-mac" ]]; then
+    echo -e "${CYAN}Installing bundled binary from release archive...${NC}"
+    cp "${SCRIPT_DIR}/snakeusbip-server-mac" "${BINARY_TARGET}"
+    chmod +x "${BINARY_TARGET}"
+    echo -e "${GREEN}V Bundled binary installed to ${BINARY_TARGET}${NC}"
+elif [[ -d "${SOURCE_DIR}" && -f "${SOURCE_DIR}/Package.swift" ]]; then
     echo -e "${CYAN}🔨 Building native Universal/macOS binary from source...${NC}"
     
     # Check for swift / Xcode tools

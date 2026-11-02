@@ -63,8 +63,9 @@ class UsbIpServerWorker(
                             val busId = UsbIpPackets.readFixedString(input, UsbIpConstants.SYSFS_BUSID_SIZE)
                             Log.i(TAG, "Client ${socket.inetAddress} requested attach of device $busId")
 
-                            val conn = hostManager.openDevice(busId)
                             val dev = hostManager.connectedDevices.value.find { it.busId == busId }
+                            // Enforce export policy: only devices explicitly shared may be imported
+                            val conn = if (dev != null && dev.isShared) hostManager.openDevice(busId) else null
 
                             if (conn != null && dev != null) {
                                 attachedBusId = busId

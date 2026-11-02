@@ -187,21 +187,34 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v6
 
+      - name: Restore Android signing keystore
+        env:
+          ANDROID_KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_B64 }}
+        run: |
+          if [ -z "$ANDROID_KEYSTORE_B64" ]; then
+            echo "Error: secret ANDROID_KEYSTORE_B64 is not configured"; exit 1
+          fi
+          echo "$ANDROID_KEYSTORE_B64" | base64 -d > android/app/release.keystore
+
       - name: Build Android Release APK
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: snakeusbip_release
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
         run: |
           cd android
           chmod +x gradlew
-          ./gradlew assembleRelease || ./gradlew assembleDebug
+          ./gradlew assembleRelease
 
       - name: Prepare APK Package
         run: |
           VERSION="${{ steps.vars.outputs.version }}"
           mkdir -p dist-android
-          APK_FILE=$(find android/app/build/outputs/apk -name "*.apk" | head -n 1)
+          APK_FILE=$(find android/app/build/outputs/apk/release -name "*-release.apk" ! -name "*unsigned*" | head -n 1)
           if [ -n "$APK_FILE" ]; then
             cp "$APK_FILE" "dist-android/SnakeUSBIP-Android-v${VERSION}.apk"
           else
-            echo "Error: No APK file produced"
+            echo "Error: No signed release APK produced (refusing to publish debug/unsigned APK)"
             exit 1
           fi
 

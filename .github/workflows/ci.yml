@@ -69,11 +69,11 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v6
 
-      - name: Build Android Debug APK
+      - name: Android Unit Tests & Debug Build
         run: |
           cd android
           chmod +x gradlew
-          ./gradlew assembleDebug
+          ./gradlew testDebugUnitTest assembleDebug
 
   lint-scripts:
     name: Script Linters (ShellCheck & Python Syntax)

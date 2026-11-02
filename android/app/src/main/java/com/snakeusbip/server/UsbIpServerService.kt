@@ -343,6 +343,14 @@ class UsbIpServerService : Service() {
         tcpControlSocket = null
     }
 
+    /** Mutating control commands are limited to loopback, link-local, RFC1918 and CGNAT (Tailscale/ZeroTier) peers. */
+    private fun isTrustedControlPeer(addr: java.net.InetAddress?): Boolean {
+        if (addr == null) return false
+        if (addr.isLoopbackAddress || addr.isSiteLocalAddress || addr.isLinkLocalAddress) return true
+        val b = addr.address
+        return b.size == 4 && (b[0].toInt() and 0xFF) == 100 && (b[1].toInt() and 0xC0) == 0x40
+    }
+
     private fun startTcpControlResponder() {
         tcpControlJob?.cancel()
         tcpControlJob = serviceScope.launch {
@@ -359,7 +367,11 @@ class UsbIpServerService : Service() {
                             val cmd = parts.firstOrNull()?.uppercase() ?: ""
                             val arg = parts.getOrNull(1)?.trim() ?: ""
                             val hm = hostManagerInstance ?: UsbHostManager(applicationContext)
-                            val response = when (cmd) {
+                            val mutating = cmd == "BIND" || cmd == "UNBIND"
+                            val response = if (mutating && !isTrustedControlPeer(client.inetAddress)) {
+                                Log.w(TAG, "Rejected $cmd from untrusted peer ${client.inetAddress}")
+                                org.json.JSONObject().put("status", "ERROR").put("message", "Forbidden").toString()
+                            } else when (cmd) {
                                 "LIST" -> {
                                     val arr = org.json.JSONArray()
                                     for (d in hm.connectedDevices.value) {

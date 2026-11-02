@@ -180,6 +180,10 @@ class UsbHostManager(private val context: Context) {
      */
     @Synchronized
     fun openDevice(busId: String): UsbDeviceConnection? {
+        if (sharedStates.getOrDefault(busId, true).not()) {
+            Log.w(TAG, "Refusing to open device $busId: not shared")
+            return null
+        }
         activeConnections[busId]?.let { return it }
 
         val rawDev = findNativeDevice(busId) ?: return null

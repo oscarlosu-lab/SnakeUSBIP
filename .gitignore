@@ -33,3 +33,8 @@ installer/Output/
 __pycache__/
 *.pyc
 
+
+# Android signing material (never commit)
+*.keystore
+*.jks
+keystore.b64

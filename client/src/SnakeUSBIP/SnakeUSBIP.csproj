@@ -12,7 +12,6 @@
     <!-- App Info -->
     <AssemblyName>SnakeUSBIP</AssemblyName>
     <RootNamespace>SnakeUSBIP</RootNamespace>
-    <Version>1.0.0</Version>
     <Description>The Free, Open-Source VirtualHere Alternative for Windows - Connect unlimited remote USB devices over network</Description>
     
     <!-- Build Options -->

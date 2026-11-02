@@ -10,7 +10,6 @@
     <UseWindowsForms>true</UseWindowsForms>
     <AssemblyName>SnakeUSBIP-Server</AssemblyName>
     <RootNamespace>SnakeUSBIP.Server</RootNamespace>
-    <Version>1.0.0</Version>
     <Company>oscarlosu-lab</Company>
     <Authors>oscarlosu-lab</Authors>
     <Copyright>Copyright (c) 2025-2026 oscarlosu-lab</Copyright>

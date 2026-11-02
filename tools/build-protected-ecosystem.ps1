@@ -28,6 +28,7 @@ if (Test-Path $serverProj) {
     dotnet publish $serverProj -c Release -r win-x64 --self-contained `
         /p:PublishSingleFile=true `
         /p:PublishReadyToRun=true `
+        /p:Version=$Version /p:AssemblyVersion=$($Version).0 /p:FileVersion=$($Version).0 /p:InformationalVersion=$Version `
         /p:DebugType=none `
         /p:DebugSymbols=false `
         -o "$OutputDir\portable\server"
@@ -41,6 +42,7 @@ if (Test-Path $clientProj) {
     dotnet publish $clientProj -c Release -r win-x64 --self-contained `
         /p:PublishSingleFile=true `
         /p:PublishReadyToRun=true `
+        /p:Version=$Version /p:AssemblyVersion=$($Version).0 /p:FileVersion=$($Version).0 /p:InformationalVersion=$Version `
         /p:DebugType=none `
         /p:DebugSymbols=false `
         -o "$OutputDir\portable"
