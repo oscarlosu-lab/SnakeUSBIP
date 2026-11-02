@@ -92,12 +92,14 @@ See [VPN_INTERNET_EN.md](VPN_INTERNET_EN.md) for complete configuration.
 SnakeUSBIP client connects transparently to any USB/IP host server:
 
 ### 🍎 Connecting to a macOS Server
+> The current macOS server can discover and list USB devices, but does not yet have a real USB transfer backend. Device sharing and attachment are disabled; connect to a Windows or Linux server for USB transfers.
+
 1. On your Mac (Apple Silicon or Intel), run the 1-click installer:
    `ash
    curl -fsSL https://raw.githubusercontent.com/oscarlosu-lab/SnakeUSBIP-Server/main/scripts/install-server-mac.sh | sudo bash
    `
 2. In SnakeUSBIP Client, enter the Mac's IP (e.g. 192.168.1.50) and click **📋 List**.
-3. Select your joystick, SimRacing wheel, or controller and click **▶️ Connect**.
+3. macOS device attachment is currently unavailable.
 4. See [macOS Server Manual](https://github.com/oscarlosu-lab/SnakeUSBIP-Server/blob/main/docs/USAGE_MACOS_EN.md) for details.
 
 ### 🖥️ Connecting to a Windows Desktop Server

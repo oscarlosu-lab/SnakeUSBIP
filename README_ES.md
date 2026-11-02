@@ -201,7 +201,7 @@ Consulta el archivo [LICENSE](LICENSE) para ver el texto completo de la licencia
 | Componente | Plataforma / Rol | Descripción |
 |---|---|---|
 | **[SnakeUSBIP Cliente](https://github.com/oscarlosu-lab/SnakeUSBIP)** | 🖥️ Windows 10/11 (x64 / ARM64) | Conecta dispositivos USB remotos con drivers WHQL y motor WSK |
-| **[SnakeUSBIP Servidor](https://github.com/oscarlosu-lab/SnakeUSBIP)** | 🌐 Windows 10/11 (.NET 9.0) | Comparte periféricos USB locales por red con GUI y Auto-Bind |
+| **[SnakeUSBIP Servidor](https://github.com/oscarlosu-lab/SnakeUSBIP)** | 🌐 Windows 10/11 y 🍎 macOS | Servidor USB/IP Windows; macOS solo permite descubrir/listar dispositivos, con transferencias desactivadas |
 | **[SnakeUSBIP Android](https://github.com/oscarlosu-lab/SnakeUSBIP)** | 📱 Android y Android TV | Servidor USB/IP rootless, integración Sunshine y hápticos DualSense |
 | **[Web Oficial](https://oscarlosu-lab.github.io/SnakeUSBIP/)** | 🌍 Portal Web | Guías interactivas, documentación y centro de descargas |
 | **[Comunidad Reddit](https://www.reddit.com/r/UsbAnywhere/)** | 💬 r/UsbAnywhere | Soporte, debates, configuraciones de la comunidad y anuncios |

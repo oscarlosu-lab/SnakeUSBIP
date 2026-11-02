@@ -46,6 +46,20 @@ public struct ServerDashboardView: View {
             HSplitView {
                 // Device List Panel
                 VStack(spacing: 12) {
+                    if !vm.canShareUSBDevices {
+                        Label(
+                            "USB/IP transfers are disabled: this macOS server has no real USB transfer backend yet.",
+                            systemImage: "exclamationmark.triangle.fill"
+                        )
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundColor(.orange)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(12)
+                        .background(Color.orange.opacity(0.10))
+                        .cornerRadius(8)
+                        .padding(.horizontal, 16)
+                    }
+
                     toolbarSection
                         .padding(.horizontal, 16)
                         .padding(.top, 12)
@@ -162,7 +176,7 @@ public struct ServerDashboardView: View {
                         .foregroundColor(neonCyan)
                         .cornerRadius(4)
                 }
-                Text("Zero-Trust Native IOKit USB/IP Server & Dynamic Control Daemon")
+                Text("USB device inventory and discovery; USB/IP transfers are unavailable")
                     .font(.system(size: 11))
                     .foregroundColor(textMuted)
             }
@@ -264,6 +278,7 @@ public struct ServerDashboardView: View {
                     .cornerRadius(6)
             }
             .buttonStyle(.plain)
+            .disabled(!vm.canShareUSBDevices)
 
             // Stop All
             Button(action: { vm.stopAll() }) {
@@ -311,7 +326,7 @@ public struct ServerDashboardView: View {
     // MARK: - Footer
     private var footerSection: some View {
         HStack {
-            Text("\(vm.devices.count) USB Peripherals (\(vm.devices.filter { $0.isBound }.count) Shared, \(vm.activeClientsCount) Attached)")
+            Text("\(vm.devices.count) USB Peripherals (\(vm.devices.filter { $0.isBound }.count) \(vm.canShareUSBDevices ? "Shared" : "Inactive config"), \(vm.activeClientsCount) Attached)")
                 .font(.system(size: 11, weight: .medium))
                 .foregroundColor(textMuted)
 
@@ -384,7 +399,10 @@ struct DeviceCardRow: View {
                     BadgePill(text: "VID:\(device.vidPidString)", color: textMuted)
 
                     if device.isBound {
-                        BadgePill(text: device.isClaimed ? "ATTACHED" : "SHARED", color: neonGreen)
+                        BadgePill(
+                            text: vm.canShareUSBDevices ? (device.isClaimed ? "ATTACHED" : "SHARED") : "INACTIVE CONFIG",
+                            color: vm.canShareUSBDevices ? neonGreen : .orange
+                        )
                     }
                 }
             }
@@ -402,7 +420,10 @@ struct DeviceCardRow: View {
                         .cornerRadius(6)
                 }
                 .buttonStyle(.plain)
-                .help("Auto-Bind: Remember and automatically share when plugged in")
+                .disabled(!vm.canShareUSBDevices)
+                .help(vm.canShareUSBDevices
+                    ? "Auto-Bind: Remember and automatically share when plugged in"
+                    : "Unavailable until a real macOS USB transfer backend is implemented")
 
                 Button(action: { vm.toggleShare(device: device) }) {
                     Text(device.isBound ? "Stop" : "Share")
@@ -414,6 +435,7 @@ struct DeviceCardRow: View {
                         .overlay(RoundedRectangle(cornerRadius: 6).stroke(device.isBound ? Color.red.opacity(0.6) : Color.clear, lineWidth: 1))
                 }
                 .buttonStyle(.plain)
+                .disabled(!vm.canShareUSBDevices && !device.isBound)
             }
         }
         .padding(12)

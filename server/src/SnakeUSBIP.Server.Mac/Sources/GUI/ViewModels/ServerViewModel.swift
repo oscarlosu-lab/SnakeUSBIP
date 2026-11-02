@@ -24,6 +24,10 @@ public final class ServerViewModel: ObservableObject {
     @Published public var serverPort: UInt16 = 3240
     @Published public var showingSettings: Bool = false
 
+    public var canShareUSBDevices: Bool {
+        USBIPServer.usbTransferBackendAvailable
+    }
+
     private var server: USBIPServer?
     private var timer: Timer?
 
@@ -78,7 +82,7 @@ public final class ServerViewModel: ObservableObject {
         
         // Auto-export remembered pinned devices
         for dev in rawDevices {
-            if autoBound.contains(dev.vidPidString.uppercased()) && !dev.isBound {
+            if canShareUSBDevices && autoBound.contains(dev.vidPidString.uppercased()) && !dev.isBound {
                 _ = IOKitDeviceManager.shared.bindDevice(busId: dev.busId)
                 dev.isBound = true
             }
@@ -96,8 +100,12 @@ public final class ServerViewModel: ObservableObject {
         if device.isBound {
             _ = IOKitDeviceManager.shared.unbindDevice(busId: device.busId)
             device.isBound = false
-            appendLog("⚪ Device unshared: \(device.displayName)")
+            appendLog("⚪ Device configuration cleared: \(device.displayName)")
         } else {
+            guard canShareUSBDevices else {
+                appendLog("❌ USB/IP sharing is unavailable until a real macOS USB transfer backend is implemented")
+                return
+            }
             let check = IOKitDeviceManager.shared.isDeviceExportAllowed(busId: device.busId, device: device)
             if !check.allowed {
                 appendLog("🛡️ Blocked by policy: \(check.reason)")
@@ -111,6 +119,10 @@ public final class ServerViewModel: ObservableObject {
     }
 
     public func shareAll() {
+        guard canShareUSBDevices else {
+            appendLog("❌ USB/IP sharing is unavailable until a real macOS USB transfer backend is implemented")
+            return
+        }
         let count = IOKitDeviceManager.shared.bindAllDevices()
         appendLog("⚡ Shared all non-hub USB peripherals (\(count) exported)")
         refreshDevices()
@@ -125,6 +137,10 @@ public final class ServerViewModel: ObservableObject {
     }
 
     public func toggleAutoBind(device: USBDeviceInfo) {
+        guard canShareUSBDevices else {
+            appendLog("❌ Auto-bind is unavailable until a real macOS USB transfer backend is implemented")
+            return
+        }
         let isNowAutoBound = AutoBindManager.shared.toggleAutoBind(vidPid: device.vidPidString)
         if isNowAutoBound && !device.isBound {
             _ = IOKitDeviceManager.shared.bindDevice(busId: device.busId)

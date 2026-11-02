@@ -126,6 +126,12 @@ public final class ControlServer {
             return encodeJSON(payload)
 
         case "BIND":
+            guard USBIPServer.usbTransferBackendAvailable else {
+                return encodeJSON([
+                    "status": "UNSUPPORTED",
+                    "message": "macOS USB/IP transfers are disabled until a real USB transfer backend is available"
+                ])
+            }
             guard parts.count >= 2 else {
                 return #"{"status": "ERROR", "message": "Missing busid"}"#
             }
@@ -173,6 +179,7 @@ public final class ControlServer {
                 "status": "OK",
                 "running": true,
                 "port_active": true,
+                "usb_transfer_supported": USBIPServer.usbTransferBackendAvailable,
                 "service_manager": "launchd",
                 "devices": devList
             ]

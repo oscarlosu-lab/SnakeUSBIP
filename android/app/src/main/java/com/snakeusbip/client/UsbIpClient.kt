@@ -102,7 +102,6 @@ class UsbIpClient {
         }
 
     private fun queryDynamicInventory(host: String): List<UsbExportedDevice> {
-        val result = mutableListOf<UsbExportedDevice>()
         val sock = Socket()
         try {
             sock.tcpNoDelay = true
@@ -112,45 +111,14 @@ class UsbIpClient {
             out.write("LIST\n".toByteArray(Charsets.UTF_8))
             out.flush()
             val jsonStr = sock.getInputStream().bufferedReader(Charsets.UTF_8).readText().trim()
-            if (jsonStr.isNotEmpty()) {
-                val root = org.json.JSONObject(jsonStr)
-                val arr = root.optJSONArray("devices")
-                if (arr != null) {
-                    for (i in 0 until arr.length()) {
-                        val obj = arr.getJSONObject(i)
-                        val busId = obj.optString("busid", "")
-                        if (busId.isBlank()) continue
-                        val vid = obj.optString("vid", "0000").toIntOrNull(16) ?: 0
-                        val pid = obj.optString("pid", "0000").toIntOrNull(16) ?: 0
-                        val desc = obj.optString("description", "USB Device")
-                        val shared = obj.optBoolean("shared", false)
-                        val busNum = busId.substringBefore("-", "1").toIntOrNull() ?: 1
-                        result.add(
-                            UsbExportedDevice(
-                                busId = busId,
-                                path = "/sys/bus/usb/devices/$busId",
-                                busNum = busNum,
-                                devNum = i + 1,
-                                speed = 3,
-                                vendorId = vid,
-                                productId = pid,
-                                deviceClass = 0,
-                                deviceSubclass = 0,
-                                deviceProtocol = 0,
-                                interfaces = emptyList(),
-                                productName = desc,
-                                isShared = shared
-                            )
-                        )
-                    }
-                }
-            }
+            if (jsonStr.isEmpty()) return emptyList()
+            return DynamicInventoryParser.parse(jsonStr)
         } catch (e: Exception) {
             Log.d(TAG, "Dynamic inventory query on $host:$DYNAMIC_CONTROL_PORT skipped: ${e.message}")
         } finally {
             try { sock.close() } catch (_: Exception) {}
         }
-        return result
+        return emptyList()
     }
 
     private fun tryDynamicBind(host: String, busId: String): Boolean {
@@ -163,16 +131,21 @@ class UsbIpClient {
             out.write("BIND $busId\n".toByteArray(Charsets.UTF_8))
             out.flush()
             val resp = sock.getInputStream().bufferedReader(Charsets.UTF_8).readLine()?.trim() ?: ""
-            if (resp.contains("\"DENIED\"", ignoreCase = true)) {
-                lastError = try {
-                    org.json.JSONObject(resp).optString("message", "Denied by host policy")
-                } catch (_: Exception) {
-                    "Denied by host policy"
+            if (resp.isNotEmpty()) {
+                val response = org.json.JSONObject(resp)
+                val status = response.optString("status")
+                if (status.equals("DENIED", ignoreCase = true) ||
+                    status.equals("ERROR", ignoreCase = true) ||
+                    status.equals("UNSUPPORTED", ignoreCase = true)
+                ) {
+                    lastError = response.optString("message").ifBlank {
+                        "The server rejected the device bind request ($status)"
+                    }
+                    return false
                 }
-                return false
-            }
-            if (resp.contains("\"OK\"", ignoreCase = true)) {
-                Thread.sleep(150)
+                if (status.equals("OK", ignoreCase = true)) {
+                    Thread.sleep(150)
+                }
             }
         } catch (_: Exception) {
             // Legacy server without TCP 3241

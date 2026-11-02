@@ -224,7 +224,7 @@ See [LICENSE](LICENSE) for full legal terms and conditions.
 | Component | Platform / Role | Description |
 |---|---|---|
 | **[SnakeUSBIP Client](https://github.com/oscarlosu-lab/SnakeUSBIP)** | 🖥️ Windows 10/11 (x64 / ARM64) | Connect to remote USB devices with WHQL drivers & WSK engine |
-| **[SnakeUSBIP Server](https://github.com/oscarlosu-lab/SnakeUSBIP)** | 🌐 Windows & 🍎 macOS | Desktop USB/IP server with GUI (Windows) & Swift daemon (macOS) |
+| **[SnakeUSBIP Server](https://github.com/oscarlosu-lab/SnakeUSBIP)** | 🌐 Windows & 🍎 macOS | Windows USB/IP server; macOS currently supports device discovery/listing only, with USB transfers disabled |
 | **[SnakeUSBIP Android](https://github.com/oscarlosu-lab/SnakeUSBIP)** | 📱 Android & Android TV | Rootless USB/IP server, Sunshine handoff & DualSense haptics |
 | **[Official Website](https://oscarlosu-lab.github.io/SnakeUSBIP/)** | 🌍 Web Portal | Interactive guides, documentation & download hub |
 | **[Reddit Community](https://www.reddit.com/r/UsbAnywhere/)** | 💬 r/UsbAnywhere | Support, discussions, community setups & announcements |

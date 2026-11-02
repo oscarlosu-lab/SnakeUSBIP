@@ -72,6 +72,8 @@ final class DiscoveryTests: XCTestCase {
     }
 
     func testSharedStateAndExportPolicy() {
+        XCTAssertFalse(USBIPServer.usbTransferBackendAvailable)
+
         // Test cross-process shared state bind / unbind
         XCTAssertTrue(IOKitDeviceManager.shared.bindDevice(busId: "2-1", dynamic: true))
         XCTAssertTrue(IOKitDeviceManager.shared.isBound(busId: "2-1"))
@@ -79,19 +81,22 @@ final class DiscoveryTests: XCTestCase {
         XCTAssertTrue(IOKitDeviceManager.shared.unbindDevice(busId: "2-1"))
         XCTAssertFalse(IOKitDeviceManager.shared.isBound(busId: "2-1"))
 
-        // Test Denylist Policy via ControlServer
+        // Export policy remains available independently of USB transfer support.
         IOKitDeviceManager.shared.updatePolicy(denylist: ["3-4", "28de:1304"])
-        let deniedResp = ControlServer.processCommand("BIND 3-4")
-        XCTAssertTrue(deniedResp.contains(#""status":"DENIED""#) || deniedResp.contains(#""status": "DENIED""#))
+        let denied = IOKitDeviceManager.shared.isDeviceExportAllowed(busId: "3-4")
+        XCTAssertFalse(denied.allowed)
 
-        // Test Allow via ControlServer
+        // Binding is explicitly unavailable until a real transfer backend exists.
         IOKitDeviceManager.shared.updatePolicy(denylist: [])
-        let okResp = ControlServer.processCommand("BIND 3-4")
-        XCTAssertTrue(okResp.contains(#""status":"OK""#) || okResp.contains(#""status": "OK""#))
-        XCTAssertTrue(IOKitDeviceManager.shared.isBound(busId: "3-4"))
+        let bindResp = ControlServer.processCommand("BIND 3-4")
+        XCTAssertTrue(bindResp.contains(#""status":"UNSUPPORTED""#) || bindResp.contains(#""status": "UNSUPPORTED""#))
+        XCTAssertFalse(IOKitDeviceManager.shared.isBound(busId: "3-4"))
+
+        let statusResp = ControlServer.processCommand("STATUS")
+        XCTAssertTrue(statusResp.contains(#""usb_transfer_supported":false"#) || statusResp.contains(#""usb_transfer_supported": false"#))
 
         let unbindResp = ControlServer.processCommand("UNBIND 3-4")
-        XCTAssertTrue(unbindResp.contains(#""status":"OK""#) || unbindResp.contains(#""status": "OK""#))
+        XCTAssertTrue(unbindResp.contains(#""status":"ERROR""#) || unbindResp.contains(#""status": "ERROR""#))
         XCTAssertFalse(IOKitDeviceManager.shared.isBound(busId: "3-4"))
     }
 

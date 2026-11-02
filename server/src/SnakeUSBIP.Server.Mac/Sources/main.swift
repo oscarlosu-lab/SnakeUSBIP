@@ -126,13 +126,18 @@ case "status":
         let claimedCount = devices.filter { $0.isClaimed }.count
         print("Status:            ACTIVE (v\(version))")
         print("USB/IP Port:       3240 (TCP)")
+        print("USB/IP Transfers:  \(USBIPServer.usbTransferBackendAvailable ? "AVAILABLE" : "UNAVAILABLE")")
         print("Dynamic API Port:  3241 (TCP/UDP)")
-        print("Detected Devices:  \(devices.count) (\(boundCount) shared, \(claimedCount) attached)")
+        print("Detected Devices:  \(devices.count) (\(boundCount) configured, \(claimedCount) attached)")
     }
     
 case "bind":
     guard args.count >= 2 else {
         print("❌ Error: Missing bus ID. Usage: snakeusbip-server-mac bind <busid>")
+        exit(1)
+    }
+    guard USBIPServer.usbTransferBackendAvailable else {
+        print("❌ USB/IP sharing is unavailable until a real macOS USB transfer backend is implemented.")
         exit(1)
     }
     let busId = args[1]
@@ -223,15 +228,17 @@ case "serve":
     // Auto-export remembered pinned devices (and all non-hub devices if --auto-bind is passed)
     let rawDevices = IOKitDeviceManager.shared.enumerateDevices()
     let pinned = AutoBindManager.shared.getAutoBoundList()
-    for dev in rawDevices where pinned.contains(dev.vidPidString.uppercased()) {
+    for dev in rawDevices where USBIPServer.usbTransferBackendAvailable && pinned.contains(dev.vidPidString.uppercased()) {
         _ = IOKitDeviceManager.shared.bindDevice(busId: dev.busId)
     }
 
-    if autoBind {
+    if autoBind && USBIPServer.usbTransferBackendAvailable {
         let count = IOKitDeviceManager.shared.bindAllDevices()
         print("⚡ Auto-bind enabled: \(count) local device(s) exported.")
+    } else if autoBind {
+        print("❌ Auto-bind ignored: macOS USB/IP transfer support is unavailable.")
     } else {
-        print("🔄 Dynamic On-Demand Mode (Zero-Host-Lockout): Devices remain local until requested by a client.")
+        print("❌ USB/IP device transfers are disabled until a real macOS USB transfer backend is implemented.")
     }
     
     let server = USBIPServer(port: port)

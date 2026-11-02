@@ -13,6 +13,8 @@ import Glibc
 #endif
 
 public final class USBIPServer {
+    public static let usbTransferBackendAvailable = false
+
     private let port: UInt16
     private var serverSocket: Int32 = -1
     private var isRunning: Bool = false
@@ -144,7 +146,7 @@ public final class USBIPServer {
         _ = readExact(fd: fd, count: 4)
         
         let allDevices = IOKitDeviceManager.shared.enumerateDevices()
-        let exportedDevices = allDevices.filter { $0.isBound }
+        let exportedDevices = allDevices.filter { $0.isBound && Self.usbTransferBackendAvailable }
         
         emitLog("📋 Sending device list: \(exportedDevices.count) exported devices")
         let replyData = USBIPPackets.encodeDevlistReply(devices: exportedDevices)
@@ -157,6 +159,13 @@ public final class USBIPServer {
         let buf = ByteBuffer(data: payload)
         _ = buf.readUInt32() // status
         guard let requestedBusId = buf.readFixedString(length: USBIPConstants.maxBusIdLength) else { return false }
+
+        guard Self.usbTransferBackendAvailable else {
+            emitLog("❌ USB/IP import rejected for '\(requestedBusId)': macOS USB transfer backend is unavailable")
+            let errReply = USBIPPackets.encodeImportReply(device: nil, status: USBIPConstants.statusError)
+            _ = writeExact(fd: fd, data: errReply)
+            return false
+        }
         
         // Check policy and allow on-demand bind if not yet bound
         let policyCheck = IOKitDeviceManager.shared.isDeviceExportAllowed(busId: requestedBusId)
@@ -201,7 +210,7 @@ public final class USBIPServer {
     }
     
     private func enterURBLoop(fd: Int32, device: USBDeviceInfo) {
-        let handler = URBHandler(device: device)
+        let handler = URBHandler()
         emitLog("⚡ Active URB streaming session started for [\(device.busId)]")
         
         while isRunning {

@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -687,11 +688,13 @@ namespace SnakeUSBIP.Services
                     if (doc.RootElement.TryGetProperty("status", out var statusProp))
                     {
                         var status = statusProp.GetString() ?? "";
-                        if (status.Equals("DENIED", StringComparison.OrdinalIgnoreCase))
+                        if (status.Equals("DENIED", StringComparison.OrdinalIgnoreCase) ||
+                            status.Equals("ERROR", StringComparison.OrdinalIgnoreCase) ||
+                            status.Equals("UNSUPPORTED", StringComparison.OrdinalIgnoreCase))
                         {
                             var reason = doc.RootElement.TryGetProperty("message", out var msgProp)
                                 ? msgProp.GetString()
-                                : $"Device {busId} blocked by server export policy";
+                                : $"Server rejected the bind request for device {busId}";
                             return (false, false, reason);
                         }
                         if (status.Equals("OK", StringComparison.OrdinalIgnoreCase))
@@ -730,27 +733,12 @@ namespace SnakeUSBIP.Services
                         var existing = new HashSet<string>(devices.Select(d => d.BusId), StringComparer.OrdinalIgnoreCase);
                         foreach (var item in devsProp.EnumerateArray())
                         {
-                            var line = item.GetString();
-                            if (string.IsNullOrWhiteSpace(line)) continue;
-                            var m = Regex.Match(line, @"^\s*([0-9a-zA-Z\-\.]+)\s*:\s*(.+?)\s*(?:\(([0-9a-fA-F]{4}:[0-9a-fA-F]{4})\))?$");
-                            if (m.Success)
+                            if (TryParseDynamicInventoryItem(item, ip, out var device) &&
+                                device is not null &&
+                                !existing.Contains(device.BusId))
                             {
-                                var busId = m.Groups[1].Value.Trim();
-                                if (InputValidator.IsValidBusId(busId) && !existing.Contains(busId))
-                                {
-                                    var desc = m.Groups[2].Value.Trim();
-                                    var hwId = m.Groups[3].Success ? m.Groups[3].Value.Trim() : string.Empty;
-                                    devices.Add(new UsbDevice
-                                    {
-                                        BusId = busId,
-                                        HardwareId = hwId,
-                                        Description = desc,
-                                        RemoteIp = ip,
-                                        ServerIP = ip,
-                                        IsConnected = false
-                                    });
-                                    existing.Add(busId);
-                                }
+                                devices.Add(device);
+                                existing.Add(device.BusId);
                             }
                         }
                     }
@@ -760,6 +748,74 @@ namespace SnakeUSBIP.Services
             {
                 // Dynamic inventory not available
             }
+        }
+
+        internal static bool TryParseDynamicInventoryItem(JsonElement item, string ip, out UsbDevice? device)
+        {
+            device = null;
+            string busId;
+            string description;
+            string hardwareId;
+
+            if (item.ValueKind == JsonValueKind.String)
+            {
+                var line = item.GetString();
+                if (string.IsNullOrWhiteSpace(line)) return false;
+
+                var match = Regex.Match(
+                    line,
+                    @"^\s*([0-9a-zA-Z\-\.]+)\s*:\s*(.+?)\s*(?:\(([0-9a-fA-F]{4}:[0-9a-fA-F]{4})\))?$");
+                if (!match.Success) return false;
+
+                busId = match.Groups[1].Value.Trim();
+                description = match.Groups[2].Value.Trim();
+                hardwareId = match.Groups[3].Success ? match.Groups[3].Value.Trim() : string.Empty;
+            }
+            else if (item.ValueKind == JsonValueKind.Object)
+            {
+                busId = ReadJsonString(item, "busid");
+                description = ReadJsonString(item, "description");
+                var vidPid = ReadJsonString(item, "vid_pid");
+                if (!Regex.IsMatch(vidPid, @"^[0-9a-fA-F]{4}:[0-9a-fA-F]{4}$"))
+                {
+                    var vendorId = ReadJsonString(item, "vid");
+                    var productId = ReadJsonString(item, "pid");
+                    vidPid = Regex.IsMatch(vendorId, @"^[0-9a-fA-F]{4}$") &&
+                        Regex.IsMatch(productId, @"^[0-9a-fA-F]{4}$")
+                        ? $"{vendorId}:{productId}"
+                        : string.Empty;
+                }
+
+                hardwareId = vidPid;
+            }
+            else
+            {
+                return false;
+            }
+
+            if (!InputValidator.IsValidBusId(busId)) return false;
+
+            device = new UsbDevice
+            {
+                BusId = busId,
+                HardwareId = hardwareId,
+                Description = string.IsNullOrWhiteSpace(description) ? "USB Device" : description,
+                RemoteIp = ip,
+                ServerIP = ip,
+                IsConnected = false
+            };
+            return true;
+        }
+
+        private static string ReadJsonString(JsonElement item, string propertyName)
+        {
+            if (!item.TryGetProperty(propertyName, out var property)) return string.Empty;
+            return property.ValueKind switch
+            {
+                JsonValueKind.String => property.GetString() ?? string.Empty,
+                JsonValueKind.Number => property.GetRawText(),
+                _ => string.Empty
+            };
         }
     }
 }
