@@ -53,8 +53,10 @@ class UsbIpServerService : Service() {
         private val _serverStats = MutableStateFlow(ServerRuntimeStats())
         val serverStats: StateFlow<ServerRuntimeStats> = _serverStats.asStateFlow()
 
-        var hostManagerInstance: UsbHostManager? = null
-            private set
+        val hostManagerInstance: UsbHostManager?
+            get() = hostManager
+
+        @Volatile private var hostManager: UsbHostManager? = null
 
         fun startService(context: Context) {
             val intent = Intent(context, UsbIpServerService::class.java).apply {
@@ -100,9 +102,7 @@ class UsbIpServerService : Service() {
     override fun onCreate() {
         super.onCreate()
         createNotificationChannel()
-        if (hostManagerInstance == null) {
-            hostManagerInstance = UsbHostManager(applicationContext)
-        }
+        hostManager = UsbHostManager.get(applicationContext)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -226,7 +226,7 @@ class UsbIpServerService : Service() {
 
                     val worker = UsbIpServerWorker(
                         socket = clientSocket,
-                        hostManager = hostManagerInstance ?: UsbHostManager(applicationContext),
+                        hostManager = UsbHostManager.get(applicationContext),
                         onPacketTransferred = { packets, bytes ->
                             totalPackets.addAndGet(packets)
                             totalBytes.addAndGet(bytes)
@@ -366,7 +366,7 @@ class UsbIpServerService : Service() {
                             val parts = line.split(" ", limit = 2)
                             val cmd = parts.firstOrNull()?.uppercase() ?: ""
                             val arg = parts.getOrNull(1)?.trim() ?: ""
-                            val hm = hostManagerInstance ?: UsbHostManager(applicationContext)
+                            val hm = UsbHostManager.get(applicationContext)
                             val mutating = cmd == "BIND" || cmd == "UNBIND"
                             val response = if (mutating && !isTrustedControlPeer(client.inetAddress)) {
                                 Log.w(TAG, "Rejected $cmd from untrusted peer ${client.inetAddress}")
