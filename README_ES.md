@@ -180,6 +180,19 @@ Ver [docs/RASPBERRY_PI_SERVER_EN.md](docs/RASPBERRY_PI_SERVER_EN.md) para la gu�
 
 ---
 
+## 📚 Documentación y Políticas
+
+| Guía | Descripción | Idioma |
+|---|---|---|
+| **[Política de Seguridad](SECURITY_ES.md)** | Defensa Zero-Trust, drivers WHQL y validación Authenticode | [Español](SECURITY_ES.md) · [English](SECURITY.md) |
+| **[Política de Privacidad](PRIVACY_ES.md)** | Cero telemetría, cero rastreo, tráfico P2P y almacenamiento local | [Español](PRIVACY_ES.md) · [English](PRIVACY.md) |
+| **[Manual de Cliente Windows](docs/USAGE_ES.md)** | Navegación de interfaz, modos de latencia y atajos | [Español](docs/USAGE_ES.md) · [English](docs/USAGE_EN.md) |
+| **[Guía de Servidor Desktop](server-windows/README_ES.md)** | Suite unificada de servidor Windows (.NET 9) y macOS (Swift) | [Español](server-windows/README_ES.md) · [English](server-windows/README.md) |
+| **[Raspberry Pi / Linux](docs/RASPBERRY_PI_SERVER_ES.md)** | Configuración en 1-clic, servicio systemd y auto-export udev | [Español](docs/RASPBERRY_PI_SERVER_ES.md) · [English](docs/RASPBERRY_PI_SERVER_EN.md) |
+| **[VPN e Internet](docs/VPN_INTERNET_ES.md)** | Guía de juego remoto con Tailscale, ZeroTier y WireGuard | [Español](docs/VPN_INTERNET_ES.md) · [English](docs/VPN_INTERNET_EN.md) |
+
+---
+
 ## 🔐 Firma de Código (Code Signing)
 
 Free code signing provided by [SignPath.io](https://signpath.io/), certificate by [SignPath Foundation](https://signpath.org/).

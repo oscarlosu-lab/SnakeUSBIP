@@ -168,6 +168,26 @@ sudo ufw allow 3240/tcp
 
 ---
 
+## 🎮 Mandos DualSense y Dispositivos de Audio Compuestos (Prevención de Kernel Oops)
+
+El mando Sony **DualSense** (`054c:0ce6`) y otros periféricos similares son dispositivos USB compuestos que combinan una interfaz HID estándar para mandos y dos interfaces de Audio USB isócrono (micrófono y altavoz).
+
+En ciertos kernels de Linux (especialmente en SBCs ARM64 como la Raspberry Pi Zero 2 W), el flujo de datos en los endpoints de audio isócrono puede desencadenar un error crítico (Kernel Oops) en la función `stub_send_ret_submit` del módulo `usbip_host`.
+
+Si solo necesitas el mando para controles de juego, giroscopio, touchpad y vibración, puedes aislar la interfaz HID del gamepad y desautorizar las interfaces de audio mediante una regla persistente de udev en la Raspberry Pi:
+
+```bash
+sudo bash -c 'cat << "EOF" > /etc/udev/rules.d/99-dualsense-no-audio.rules
+# Deshabilita interfaces de audio de DualSense (054c:0ce6) para prevenir Oops isócrono en usbip_host
+ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="054c", ATTR{idProduct}=="0ce6", ATTR{bInterfaceNumber}=="01", ATTR{authorized}="0"
+ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="054c", ATTR{idProduct}=="0ce6", ATTR{bInterfaceNumber}=="02", ATTR{authorized}="0"
+EOF'
+
+sudo udevadm control --reload-rules && sudo udevadm trigger
+```
+
+---
+
 ## 📝 Notas
 
 - El `bus-id` (ej: `1-1.4`) puede cambiar si reconectas el dispositivo

@@ -168,12 +168,21 @@ namespace SnakeUSBIP.Services
 
         public async Task<bool> AttachDeviceAsync(string ip, string busId, string? receiveMode = null, CancellationToken ct = default)
         {
-            if (string.IsNullOrWhiteSpace(ip) || string.IsNullOrWhiteSpace(busId)) return false;
+            var result = await AttachDeviceWithResultAsync(ip, busId, receiveMode, ct);
+            return result.Success;
+        }
+
+        private async Task<OperationResult> AttachDeviceWithResultAsync(string ip, string busId, string? receiveMode, CancellationToken ct)
+        {
+            if (string.IsNullOrWhiteSpace(ip) || string.IsNullOrWhiteSpace(busId))
+            {
+                return OperationResult.Fail("Server IP and USB bus ID are required.");
+            }
 
             if (!InputValidator.IsValidHost(ip) || !InputValidator.IsValidBusId(busId))
             {
                 _logger.LogWarning("SEGURIDAD: Parámetros inválidos rechazados (ip='{IP}', busId='{BusId}')", ip, busId);
-                return false;
+                return OperationResult.Fail("Invalid server IP or USB bus ID.");
             }
 
             _logger.LogInformation("Intentando conectar dispositivo {BusId} desde {IP} (modo: {Mode})...", busId, ip, receiveMode ?? "default");
@@ -185,15 +194,13 @@ namespace SnakeUSBIP.Services
                     _logger.LogWarning("Driver usbip-win no detectado. La conexión podría fallar.");
                 }
 
-                _lastAttachError.Value = null;
-
                 // Dynamic on-demand binding (SnakeUSBIP Dynamic Daemon on port 3241)
                 var bindStatus = await TryDynamicBindAsync(ip, busId, ct);
                 if (!bindStatus.Allowed)
                 {
-                    _lastAttachError.Value = bindStatus.ErrorMessage ?? $"Device {busId} blocked by server export policy";
-                    _logger.LogWarning("Conexión denegada por política del servidor {IP}: {Reason}", ip, _lastAttachError.Value);
-                    return false;
+                    var error = bindStatus.ErrorMessage ?? $"Device {busId} blocked by server export policy";
+                    _logger.LogWarning("Conexión denegada por política del servidor {IP}: {Reason}", ip, error);
+                    return OperationResult.Fail(error);
                 }
 
                 if (bindStatus.BoundOnDemand)
@@ -234,16 +241,29 @@ namespace SnakeUSBIP.Services
                     success = result.ExitCode == 0 && !hasError;
                 }
 
-                if (success) _logger.LogInformation("Dispositivo {BusId} conectado exitosamente.", busId);
-                else _logger.LogError("Fallo al conectar {BusId}. ExitCode: {ExitCode}, Output: {Output}, Error: {Error}",
-                    busId, result.ExitCode, result.Output, result.Error);
-
-                return success;
+                if (success)
+                {
+                    _logger.LogInformation("Dispositivo {BusId} conectado exitosamente.", busId);
+                    return OperationResult.Ok();
+                }
+                else
+                {
+                    var details = !string.IsNullOrWhiteSpace(result.Error)
+                        ? result.Error.Trim()
+                        : result.Output.Trim();
+                    if (details.Length > 512) details = details[..512];
+                    var error = string.IsNullOrWhiteSpace(details)
+                        ? $"usbip attach failed with exit code {result.ExitCode}."
+                        : $"usbip attach failed with exit code {result.ExitCode}: {details}";
+                    _logger.LogError("Fallo al conectar {BusId}. ExitCode: {ExitCode}, Output: {Output}, Error: {Error}",
+                        busId, result.ExitCode, result.Output, result.Error);
+                    return OperationResult.Fail(error);
+                }
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Excepción al conectar dispositivo {BusId}", busId);
-                return false;
+                return OperationResult.Fail(ex.Message);
             }
         }
 
@@ -463,12 +483,9 @@ namespace SnakeUSBIP.Services
         public Task<List<UsbDevice>> ListDevicesAsync(string serverIP)
             => ListRemoteDevicesAsync(serverIP);
 
-        private readonly AsyncLocal<string?> _lastAttachError = new();
-
         public async Task<OperationResult> ConnectAsync(string serverIP, string busId, string? receiveMode = null)
         {
-            bool ok = await AttachDeviceAsync(serverIP, busId, receiveMode);
-            return new OperationResult { Success = ok, Error = ok ? null : (_lastAttachError.Value ?? "Attach failed") };
+            return await AttachDeviceWithResultAsync(serverIP, busId, receiveMode, CancellationToken.None);
         }
 
         public async Task<OperationResult> DisconnectAsync(int port)

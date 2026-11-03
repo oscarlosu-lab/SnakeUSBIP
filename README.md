@@ -191,6 +191,7 @@ See [docs/RASPBERRY_PI_SERVER_EN.md](docs/RASPBERRY_PI_SERVER_EN.md) for complet
 | Guide | Description | Language |
 |---|---|---|
 | **[Security Policy](SECURITY.md)** | Zero-Trust defense, WHQL drivers & Authenticode validation | [English](SECURITY.md) · [Español](SECURITY_ES.md) |
+| **[Privacy Policy](PRIVACY.md)** | Zero-telemetry, zero-tracking, P2P & local storage governance | [English](PRIVACY.md) · [Español](PRIVACY_ES.md) |
 | **[Windows Client Manual](docs/USAGE_EN.md)** | Comprehensive UI navigation, latency modes & shortcuts | [English](docs/USAGE_EN.md) · [Español](docs/USAGE_ES.md) |
 | **[Desktop Server Guide](server-windows/README.md)** | Unified Windows (.NET 9) & macOS (Swift) server suite | [English](server-windows/README.md) · [Español](server-windows/README_ES.md) |
 | **[macOS Server Manual](server-windows/docs/USAGE_MACOS_EN.md)** | Native Swift server setup for Apple Silicon M1-M4 & Intel | [English](server-windows/docs/USAGE_MACOS_EN.md) · [Español](server-windows/docs/USAGE_MACOS_ES.md) |

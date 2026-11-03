@@ -175,6 +175,26 @@ sudo ufw allow from 192.168.1.0/24 to any port 3240 proto tcp comment 'SnakeUSBI
 
 ---
 
+## 🎮 DualSense & Composite Audio Controllers (Preventing Kernel Oops)
+
+The Sony **DualSense** (`054c:0ce6`) and similar controllers are composite USB devices that bundle both a standard HID gamepad interface and isochronous USB Audio interfaces (mic & speaker).
+
+On certain Linux kernels (especially on low-power ARM64 boards like Raspberry Pi Zero 2 W), streaming or alternating settings on the isochronous audio endpoints can trigger a kernel Oops in `stub_send_ret_submit` in the kernel's `usbip_host` module.
+
+If you only need the controller for gaming inputs, motion gyro, touchpad, and vibration, you can isolate the HID gamepad interface and de-authorize the audio streaming interfaces by adding a persistent udev rule on the Pi:
+
+```bash
+sudo bash -c 'cat << "EOF" > /etc/udev/rules.d/99-dualsense-no-audio.rules
+# Disable DualSense (054c:0ce6) Audio interfaces (interfaces 1 and 2) to prevent usbip_host isochronous Oops
+ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="054c", ATTR{idProduct}=="0ce6", ATTR{bInterfaceNumber}=="01", ATTR{authorized}="0"
+ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="054c", ATTR{idProduct}=="0ce6", ATTR{bInterfaceNumber}=="02", ATTR{authorized}="0"
+EOF'
+
+sudo udevadm control --reload-rules && sudo udevadm trigger
+```
+
+---
+
 ## 📝 Notes
 
 - The `bus-id` (e.g., `1-1.4`) may change if you reconnect the device
