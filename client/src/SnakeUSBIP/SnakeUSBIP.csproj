@@ -12,6 +12,10 @@
     <!-- App Info -->
     <AssemblyName>SnakeUSBIP</AssemblyName>
     <RootNamespace>SnakeUSBIP</RootNamespace>
+    <Version>1.1.0</Version>
+    <AssemblyVersion>1.1.0.0</AssemblyVersion>
+    <FileVersion>1.1.0.0</FileVersion>
+    <InformationalVersion>1.1.0</InformationalVersion>
     <Description>The Free, Open-Source VirtualHere Alternative for Windows - Connect unlimited remote USB devices over network</Description>
     
     <!-- Build Options -->

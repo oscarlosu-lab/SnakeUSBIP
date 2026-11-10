@@ -7,9 +7,9 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: "Release tag (e.g. v1.0.1)"
+        description: "Release tag (e.g. v1.1.0)"
         required: false
-        default: "v1.0.1"
+        default: "v1.1.0"
 
 permissions:
   contents: write
@@ -284,7 +284,7 @@ jobs:
             * **Windows Server**: `SnakeUSBIP-Server_Setup_v${{ steps.vars.outputs.version }}.exe` (Instalador dedicado para servidor Windows)
             * **Windows Portable**: `SnakeUSBIP_v${{ steps.vars.outputs.version }}_Portable_win-x64.zip` (Cliente + Servidor ReadyToRun sin instalación)
             * **macOS Server**: `SnakeUSBIP-Server-macOS-v${{ steps.vars.outputs.version }}.tar.gz` (Servidor Swift para Apple Silicon / Intel)
-            * **Linux Server**: `SnakeUSBIP-Server-Linux-v${{ steps.vars.outputs.version }}.tar.gz` (Suite de control universal y servicio systemd)
+            * **Linux Client & Server**: `SnakeUSBIP-Server-Linux-v${{ steps.vars.outputs.version }}.tar.gz` (Cliente `vhci_hcd` + Servidor `usbip_host` universal y servicio systemd)
             * **Android App**: `SnakeUSBIP-Android-v${{ steps.vars.outputs.version }}.apk` (App servidor rootless para dispositivos Android)
             
             ### 🔒 Verificación Criptográfica de Integridad (SHA-256)

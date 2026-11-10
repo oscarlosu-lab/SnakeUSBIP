@@ -2,7 +2,7 @@
 
 🌐 **Idioma / Language:** [English](README.md) | **Español**
 
-**v1.0.0** | [🌍 Web Oficial](https://oscarlosu-lab.github.io/SnakeUSBIP/) | [📦 Releases y Descargas](https://github.com/oscarlosu-lab/SnakeUSBIP/releases/latest) | [🌐 SnakeUSBIP Server (Windows & macOS)](https://github.com/oscarlosu-lab/SnakeUSBIP) | [📱 SnakeUSBIP Android](https://github.com/oscarlosu-lab/SnakeUSBIP) | [💬 Comunidad Reddit](https://www.reddit.com/r/UsbAnywhere/) | [📖 Manual de Usuario](docs/USAGE_ES.md) | [🌐 Conexión VPN](docs/VPN_INTERNET_ES.md)
+**v1.1.0** | [🌍 Web Oficial](https://oscarlosu-lab.github.io/SnakeUSBIP/) | [📦 Releases y Descargas](https://github.com/oscarlosu-lab/SnakeUSBIP/releases/latest) | [🌐 SnakeUSBIP Server (Windows & macOS)](https://github.com/oscarlosu-lab/SnakeUSBIP) | [📱 SnakeUSBIP Android](https://github.com/oscarlosu-lab/SnakeUSBIP) | [💬 Comunidad Reddit](https://www.reddit.com/r/UsbAnywhere/) | [📖 Manual de Usuario](docs/USAGE_ES.md) | [🌐 Conexión VPN](docs/VPN_INTERNET_ES.md)
 
 > **¿Por qué pagar 49,00 $ por servidor y estar limitado a un único dispositivo USB?**
 > **SnakeUSBIP** conecta **ilimitados** periféricos USB remotos por LAN, Wi-Fi e Internet con **cero licencias**, **drivers certificados WHQL por Microsoft** y **latencia ultrabaja ajustable**.
@@ -138,6 +138,16 @@ curl -fsSL https://raw.githubusercontent.com/oscarlosu-lab/SnakeUSBIP/main/scrip
 Despliega un servidor USB/IP Plug & Play en **Unraid, TrueNAS, Synology o Proxmox** usando [`docker/docker-compose.yml`](docker/docker-compose.yml):
 ```bash
 git clone --recursive https://github.com/oscarlosu-lab/SnakeUSBIP.git && cd SnakeUSBIP/docker && docker compose up -d
+```
+
+### 🐧 Modo Cliente Linux (`snakeusbip-ctl` — SteamOS, Bazzite, Ubuntu, Mint, Arch, Fedora)
+Conecta periféricos USB remotos desde cualquier servidor SnakeUSBIP (Android, Raspberry Pi, Linux, Windows, macOS) directamente en un **cliente Linux** mediante `snakeusbip-ctl` (compatible con On-Demand Dynamic Binding `TCP 3241` + `vhci_hcd`):
+```bash
+sudo snakeusbip-ctl scan                  # Descubrir servidores SnakeUSBIP en LAN y Tailscale/VPN
+sudo snakeusbip-ctl remote 192.168.1.50   # Listar dispositivos USB remotos (exportados + On-Demand)
+sudo snakeusbip-ctl connect 192.168.1.50 1-1.4   # Vincular dinámicamente y conectar el USB remoto
+sudo snakeusbip-ctl ports                 # Ver puertos USB virtuales conectados localmente
+sudo snakeusbip-ctl disconnect all        # Desconectar y devolver el periférico al host remoto
 ```
 
 ### 🎮 Automatización CLI para Moonlight / Sunshine / Playnite

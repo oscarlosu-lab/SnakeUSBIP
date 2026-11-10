@@ -1,5 +1,29 @@
 # CHANGELOG - SnakeUSBIP
 
+## [1.1.0] - 2026-11-10
+
+### Added
+- **Universal Linux Client Mode (`snakeusbip-ctl` v1.1.0)**:
+  - Full client support on Linux (Ubuntu, Debian, Mint, Arch, Fedora, SteamOS, Bazzite) via the kernel `vhci_hcd` virtual host controller.
+  - Seamless compatibility with **On-Demand Dynamic Binding (`TCP 3241`)**: `snakeusbip-ctl` automatically queries `LIST` on TCP 3241, dispatches `BIND <busid>` prior to `usbip attach`, and sends `UNBIND <busid>` on `disconnect` to return the peripheral to the remote host.
+  - New CLI commands (`scan [subnet]`, `remote <ip>`, `connect <ip> <busid>`, `disconnect [port|all]`, `ports`) and interactive Control Dashboard options (`[9]` Connect Remote Device, `[0]` Disconnect Client Port).
+- **Android TV / Nvidia Shield D-Pad & Gamepad Navigation (`TvFocus.kt`)**:
+  - Full remote control and gamepad navigation across all tabs, top bar actions, switches, buttons, and device cards with high-contrast focus borders (`#D2F800`) and subtle scaling (`1.02x`).
+
+### Fixed
+- **Android USB Keyboard & Pure HID Enumeration (`UrbSession.kt`, `UsbHostManager.kt`)**:
+  - Fixed `USB\VID_0000&PID_0002` enumeration failure on Windows UDE clients when attaching USB keyboards and composite HID devices exported from Android (Issue #8):
+    - Accurate USB speed deduction (`USB_SPEED_LOW` / `USB_SPEED_FULL` / `USB_SPEED_HIGH`) instead of hardcoding `USB_SPEED_HIGH`.
+    - Cleared `URB_SHORT_NOT_OK` (`0x0001`) on USBDEVFS Bulk/Interrupt IN URBs to prevent short-packet stalls on `usbip2_ude.sys`.
+    - Skipped `0x0600` (`DEVICE_QUALIFIER`) control probes on pure HID devices in `UsbHostManager.refineDevice`.
+    - Added `extractDescriptorFallback` serving cached `0x01` (Device), `0x02` (Configuration), and `0x21` (HID) descriptors from `UsbDeviceConnection.getRawDescriptors()`, plus synthesized `0x22` HID Report Descriptors (Boot Keyboard, Boot Mouse, Gamepad) and benign `USBIP_STATUS_OK` completion for stalled `SET_IDLE` / `SET_PROTOCOL` requests.
+- **DualSense Audio Interface De-Authorization & Raspberry Pi `dwc_otg` Diagnostics (Issue #6)**:
+  - Updated `99-snakeusbip-dualsense-fix.rules` to match `ENV{DEVTYPE}=="usb_interface"` using parent `ATTRS{idVendor}=="054c"` and `ATTR{bInterfaceClass}=="01", ATTR{authorized}="0"` for both `0ce6` (DualSense) and `0df2` (DualSense Edge), plus automatic `dwc_otg` warning in `snakeusbip-ctl doctor`.
+- **Unix LF Line-Ending Enforcement**:
+  - Added `.gitattributes` enforcing `eol=lf` across all shell scripts (`*.sh`), `udev` rules (`*.rules`), `snakeusbip-ctl`, and `gradlew`.
+
+---
+
 ## [1.0.1] - 2026-11-01
 
 ### Added

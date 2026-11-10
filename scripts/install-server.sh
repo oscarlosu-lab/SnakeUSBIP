@@ -96,7 +96,7 @@ if [ -f "$SCRIPT_DIR/snakeusbip-ctl" ]; then
     chmod +x /usr/local/bin/snakeusbip-ctl
 else
     # Download latest if running via curl pipe
-    curl -fsSL https://raw.githubusercontent.com/oscarlosu-lab/SnakeUSBIP-Server/main/scripts/snakeusbip-ctl -o /usr/local/bin/snakeusbip-ctl
+    curl -fsSL https://raw.githubusercontent.com/oscarlosu-lab/SnakeUSBIP/main/scripts/snakeusbip-ctl -o /usr/local/bin/snakeusbip-ctl
     chmod +x /usr/local/bin/snakeusbip-ctl
 fi
 
@@ -108,7 +108,20 @@ rm -f /etc/systemd/system/snakeusbip-autobind.service
 rm -f /usr/local/bin/snakeusbip-autobind.sh
 rm -f /etc/udev/rules.d/99-usbip-autobind.rules
 rm -f /etc/udev/rules.d/99-snakeusbip-autobind.rules
+
+# Install DualSense / DualSense Edge udev protection rule (inhibits hid-playstation race, USB autosuspend & ARM64 isoc audio Oops)
+cat << 'UDEV_EOF' > /etc/udev/rules.d/99-snakeusbip-dualsense-fix.rules
+# SnakeUSBIP — Prevent hid-playstation race, USB autosuspend, and ARM64 usbip_host isoc audio Oops on Sony DualSense / DualSense Edge
+ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="054c", ATTR{idProduct}=="0ce6", ATTR{power/control}="on"
+ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="054c", ATTR{idProduct}=="0df2", ATTR{power/control}="on"
+ACTION=="add", SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_interface", ATTRS{idVendor}=="054c", ATTRS{idProduct}=="0ce6", ATTR{bInterfaceClass}=="01", ATTR{authorized}="0"
+ACTION=="add", SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_interface", ATTRS{idVendor}=="054c", ATTRS{idProduct}=="0df2", ATTR{bInterfaceClass}=="01", ATTR{authorized}="0"
+ACTION=="add", SUBSYSTEM=="hid", ATTRS{idVendor}=="054c", ATTRS{idProduct}=="0ce6", RUN+="/bin/sh -c 'echo $kernel > /sys/bus/hid/drivers/playstation/unbind 2>/dev/null || true'"
+ACTION=="add", SUBSYSTEM=="hid", ATTRS{idVendor}=="054c", ATTRS{idProduct}=="0df2", RUN+="/bin/sh -c 'echo $kernel > /sys/bus/hid/drivers/playstation/unbind 2>/dev/null || true'"
+UDEV_EOF
+
 udevadm control --reload-rules 2>/dev/null || true
+udevadm trigger 2>/dev/null || true
 mkdir -p /etc/snakeusbip
 
 # Install Dynamic Auto-Unbind & Control API service (now snakeusbip-ctl is guaranteed to exist!)
@@ -146,7 +159,7 @@ if command -v avahi-daemon &> /dev/null; then
     <type>_snakeusbip._tcp</type>
     <port>3240</port>
     <txt-record>proto=usbip</txt-record>
-    <txt-record>version=3.2.0</txt-record>
+    <txt-record>version=1.0.0</txt-record>
   </service>
   <service>
     <type>_usbip._tcp</type>

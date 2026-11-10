@@ -50,7 +50,8 @@ Write-Host "  ✓ No hay PDBs expuestos en el código fuente ni en distribución
 
 # Gate 4: Zero-Leak
 Write-Host "`n[Gate 4/4] Verificando Zero-Leak de rutas privadas..." -ForegroundColor Yellow
-$leaks = git -C $root grep -i "C:\\Users\\snake" 2>$null
+$userPattern = [regex]::Escape($env:USERPROFILE)
+$leaks = git -C $root grep -i $userPattern 2>$null
 if ($leaks) {
     Write-Host "❌ Alerta Zero-Leak: se detectaron rutas privadas locales." -ForegroundColor Red
     exit 1
