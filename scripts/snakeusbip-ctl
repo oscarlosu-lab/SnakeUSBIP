@@ -728,6 +728,21 @@ def run_doctor():
         print(f"• Kernel Module core: {core_str}")
         print(f"• Kernel Module host: {host_str}")
 
+        # Check Raspberry Pi legacy dwc_otg driver (causes kernel Oops in stub_send_ret_submit behind USB 2.0 Hub HATs)
+        if os.path.exists("/sys/bus/platform/drivers/dwc_otg") and any(
+            x.startswith("20980000.usb") or x.startswith("3f980000.usb") or x.startswith("fe980000.usb")
+            for x in os.listdir("/sys/bus/platform/drivers/dwc_otg")
+        ):
+            print(f"• RPi USB Controller: {YELLOW}WARNING: Legacy 'dwc_otg' active!{RESET}")
+            print(f"    {YELLOW}↳ High-speed HID/DualSense behind USB 2.0 Hub HATs may trigger a kernel Oops.{RESET}")
+            print(f"    {CYAN}↳ Fix: Run 'sudo snakeusbip-ctl fix-dualsense' or add 'dtoverlay=dwc2,dr_mode=host' to /boot/firmware/config.txt{RESET}")
+        elif os.path.exists("/sys/bus/platform/drivers/dwc2"):
+            print(f"• RPi USB Controller: {GREEN}dwc2 (Modern split-transaction safe){RESET}")
+
+        dualsense_rule = "/etc/udev/rules.d/99-snakeusbip-dualsense-fix.rules"
+        if os.path.exists(dualsense_rule):
+            print(f"• DualSense Quirk:    {GREEN}INSTALLED ({dualsense_rule}){RESET}")
+
     # 5. Device Inventory
     devs = list_devices()
     print(f"• USB Devices Found:  {BOLD}{len(devs)}{RESET}")
@@ -828,6 +843,49 @@ def render_dashboard():
 # MAIN DISPATCHER
 # ══════════════════════════════════════════════════════════════════════════════
 
+def apply_dualsense_fix():
+    """Install udev quirk for Sony DualSense (054c:0ce6 / 054c:0df2) and check Raspberry Pi dwc2 overlay."""
+    if not IS_LINUX:
+        print(f"{YELLOW}DualSense udev/dwc2 fix is only applicable on Linux / Raspberry Pi hosts.{RESET}")
+        return False
+    if not is_root():
+        print(f"{YELLOW}[!] Superuser privileges required. Re-running with sudo...{RESET}")
+        return subprocess.run(["sudo", sys.executable, *sys.argv], timeout=30).returncode == 0
+
+    rule_path = "/etc/udev/rules.d/99-snakeusbip-dualsense-fix.rules"
+    rule_content = (
+        "# SnakeUSBIP — Prevent hid-playstation race and USB autosuspend on Sony DualSense / DualSense Edge\n"
+        'ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="054c", ATTR{idProduct}=="0ce6", ATTR{power/control}="on"\n'
+        'ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="054c", ATTR{idProduct}=="0df2", ATTR{power/control}="on"\n'
+        'ACTION=="add", SUBSYSTEM=="hid", ATTRS{idVendor}=="054c", ATTRS{idProduct}=="0ce6", RUN+="/bin/sh -c \'echo $kernel > /sys/bus/hid/drivers/playstation/unbind 2>/dev/null || true\'"\n'
+        'ACTION=="add", SUBSYSTEM=="hid", ATTRS{idVendor}=="054c", ATTRS{idProduct}=="0df2", RUN+="/bin/sh -c \'echo $kernel > /sys/bus/hid/drivers/playstation/unbind 2>/dev/null || true\'"\n'
+    )
+    try:
+        os.makedirs("/etc/udev/rules.d", exist_ok=True)
+        with open(rule_path, "w", encoding="utf-8") as f:
+            f.write(rule_content)
+        run_cmd(["udevadm", "control", "--reload-rules"])
+        run_cmd(["udevadm", "trigger"])
+        print(f"{GREEN}✓ Installed DualSense udev protection rule at {rule_path}{RESET}")
+    except Exception as e:
+        print(f"{RED}✗ Failed to write udev rule: {e}{RESET}")
+        return False
+
+    # Check Raspberry Pi config.txt for dwc2 host mode if dwc_otg is currently bound
+    for cfg in ("/boot/firmware/config.txt", "/boot/config.txt"):
+        if os.path.isfile(cfg):
+            try:
+                with open(cfg, "r", encoding="utf-8") as f:
+                    txt = f.read()
+                if "dtoverlay=dwc2" not in txt:
+                    print(f"{YELLOW}[!] Raspberry Pi detected ({cfg}) without 'dtoverlay=dwc2,dr_mode=host'.{RESET}")
+                    print(f"    To prevent dwc_otg kernel Oops behind USB 2.0 Hub HATs, add under [all]:")
+                    print(f"    {CYAN}dtoverlay=dwc2,dr_mode=host{RESET}")
+            except Exception:
+                pass
+            break
+    return True
+
 def main():
     parser = argparse.ArgumentParser(
         description=f"SnakeUSBIP Control Suite v{VERSION} — macOS & Linux",
@@ -835,7 +893,8 @@ def main():
     )
     parser.add_argument("command", nargs="?", default="dashboard",
                         choices=["dashboard", "status", "start", "stop", "restart",
-                                 "list", "share", "unshare", "policy", "auto-unbind", "dynamic-daemon", "doctor", "test", "logs"],
+                                 "list", "share", "unshare", "policy", "auto-unbind",
+                                 "dynamic-daemon", "fix-dualsense", "doctor", "test", "logs"],
                         help="Action to perform (default: interactive dashboard)")
     parser.add_argument("busid", nargs="?", default=None, help="Target USB bus ID or action parameter")
     parser.add_argument("extra", nargs="?", default=None, help="Additional argument for policy management")
@@ -931,6 +990,9 @@ def main():
         run_auto_unbind_daemon()
     elif args.command == "dynamic-daemon":
         run_dynamic_daemon()
+    elif args.command == "fix-dualsense":
+        ok = apply_dualsense_fix()
+        sys.exit(0 if ok else 1)
     elif args.command == "doctor":
         run_doctor()
     elif args.command == "test":

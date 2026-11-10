@@ -42,6 +42,74 @@ namespace SnakeUSBIP.Services
             "B9FF5A60212F7BDED02A16510EEE031C59C312A4A396AC2956478E6A32165928"  // resources.dll (ARM64)
         };
 
+        private static readonly string[] RequiredNativeDlls = { "libusbip.dll", "resources.dll" };
+        private static readonly string[] HijackCandidateDlls = { "version.dll", "winmm.dll", "dbghelp.dll", "cryptbase.dll", "dwmapi.dll" };
+
+        // High-speed metadata cache so 2-second 'usbip port' polling does not re-read 2.5 MB from disk
+        // unless file length, write timestamp, or directory contents change.
+        private readonly object _integrityCacheLock = new();
+        private string? _cachedIntegritySignature;
+        private bool _cachedIntegrityResult;
+
+        /// <summary>
+        /// Resolves the optimal usbip2_ude receive mode. Interactive Interrupt IN and Isochronous
+        /// peripherals (controllers, mice, keyboards, HID dongles, audio headsets) require 'low-latency'
+        /// to avoid Linux/UDE EOVERFLOW (-75) stalls (upstream issue #187).
+        /// </summary>
+        public static string ResolveEffectiveReceiveMode(string? requestedMode, string? description = null, string? hardwareId = null)
+        {
+            if (!string.IsNullOrWhiteSpace(requestedMode))
+            {
+                var norm = requestedMode.Trim().ToLowerInvariant();
+                if (norm == "low-latency") return "low-latency";
+                if (norm == "zero-copy" && !IsInteractiveOrIsochronousDevice(description, hardwareId))
+                {
+                    return "zero-copy";
+                }
+            }
+
+            if (IsInteractiveOrIsochronousDevice(description, hardwareId))
+            {
+                return "low-latency";
+            }
+
+            return "low-latency";
+        }
+
+        public static bool IsInteractiveOrIsochronousDevice(string? description, string? hardwareId)
+        {
+            if (!string.IsNullOrWhiteSpace(hardwareId))
+            {
+                var vid = hardwareId.Split(':')[0].Trim().ToLowerInvariant();
+                // Sony, Microsoft, Nintendo, GameSir, Logitech, Razer, 8BitDo, Thrustmaster, Fanatec, SteelSeries, Corsair, Elgato
+                if (vid is "054c" or "045e" or "057e" or "3537" or "046d" or "1532" or "2dc8" or "044f" or "0eb7" or "1038" or "1b1c" or "0fd9")
+                {
+                    return true;
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(description))
+            {
+                var d = description.ToLowerInvariant();
+                string[] interactiveKeywords =
+                {
+                    "hid", "controller", "gamepad", "dualsense", "dualshock", "wireless controller",
+                    "xbox", "gamesir", "8bitdo", "joystick", "wheel", "pedal", "mouse", "keyboard",
+                    "receiver", "lightspeed", "dongle", "audio", "headset", "microphone", "dac",
+                    "sound", "speaker", "webcam", "camera", "input"
+                };
+                foreach (var kw in interactiveKeywords)
+                {
+                    if (d.Contains(kw, StringComparison.Ordinal))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
         public UsbipService(
             ILogger<UsbipService> logger,
             IEnvironmentService envService,
@@ -209,14 +277,13 @@ namespace SnakeUSBIP.Services
                     await Task.Delay(150, ct);
                 }
 
-                var cmdArgs = new List<string> { "attach", "-r", ip, "-b", busId };
-                if (!string.IsNullOrWhiteSpace(receiveMode))
+                var cmdArgs = new List<string> { "attach", "-r", ip, "-b", busId, "--once" };
+                var effectiveMode = string.IsNullOrWhiteSpace(receiveMode)
+                    ? "low-latency"
+                    : receiveMode.Trim().ToLowerInvariant();
+                if (effectiveMode == "zero-copy" || effectiveMode == "low-latency")
                 {
-                    var normalized = receiveMode.Trim().ToLowerInvariant();
-                    if (normalized == "zero-copy" || normalized == "low-latency")
-                    {
-                        cmdArgs.Add($"--receive-mode={normalized}");
-                    }
+                    cmdArgs.Add($"--receive-mode={effectiveMode}");
                 }
 
                 var result = await RunCommandAsync(cmdArgs, 10000, ct);
@@ -407,10 +474,62 @@ namespace SnakeUSBIP.Services
             return null;
         }
 
+        internal void InvalidateIntegrityCache()
+        {
+            lock (_integrityCacheLock)
+            {
+                _cachedIntegritySignature = null;
+                _cachedIntegrityResult = false;
+            }
+        }
+
+        private static string BuildDirectoryIntegritySignature(string exePath)
+        {
+            var sb = new StringBuilder(256);
+            var exeInfo = new FileInfo(exePath);
+            sb.Append(exePath).Append('|')
+              .Append(exeInfo.Exists ? exeInfo.Length : -1).Append('|')
+              .Append(exeInfo.Exists ? exeInfo.LastWriteTimeUtc.Ticks : -1);
+
+            var binDir = Path.GetDirectoryName(exePath);
+            if (!string.IsNullOrEmpty(binDir) && Directory.Exists(binDir))
+            {
+                foreach (var dllName in RequiredNativeDlls)
+                {
+                    var fi = new FileInfo(Path.Combine(binDir, dllName));
+                    sb.Append('|').Append(dllName).Append(':')
+                      .Append(fi.Exists ? fi.Length : -1).Append(':')
+                      .Append(fi.Exists ? fi.LastWriteTimeUtc.Ticks : -1);
+                }
+
+                foreach (var hijackName in HijackCandidateDlls)
+                {
+                    var fi = new FileInfo(Path.Combine(binDir, hijackName));
+                    if (fi.Exists)
+                    {
+                        sb.Append("|H:").Append(hijackName).Append(':')
+                          .Append(fi.Length).Append(':')
+                          .Append(fi.LastWriteTimeUtc.Ticks);
+                    }
+                }
+            }
+
+            return sb.ToString();
+        }
+
         private bool ValidateBinaryHash(string path)
         {
             try
             {
+                string currentSignature = BuildDirectoryIntegritySignature(path);
+                lock (_integrityCacheLock)
+                {
+                    if (_cachedIntegritySignature == currentSignature)
+                    {
+                        return _cachedIntegrityResult;
+                    }
+                }
+
                 using (var sha256 = SHA256.Create())
                 {
                     // 1. Validate the executable itself
@@ -424,6 +543,11 @@ namespace SnakeUSBIP.Services
                     if (!ValidHashes.Contains(exeHash))
                     {
                         _logger.LogCritical("SEGURIDAD: Hash de ejecutable NO reconocido: {Hash} ({Path}). Ejecución bloqueada.", exeHash, path);
+                        lock (_integrityCacheLock)
+                        {
+                            _cachedIntegritySignature = currentSignature;
+                            _cachedIntegrityResult = false;
+                        }
                         return false;
                     }
 
@@ -431,8 +555,7 @@ namespace SnakeUSBIP.Services
                     var binDir = Path.GetDirectoryName(path);
                     if (!string.IsNullOrEmpty(binDir) && Directory.Exists(binDir))
                     {
-                        var requiredNativeDlls = new[] { "libusbip.dll", "resources.dll" };
-                        foreach (var dllName in requiredNativeDlls)
+                        foreach (var dllName in RequiredNativeDlls)
                         {
                             var dll = Path.Combine(binDir, dllName);
                             if (File.Exists(dll))
@@ -444,13 +567,17 @@ namespace SnakeUSBIP.Services
                                 if (!ValidDllHashes.Contains(dllHash))
                                 {
                                     _logger.LogCritical("SEGURIDAD: DLL nativa no autorizada o manipulada detectada: {Dll} (Hash: {Hash}). Operación abortada.", dll, dllHash);
+                                    lock (_integrityCacheLock)
+                                    {
+                                        _cachedIntegritySignature = currentSignature;
+                                        _cachedIntegrityResult = false;
+                                    }
                                     return false;
                                 }
                             }
                         }
 
-                        var hijackDlls = new[] { "version.dll", "winmm.dll", "dbghelp.dll", "cryptbase.dll", "dwmapi.dll" };
-                        foreach (var hijackName in hijackDlls)
+                        foreach (var hijackName in HijackCandidateDlls)
                         {
                             var hijackPath = Path.Combine(binDir, hijackName);
                             if (File.Exists(hijackPath))
@@ -462,12 +589,22 @@ namespace SnakeUSBIP.Services
                                 if (!ValidDllHashes.Contains(dllHash))
                                 {
                                     _logger.LogCritical("SEGURIDAD: DLL de secuestro detectada: {Dll} (Hash: {Hash}). Operación abortada.", hijackPath, dllHash);
+                                    lock (_integrityCacheLock)
+                                    {
+                                        _cachedIntegritySignature = currentSignature;
+                                        _cachedIntegrityResult = false;
+                                    }
                                     return false;
                                 }
                             }
                         }
                     }
 
+                    lock (_integrityCacheLock)
+                    {
+                        _cachedIntegritySignature = currentSignature;
+                        _cachedIntegrityResult = true;
+                    }
                     return true;
                 }
             }
@@ -500,6 +637,9 @@ namespace SnakeUSBIP.Services
             try
             {
                 _logger.LogInformation("Iniciando desconexión limpia de todos los dispositivos...");
+                // Stop any active background kernel attach loops in usbip2_ude.sys first
+                try { await RunCommandAsync(new[] { "attach", "-X" }, 3000, ct); } catch { }
+
                 var connected = await GetConnectedDevicesAsync();
                 foreach (var dev in connected)
                 {
