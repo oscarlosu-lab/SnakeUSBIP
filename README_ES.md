@@ -21,7 +21,7 @@ Transforma cualquier dispositivo Linux (o PC Windows) en un Hub USB Virtual de a
 
 ## ⚔️ ¿Por qué cambiar de VirtualHere a SnakeUSBIP?
 
-| Característica | **SnakeUSBIP v1.0** | **VirtualHere** | **USB Network Gate** |
+| Característica | **SnakeUSBIP v1.1.0** | **VirtualHere** | **USB Network Gate** |
 | :--- | :---: | :---: | :---: |
 | **Precio y Licencia** | **100% Gratis y Código Abierto (GPLv3)** | 49,00 USD / Servidor | +159,00 USD |
 | **Dispositivos Simultáneos (Free)** | **♾️ Ilimitados** | ⚠️ Solo 1 dispositivo | ❌ Trial limitado |
@@ -68,16 +68,16 @@ Conecta tu grabadora láser diodo (GRBL/Ruida) y tu cámara cenital simultáneam
 
 ---
 
-## 🆕 Novedades en v1.0.0 (Evolución a SnakeUSBIP)
+## 🆕 Novedades en v1.1.0 (Suite Multiplataforma SnakeUSBIP)
 
-- 🌐 **Nueva marca: SnakeUSBIP** - Evolución de `SnakeUSBIP` para posicionarse como la alternativa abierta número 1 frente a VirtualHere y VirtualUSB, con migración automática de tu configuración desde v2.x.
-- ⚡ **Auto-Instalador SSH y Plug & Play en 1-Click** - Convierte cualquier Raspberry Pi, Debian o Ubuntu en un servidor USB/IP con auto-exportación `udev` hotplug automática al conectar dispositivos.
-- 🏎️ **Selector Interactivo de Modos de Rendimiento (`⚡ Modo: Zero-Copy` / `🏎️ Modo: Low-Latency`)** - Alterna en vivo desde la barra de estado entre `zero-copy` (máxima velocidad para almacenamiento y cámaras) y `low-latency` (callbacks WSK en kernel para periféricos HID/gaming/SimRacing).
-- 📊 **Medidor de Latencia en Vivo (`[ms]`) y Renombrado de Dispositivos (`✏️`)** - Indicador de ping TCP en tiempo real junto a cada servidor descubierto y nombres personalizados persistentes por periférico.
-- 🔌 **Desconexión Limpia y Ciclo de Vida de Drivers Blindado** - Libera automáticamente los puertos USB remotos al salir o desinstalar y gestiona de forma segura el nodo virtual `ROOT\USBIP_WIN2\UDE` sin crear controladoras duplicadas ni reiniciar concentradores USB físicos.
+- 🐧 **Modo Cliente Universal para Linux (`snakeusbip-ctl` v1.1.0)** - Soporte completo como cliente en Linux (SteamOS, Bazzite, Ubuntu, Debian, Mint, Arch, Fedora) mediante `vhci_hcd` con **On-Demand Dynamic Binding (`TCP 3241` `LIST`/`BIND`/`UNBIND`)** automático (`scan`, `remote`, `connect`, `disconnect`, `ports` + opciones `[9]` / `[0]` en el Dashboard interactivo).
+- ⌨️ **Fix de Enumeración de Teclados USB y Periféricos HID en Android (`UrbSession.kt`)** - Deducción exacta de velocidad (`USB_SPEED_LOW`/`FULL`/`HIGH`), limpieza de `URB_SHORT_NOT_OK`, respaldo `rawDescriptors` (`0x01`/`0x02`/`0x21`), síntesis de descriptores de informe HID `0x22` y tolerancia ante stalls de `SET_IDLE`/`SET_PROTOCOL` para clientes Windows UDE.
+- 📺 **Navegación D-Pad y Gamepad en Android TV / Nvidia Shield (`TvFocus.kt`)** - Control completo con mando a distancia o gamepad en todas las pestañas, interruptores y tarjetas de dispositivos.
+- 🎮 **Desautorización de Interfaces de Audio DualSense y Diagnóstico `dwc_otg`** - Regla `udev` por clase (`ENV{DEVTYPE}=="usb_interface", ATTRS{idVendor}=="054c", ATTR{bInterfaceClass}=="01", ATTR{authorized}="0"`) compatible con todas las revisiones de firmware de DualSense (`0ce6`/`0df2`).
+- ⚡ **Auto-Instalador SSH y Plug & Play en 1-Click** - Convierte cualquier Raspberry Pi, Debian o Ubuntu en un servidor USB/IP con exportación dinámica bajo demanda.
+- 🏎️ **Selector Interactivo de Modos de Rendimiento (`⚡ Modo: Zero-Copy` / `🏎️ Modo: Low-Latency`)** - Alterna en vivo desde la barra de estado entre `zero-copy` y `low-latency` (callbacks WSK en kernel).
 - 🛡️ **Drivers Certificados WHQL** - Controladores oficiales firmados por Microsoft para Windows 10/11 x64 compatibles con Aislamiento de Núcleo (Core Isolation / HVCI).
 - 📦 **Modo Portable e Instalador Híbrido** - Las versiones ZIP guardan la configuración localmente; el instalador Inno Setup usa `%AppData%\SnakeUSBIP` e inicia silenciosamente en bandeja (`--minimized`).
-- 📚 **Base de Datos USB Actualizada** - Base `usb.ids` con más de 25.000 dispositivos identificados.
 
 ---
 
@@ -99,15 +99,14 @@ Conecta tu grabadora láser diodo (GRBL/Ruida) y tu cámara cenital simultáneam
 ## 📦 Instalación
 
 ### Opción 1: Portable (Sin instalación)
-1. Descarga desde [SnakeUSBIP Downloads](https://github.com/oscarlosu-lab/SnakeUSBIP/releases/tag/client-v1.0.0):
-   - **Windows x64**: `SnakeUSBIP-v1.0.0-x64.zip`
-   - **Windows ARM64**: `SnakeUSBIP-v1.0.0-arm64.zip` (Surface Pro X, Snapdragon X Elite, etc.)
+1. Descarga desde [SnakeUSBIP Releases (v1.1.0)](https://github.com/oscarlosu-lab/SnakeUSBIP/releases/tag/v1.1.0):
+   - **Windows x64 (Cliente + Servidor Portable)**: `SnakeUSBIP_v1.1.0_Portable_win-x64.zip`
 2. Extrae el ZIP en cualquier carpeta
 3. Ejecuta `SnakeUSBIP.exe` como Administrador
 4. ¡Listo!
 
 ### Opción 2: Instalador (x64 Recomendado)
-1. Descarga `SnakeUSBIP_Setup_v1.0.0.exe` desde [SnakeUSBIP Downloads](https://github.com/oscarlosu-lab/SnakeUSBIP/releases/tag/client-v1.0.0)
+1. Descarga `SnakeUSBIP_Setup_v1.1.0.exe` (Cliente) o `SnakeUSBIP-Server_Setup_v1.1.0.exe` (Servidor) desde [SnakeUSBIP Releases (v1.1.0)](https://github.com/oscarlosu-lab/SnakeUSBIP/releases/tag/v1.1.0)
 2. Ejecuta el instalador como Administrador
 3. Sigue el asistente de instalación
 

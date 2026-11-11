@@ -19,7 +19,7 @@ public static class Program
     [STAThread]
     public static void Main()
     {
-        var outDir = @"D:\REPOS_GITHUB\SnakeUSBIP-WPF\docs\assets\captures";
+        var outDir = @"docs\assets\captures";
         Directory.CreateDirectory(outDir);
 
         var app = new SnakeUSBIP.App();
