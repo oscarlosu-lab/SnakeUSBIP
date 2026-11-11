@@ -7,9 +7,9 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: "Release tag (e.g. v1.1.0)"
+        description: "Release tag (e.g. v1.1.1)"
         required: false
-        default: "v1.1.0"
+        default: "v1.1.1"
 
 permissions:
   contents: write
@@ -142,9 +142,10 @@ jobs:
           cp server/scripts/snakeusbip-ctl "$PKG_DIR/"
           cp server/scripts/install-server-linux.sh "$PKG_DIR/install.sh"
           cp server/scripts/uninstall-server-linux.sh "$PKG_DIR/uninstall.sh"
+          cp -r server/patches "$PKG_DIR/"
           cp LICENSE "$PKG_DIR/"
           cp README.md "$PKG_DIR/"
-          chmod +x "$PKG_DIR/snakeusbip-ctl" "$PKG_DIR/install.sh" "$PKG_DIR/uninstall.sh"
+          chmod +x "$PKG_DIR/snakeusbip-ctl" "$PKG_DIR/install.sh" "$PKG_DIR/uninstall.sh" "$PKG_DIR"/patches/*/*.sh
           tar -czvf "SnakeUSBIP-Server-Linux-v${VERSION}.tar.gz" "$PKG_DIR"
           mkdir -p dist-linux
           mv "SnakeUSBIP-Server-Linux-v${VERSION}.tar.gz" dist-linux/

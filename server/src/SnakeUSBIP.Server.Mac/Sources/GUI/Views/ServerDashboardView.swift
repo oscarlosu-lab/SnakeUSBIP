@@ -168,7 +168,7 @@ public struct ServerDashboardView: View {
                     Text("SnakeUSBIP Server")
                         .font(.system(size: 18, weight: .bold))
                         .foregroundColor(.white)
-                    Text("macOS v1.0.0")
+                    Text("macOS v1.1.1")
                         .font(.system(size: 10, weight: .bold))
                         .padding(.horizontal, 6)
                         .padding(.vertical, 2)

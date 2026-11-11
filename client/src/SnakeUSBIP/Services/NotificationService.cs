@@ -12,7 +12,7 @@ namespace SnakeUSBIP.Services;
 public class NotificationService : INotificationService
 {
     private static readonly string AppVersion =
-        typeof(NotificationService).Assembly.GetName().Version?.ToString(3) ?? "1.1.0";
+        typeof(NotificationService).Assembly.GetName().Version?.ToString(3) ?? "1.1.1";
 
     private Forms.NotifyIcon? _fallbackIcon;
 

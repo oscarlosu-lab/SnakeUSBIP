@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 #endif
 
-let version = "1.0.0"
+let version = "1.1.1"
 
 func printBanner() {
     print("""

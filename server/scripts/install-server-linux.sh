@@ -159,7 +159,7 @@ if command -v avahi-daemon &> /dev/null; then
     <type>_snakeusbip._tcp</type>
     <port>3240</port>
     <txt-record>proto=usbip</txt-record>
-    <txt-record>version=1.1.0</txt-record>
+    <txt-record>version=1.1.1</txt-record>
   </service>
   <service>
     <type>_usbip._tcp</type>

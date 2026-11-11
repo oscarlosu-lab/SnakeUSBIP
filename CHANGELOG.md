@@ -1,5 +1,18 @@
 # CHANGELOG - SnakeUSBIP
 
+## [1.1.1] - 2026-11-11
+
+### Fixed
+- **Client Instant TCP `UNBIND` & Replug Backoff (Issue #9)**:
+  - `UsbipService.DetachDeviceAsync` now dispatches an asynchronous fire-and-forget `UNBIND <busid>` to TCP `3241` alongside `usbipw detach` so Linux servers release shared devices immediately instead of waiting for the kernel status transition.
+  - `ConnectionMonitorService` tracks progressive reconnect delays (`3s`, `6s`, `12s`, capped at `30s`) while `BindRemoteDeviceAsync` is retried cleanly during slow USB re-enumeration.
+- **Linux Server `snakeusbip-ctl` Bind/Unbind Race & `SDEV_ST_ERROR` Recovery (Issue #9)**:
+  - Added per-`busid` `threading.Lock`, `udevadm settle`, and real `/sys/bus/usb/drivers/usbip-host/<busid>/usbip_status` verification in `share_device()`.
+  - Waits for `SDEV_ST_USED` (`2`) / `SDEV_ST_ERROR` (`3`) settlement and automatically unbinds/retries stalled `SDEV_ST_ERROR` devices, fixing re-attach failures after USBIP detach.
+- **Raspberry Pi `dwc_otg` Kernel Patch (`usbip-host` Isochronous/DMA Fix, Issue #9)**:
+  - Added `server/patches/rpi-dwc-usbip-host/` (`usbip-host-dwc-otg-dma-contig.patch`, `build-patched-usbip-host.sh`, `SHA256SUMS.txt`, and guide) eliminating `-EILSEQ` (`-71`) / kernel panics on Raspberry Pi `dwc_otg` hosts and fixed `usbip-host-y` Kbuild objects (`stub_dev.o stub_main.o stub_rx.o stub_tx.o`, omitting `usbip_common.o`).
+  - Updated Release packaging so `SnakeUSBIP-Server-Linux-v*.tar.gz` bundles `patches/` out of the box.
+
 ## [1.1.0] - 2026-11-10
 
 ### Added

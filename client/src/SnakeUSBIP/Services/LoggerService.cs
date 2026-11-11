@@ -31,7 +31,7 @@ public class LoggerService : ILoggerService
 
         CleanupOldLogs(logsDir, keepDays: 7);
 
-        var appVersion = typeof(LoggerService).Assembly.GetName().Version?.ToString(3) ?? "1.1.0";
+        var appVersion = typeof(LoggerService).Assembly.GetName().Version?.ToString(3) ?? "1.1.1";
         Info($"=== SnakeUSBIP v{appVersion} Logger Initialized ===");
     }
 
