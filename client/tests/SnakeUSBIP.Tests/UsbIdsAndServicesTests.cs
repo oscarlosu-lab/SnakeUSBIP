@@ -1,6 +1,10 @@
+using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using SnakeUSBIP.Models;
 using SnakeUSBIP.Services;
+using SnakeUSBIP.Services.Interfaces;
 using Xunit;
 
 namespace SnakeUSBIP.Tests;
@@ -72,5 +76,69 @@ public class UsbIdsAndServicesTests
         var empty = new UsbDevice { HardwareId = "" };
         Assert.Equal(string.Empty, empty.VendorId);
         Assert.Equal(string.Empty, empty.ProductId);
+    }
+
+    [Fact]
+    public void ConnectionMonitorService_ShouldAttemptReconnect_UsesProgressiveBackoff()
+    {
+        var now = new DateTime(2026, 11, 11, 12, 0, 0, DateTimeKind.Utc);
+        var dev = new MonitoredDevice
+        {
+            ServerIP = "192.168.1.50",
+            BusId = "1-1.3",
+            AutoReconnect = true,
+            IsConnected = false,
+            ReconnectAttempts = 0,
+            LastReconnectAttemptUtc = DateTime.MinValue
+        };
+
+        Assert.True(ConnectionMonitorService.ShouldAttemptReconnect(dev, now));
+
+        // After 3 attempts (e.g. device unplugged > 6s), monitoring continues with progressive backoff
+        dev.ReconnectAttempts = 3;
+        dev.LastReconnectAttemptUtc = now.AddSeconds(-2);
+        Assert.False(ConnectionMonitorService.ShouldAttemptReconnect(dev, now));
+        Assert.True(ConnectionMonitorService.ShouldAttemptReconnect(dev, now.AddSeconds(3)));
+
+        // Prevent re-entrancy while reconnect is in flight
+        dev.IsReconnecting = true;
+        Assert.False(ConnectionMonitorService.ShouldAttemptReconnect(dev, now.AddSeconds(30)));
+    }
+
+    [Fact]
+    public void LoggerService_Initialize_UsesAssemblyVersionNotLegacyHardcoded()
+    {
+        var tempLogs = Path.Combine(Path.GetTempPath(), $"snakeusbip_logtest_{Guid.NewGuid():N}");
+        try
+        {
+            var env = new StubEnvironmentService(tempLogs);
+            var logger = new LoggerService(env);
+            logger.Initialize();
+
+            var logFiles = Directory.GetFiles(tempLogs, "snakeusbip_*.log");
+            Assert.Single(logFiles);
+            var content = File.ReadAllText(logFiles[0]);
+            var expectedVer = typeof(LoggerService).Assembly.GetName().Version?.ToString(3) ?? "1.1.0";
+            Assert.Contains($"v{expectedVer} Logger Initialized", content);
+        }
+        finally
+        {
+            if (Directory.Exists(tempLogs))
+                Directory.Delete(tempLogs, recursive: true);
+        }
+    }
+
+    private sealed class StubEnvironmentService : IEnvironmentService
+    {
+        public StubEnvironmentService(string logsPath) => LogsPath = logsPath;
+        public string AppDataPath => LogsPath;
+        public string LogsPath { get; }
+        public string BinPath => LogsPath;
+        public string DriversPath => LogsPath;
+        public string TempPath => LogsPath;
+        public bool IsPortableMode => true;
+        public bool IsPortable => true;
+        public string GetConfigFilePath() => Path.Combine(LogsPath, "config.json");
+        public void Initialize() { }
     }
 }

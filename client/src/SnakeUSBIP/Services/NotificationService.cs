@@ -11,6 +11,9 @@ namespace SnakeUSBIP.Services;
 /// </summary>
 public class NotificationService : INotificationService
 {
+    private static readonly string AppVersion =
+        typeof(NotificationService).Assembly.GetName().Version?.ToString(3) ?? "1.1.0";
+
     private Forms.NotifyIcon? _fallbackIcon;
 
     public void SetFallbackIcon(Forms.NotifyIcon? icon)
@@ -33,7 +36,7 @@ public class NotificationService : INotificationService
             new ToastContentBuilder()
                 .AddText($"{iconPrefix}{title}")
                 .AddText(message)
-                .AddAttributionText("SnakeUSBIP v3.0")
+                .AddAttributionText($"SnakeUSBIP v{AppVersion}")
                 .Show();
         }
         catch (Exception ex)

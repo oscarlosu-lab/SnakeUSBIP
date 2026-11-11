@@ -32,6 +32,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="SnakeUSBIP.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Resource Include="Assets\**\*" />
   </ItemGroup>
   
