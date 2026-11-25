@@ -72,6 +72,7 @@ public partial class MainWindow : Window
     private EventWaitHandle? _gracefulExitEvent;
     private RegisteredWaitHandle? _disconnectAllWaitHandle;
     private RegisteredWaitHandle? _gracefulExitWaitHandle;
+    private CancellationTokenSource? _ipcPipeCts;
     private HwndSource? _hwndSource;
     private bool _hotkeyRegistered;
     private const int HOTKEY_ID_DISCONNECT_ALL = 0x534B;
@@ -192,7 +193,7 @@ public partial class MainWindow : Window
                     loadedIcon = new Icon(s, Forms.SystemInformation.SmallIconSize);
                 }
             }
-            catch { }
+            catch (Exception ignoreEx) { System.Diagnostics.Debug.WriteLine($"[MainWindow.xaml.cs] {ignoreEx.Message}"); }
 
             // 2. Fallback to Assets/icon.ico on disk
             if (loadedIcon == null)
@@ -208,7 +209,7 @@ public partial class MainWindow : Window
             // 3. Fallback to executable's associated Win32 icon
             if (loadedIcon == null && !string.IsNullOrEmpty(Environment.ProcessPath) && File.Exists(Environment.ProcessPath))
             {
-                try { loadedIcon = System.Drawing.Icon.ExtractAssociatedIcon(Environment.ProcessPath); } catch { }
+                try { loadedIcon = System.Drawing.Icon.ExtractAssociatedIcon(Environment.ProcessPath); } catch (Exception ignoreEx) { System.Diagnostics.Debug.WriteLine($"[MainWindow.xaml.cs] {ignoreEx.Message}"); }
             }
 
             _trayIcon.Icon = loadedIcon ?? System.Drawing.SystemIcons.Application;
@@ -455,7 +456,7 @@ public partial class MainWindow : Window
         catch (Exception ex)
         {
             AddLog("Error", ex.Message);
-            try { await LoadConnectedDevicesAsync(); } catch { }
+            try { await LoadConnectedDevicesAsync(); } catch (Exception ignoreEx) { System.Diagnostics.Debug.WriteLine($"[MainWindow.xaml.cs] {ignoreEx.Message}"); }
         }
 
         // Always auto-connect saved favorites using their persisted ServerIP even if subnet scan found 0 servers
@@ -472,32 +473,26 @@ public partial class MainWindow : Window
     {
         try
         {
-            // Support CLI --connect <IP> <BUSID> for Moonlight / Sunshine / Playnite automation
-            var cliArgs = Environment.GetCommandLineArgs();
-            for (int i = 0; i < cliArgs.Length - 2; i++)
+            if (App.TryParseConnectArgs(Environment.GetCommandLineArgs(), out string cliIp, out string cliBusId))
             {
-                if (cliArgs[i].Equals("--connect", StringComparison.OrdinalIgnoreCase))
-                {
-                    var cliIp = cliArgs[i + 1];
-                    var cliBusId = cliArgs[i + 2];
-                    if (SnakeUSBIP.Utils.InputValidator.IsValidHost(cliIp) && SnakeUSBIP.Utils.InputValidator.IsValidBusId(cliBusId))
-                    {
-                        var fav = _favorites.GetFavorites().FirstOrDefault(f =>
-                            string.Equals(f.ServerIP, cliIp, StringComparison.OrdinalIgnoreCase) &&
-                            string.Equals(f.BusId, cliBusId, StringComparison.OrdinalIgnoreCase));
-                        var requestedMode = _config.Load().DefaultReceiveMode;
-                        var mode = UsbipService.ResolveEffectiveReceiveMode(requestedMode, fav?.Description, null);
-                        await _usbip.AttachDeviceAsync(cliIp, cliBusId, mode);
-                        await LoadConnectedDevicesAsync();
-                    }
-                    break;
-                }
+                await ConnectCliDeviceAsync(cliIp, cliBusId);
             }
         }
         catch (Exception ex)
         {
             AddLog("Error", ex.Message);
         }
+    }
+
+    private async Task ConnectCliDeviceAsync(string cliIp, string cliBusId)
+    {
+        var fav = _favorites.GetFavorites().FirstOrDefault(f =>
+            string.Equals(f.ServerIP, cliIp, StringComparison.OrdinalIgnoreCase) &&
+            string.Equals(f.BusId, cliBusId, StringComparison.OrdinalIgnoreCase));
+        var requestedMode = _config.Load().DefaultReceiveMode;
+        var mode = UsbipService.ResolveEffectiveReceiveMode(requestedMode, fav?.Description, null);
+        await _usbip.AttachDeviceAsync(cliIp, cliBusId, mode);
+        await LoadConnectedDevicesAsync();
     }
 
     /// <summary>
@@ -705,7 +700,8 @@ public partial class MainWindow : Window
 
             try
             {
-                var result = await _usbip.ConnectAsync(fav.ServerIP, fav.BusId, effectiveMode);
+                string? favSerial = !string.IsNullOrWhiteSpace(fav.CustomSerial) ? fav.CustomSerial : GetCustomSerialForDevice(null, fav.ServerIP, fav.BusId);
+                var result = await _usbip.ConnectAsync(fav.ServerIP, fav.BusId, effectiveMode, serial: favSerial);
                 if (result.Success)
                 {
                     AddLocalizedLog("Success", "log_connected_favorite", fav.Description, fav.BusId);
@@ -753,7 +749,8 @@ public partial class MainWindow : Window
         lblStatus.Text = $"{_localization.GetText("status_connecting", _currentLanguage)} {busId}...";
         lblStatus.Foreground = (SolidColorBrush)FindResource("StatusInfo");
 
-        var result = await _usbip.ConnectAsync(serverIP, busId, mode);
+        string? customSerial = GetCustomSerialForDevice(hwId, serverIP, busId);
+        var result = await _usbip.ConnectAsync(serverIP, busId, mode, serial: customSerial);
 
         if (result.Success)
         {
@@ -915,7 +912,7 @@ public partial class MainWindow : Window
                 _trayIcon.Visible = false;
                 _trayIcon.Dispose();
             }
-            catch { }
+            catch (Exception ignoreEx) { System.Diagnostics.Debug.WriteLine($"[MainWindow.xaml.cs] {ignoreEx.Message}"); }
             _trayIcon = null;
         }
 
@@ -934,7 +931,7 @@ public partial class MainWindow : Window
         }
         else if (e.LeftButton == MouseButtonState.Pressed)
         {
-            try { DragMove(); } catch { }
+            try { DragMove(); } catch (Exception ignoreEx) { System.Diagnostics.Debug.WriteLine($"[MainWindow.xaml.cs] {ignoreEx.Message}"); }
         }
     }
 
@@ -1128,6 +1125,11 @@ public partial class MainWindow : Window
         menuRemoveServer.Header = _localization.GetText("menu_remove_server", _currentLanguage);
         menuProperties.Header = _localization.GetText("menu_properties", _currentLanguage);
         menuRename.Header = _localization.GetText("menu_rename", _currentLanguage);
+        menuSetSerial.Header = _localization.GetText("menu_set_serial", _currentLanguage);
+        menuToggleKernelPersist.Header = _localization.GetText("menu_kernel_persist", _currentLanguage);
+        menuStopAttachRetries.Header = _localization.GetText("menu_stop_attach_retries", _currentLanguage);
+        menuConfigureHubPorts.Header = _localization.GetText("menu_hub_ports", _currentLanguage);
+        menuExportDiagnostics.Header = _localization.GetText("menu_export_diagnostics", _currentLanguage);
 
         chkStartMinimized.Content = _localization.GetText("chk_start_minimized", _currentLanguage);
 
@@ -1660,7 +1662,7 @@ public partial class MainWindow : Window
             _vhciListenerCts?.Dispose();
             _vhciListenerCts = null;
         }
-        catch { }
+        catch (Exception ignoreEx) { System.Diagnostics.Debug.WriteLine($"[MainWindow.xaml.cs] {ignoreEx.Message}"); }
 
         CleanupIpcAndHotkey();
         Microsoft.Win32.SystemEvents.PowerModeChanged -= OnSystemPowerModeChanged;
@@ -1674,7 +1676,7 @@ public partial class MainWindow : Window
                 _trayIcon.Visible = false;
                 _trayIcon.Dispose();
             }
-            catch { }
+            catch (Exception ignoreEx) { System.Diagnostics.Debug.WriteLine($"[MainWindow.xaml.cs] {ignoreEx.Message}"); }
             _trayIcon = null;
         }
 
@@ -1789,6 +1791,109 @@ public partial class MainWindow : Window
                         $"{_localization.GetText("props_product", _currentLanguage)}: {productDesc}";
             System.Windows.MessageBox.Show(props, _localization.GetText("props_title", _currentLanguage), System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
         }
+    }
+
+
+    private string? GetCustomSerialForDevice(string? hwId, string serverIP, string busId)
+    {
+        var cfg = _config.Load();
+        if (cfg.CustomDeviceSerials == null) return null;
+        string key = !string.IsNullOrWhiteSpace(hwId) ? hwId : $"{serverIP}|{busId}";
+        if (cfg.CustomDeviceSerials.TryGetValue(key, out var s) && !string.IsNullOrWhiteSpace(s))
+            return s.Trim();
+        if (cfg.CustomDeviceSerials.TryGetValue($"{serverIP}|{busId}", out var s2) && !string.IsNullOrWhiteSpace(s2))
+            return s2.Trim();
+        return null;
+    }
+
+    private void MenuSetSerial_Click(object sender, RoutedEventArgs e)
+    {
+        if (treeDevices.SelectedItem is not TreeViewItem node || node.Tag is not UsbDevice device) return;
+        string key = !string.IsNullOrWhiteSpace(device.HardwareId) ? device.HardwareId : $"{device.ServerIP}|{device.BusId}";
+        string current = GetCustomSerialForDevice(device.HardwareId, device.ServerIP, device.BusId) ?? VhciNativeClient.GenerateUsbSerial();
+        var prompt = _currentLanguage == "es"
+            ? $"Serial USB ASCII (1-15 alfanumérico, vacío para quitar) para {device.Description}:"
+            : $"ASCII USB Serial (1-15 alphanumeric, blank to clear) for {device.Description}:";
+        var input = Microsoft.VisualBasic.Interaction.InputBox(prompt, _currentLanguage == "es" ? "Número de serie USB" : "Custom USB Serial", current);
+        if (input == null) return;
+        string trimmed = input.Trim();
+        if (!VhciNativeClient.IsValidUsbSerial(trimmed))
+        {
+            lblStatus.Text = _currentLanguage == "es" ? "Serial inválido (1-15 ASCII)" : "Invalid serial (1-15 ASCII)";
+            return;
+        }
+        var cfg = _config.Load();
+        cfg.CustomDeviceSerials ??= new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        if (string.IsNullOrEmpty(trimmed)) cfg.CustomDeviceSerials.Remove(key);
+        else cfg.CustomDeviceSerials[key] = trimmed;
+        _config.Save(cfg);
+        AddLog("Success", string.IsNullOrEmpty(trimmed) ? $"Cleared custom serial for {device.BusId}" : $"Set custom serial '{trimmed}' for {device.BusId}");
+    }
+
+    private async void MenuToggleKernelPersist_Click(object sender, RoutedEventArgs e)
+    {
+        if (treeDevices.SelectedItem is not TreeViewItem node || node.Tag is not UsbDevice device) return;
+        var current = await _usbip.GetKernelPersistentDevicesAsync();
+        bool exists = current.Any(p => string.Equals(p.Host, device.ServerIP, StringComparison.OrdinalIgnoreCase) && string.Equals(p.BusId, device.BusId, StringComparison.OrdinalIgnoreCase));
+        var updated = current.Where(p => !(string.Equals(p.Host, device.ServerIP, StringComparison.OrdinalIgnoreCase) && string.Equals(p.BusId, device.BusId, StringComparison.OrdinalIgnoreCase))).ToList();
+        if (!exists)
+        {
+            string serial = GetCustomSerialForDevice(device.HardwareId, device.ServerIP, device.BusId) ?? string.Empty;
+            updated.Add(new VhciPersistentDevice(device.ServerIP, VhciNativeClient.DefaultServicePort, device.BusId, serial, _currentReceiveMode, AttachOnce: false));
+        }
+        var res = await _usbip.SetKernelPersistentDevicesAsync(updated);
+        if (res.Success)
+        {
+            AddLog("Success", exists ? $"Removed {device.BusId} from kernel boot persistence" : $"Pinned {device.BusId} ({device.ServerIP}) to kernel boot persistence");
+            lblStatus.Text = exists ? "Unpinned from boot" : "Pinned to kernel boot";
+        }
+        else
+        {
+            AddLog("Warning", res.Error ?? "Kernel persistence update failed");
+        }
+    }
+
+    private async void MenuStopAttachRetries_Click(object sender, RoutedEventArgs e)
+    {
+        string? host = null;
+        string? busId = null;
+        if (treeDevices.SelectedItem is TreeViewItem node && node.Tag is UsbDevice device)
+        {
+            host = device.ServerIP;
+            busId = device.BusId;
+        }
+        int canceled = await _usbip.StopKernelAttachAttemptsAsync(host, busId);
+        AddLog("Info", $"Stopped {canceled} pending kernel attach attempt(s).");
+        lblStatus.Text = $"Canceled: {canceled}";
+    }
+
+    private void MenuConfigureHubPorts_Click(object sender, RoutedEventArgs e)
+    {
+        var cur = KernelConfigService.GetVirtualHubPortSettings();
+        var prompt = _currentLanguage == "es"
+            ? $"Puertos USB 2.0, USB 3.0 (total <= 255). Actual: {cur.Usb20Ports},{cur.Usb30Ports}"
+            : $"USB 2.0, USB 3.0 port counts (total <= 255). Current: {cur.Usb20Ports},{cur.Usb30Ports}";
+        var input = Microsoft.VisualBasic.Interaction.InputBox(prompt, _currentLanguage == "es" ? "Puertos Hub Virtual" : "Virtual Hub Ports", $"{cur.Usb20Ports},{cur.Usb30Ports}");
+        if (string.IsNullOrWhiteSpace(input)) return;
+        var parts = input.Split(',');
+        if (parts.Length == 2 && int.TryParse(parts[0].Trim(), out int u20) && int.TryParse(parts[1].Trim(), out int u30))
+        {
+            var res = KernelConfigService.SetVirtualHubPortSettings(u20, u30);
+            AddLog(res.Success ? "Success" : "Warning", res.Success ? $"Hub ports updated to {u20}/{u30} (reboot to apply)" : (res.Error ?? "Failed"));
+        }
+    }
+
+    private async void MenuExportDiagnostics_Click(object sender, RoutedEventArgs e)
+    {
+        var connected = await _usbip.GetConnectedDevicesAsync();
+        var persistent = await _usbip.GetKernelPersistentDevicesAsync();
+        var zipPath = KernelDiagnosticsService.ExportDiagnosticBundle(
+            recentUiLogs: txtLog.Text.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries),
+            driverStatusText: lblDriverValue.Text,
+            connectedDevices: connected,
+            persistentDevices: persistent);
+        AddLog("Success", $"Diagnostics exported: {zipPath}");
+        lblStatus.Text = System.IO.Path.GetFileName(zipPath);
     }
 
     private void MenuRename_Click(object sender, RoutedEventArgs e)
@@ -1919,6 +2024,9 @@ public partial class MainWindow : Window
                 null,
                 Timeout.Infinite,
                 false);
+
+            _ipcPipeCts = new CancellationTokenSource();
+            _ = RunIpcPipeServerAsync(_ipcPipeCts.Token);
         }
         catch (Exception ex)
         {
@@ -1963,7 +2071,7 @@ public partial class MainWindow : Window
                 _hwndSource = null;
             }
         }
-        catch { }
+        catch (Exception ignoreEx) { System.Diagnostics.Debug.WriteLine($"[MainWindow.xaml.cs] {ignoreEx.Message}"); }
 
         try
         {
@@ -1976,8 +2084,51 @@ public partial class MainWindow : Window
             _gracefulExitWaitHandle = null;
             _gracefulExitEvent?.Dispose();
             _gracefulExitEvent = null;
+
+            _ipcPipeCts?.Cancel();
+            _ipcPipeCts?.Dispose();
+            _ipcPipeCts = null;
         }
-        catch { }
+        catch (Exception ignoreEx) { System.Diagnostics.Debug.WriteLine($"[MainWindow.xaml.cs] {ignoreEx.Message}"); }
+    }
+
+    private async Task RunIpcPipeServerAsync(CancellationToken ct)
+    {
+        while (!ct.IsCancellationRequested)
+        {
+            try
+            {
+                using var server = System.IO.Pipes.NamedPipeServerStreamAcl.Create(
+                    App.IpcPipeName,
+                    System.IO.Pipes.PipeDirection.In,
+                    1,
+                    System.IO.Pipes.PipeTransmissionMode.Byte,
+                    System.IO.Pipes.PipeOptions.Asynchronous,
+                    0,
+                    0,
+                    App.CreateRestrictedPipeSecurity());
+                await server.WaitForConnectionAsync(ct);
+                using var reader = new System.IO.StreamReader(server, System.Text.Encoding.UTF8);
+                string? line = await reader.ReadLineAsync(ct);
+                if (!string.IsNullOrWhiteSpace(line))
+                {
+                    var parts = line.Split('|', 3, StringSplitOptions.TrimEntries);
+                    if (parts.Length == 3 &&
+                        parts[0].Equals("CONNECT", StringComparison.OrdinalIgnoreCase) &&
+                        SnakeUSBIP.Utils.InputValidator.IsValidHost(parts[1]) &&
+                        SnakeUSBIP.Utils.InputValidator.IsValidBusId(parts[2]))
+                    {
+                        await Dispatcher.InvokeAsync(() => ConnectCliDeviceAsync(parts[1], parts[2]));
+                    }
+                }
+            }
+            catch (OperationCanceledException) { break; }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"[IPC Pipe] {ex.Message}");
+                await Task.Delay(250, ct);
+            }
+        }
     }
 
     private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)

@@ -69,35 +69,7 @@ public partial class SshDialog : Window
         }
 
         Close();
-
-        try
-        {
-            // Try Windows Terminal first, then cmd
-            var wtPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Microsoft", "WindowsApps", "wt.exe");
-            var cmdPath = Path.Combine(Environment.SystemDirectory, "cmd.exe");
-            if (File.Exists(wtPath))
-            {
-                Process.Start(new ProcessStartInfo
-                {
-                    FileName = wtPath,
-                    Arguments = $"new-tab ssh {user}@{ip}",
-                    UseShellExecute = true
-                });
-            }
-            else
-            {
-                Process.Start(new ProcessStartInfo
-                {
-                    FileName = File.Exists(cmdPath) ? cmdPath : "cmd.exe",
-                    Arguments = $"/k ssh {user}@{ip}",
-                    UseShellExecute = true
-                });
-            }
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"[SshDialog] Failed to launch ssh: {ex}");
-        }
+        LaunchTerminalSsh(user, ip);
     }
 
     private void BtnCopy_Click(object sender, RoutedEventArgs e)
@@ -130,33 +102,41 @@ public partial class SshDialog : Window
 
         // Avoid ';' because Windows Terminal (wt.exe) parses ';' as its own multi-tab command delimiter.
         const string remoteScript = "TMPFILE=$(mktemp /tmp/snakeusbip-install.XXXXXX.sh) && trap 'rm -f \"$TMPFILE\"' EXIT && (curl -fsSL https://raw.githubusercontent.com/oscarlosu-lab/SnakeUSBIP/main/scripts/install-server.sh -o \"$TMPFILE\" || wget -qO \"$TMPFILE\" https://raw.githubusercontent.com/oscarlosu-lab/SnakeUSBIP/main/scripts/install-server.sh) && chmod 700 \"$TMPFILE\" && sudo bash \"$TMPFILE\"";
+        LaunchTerminalSsh(user, ip, remoteScript);
+    }
 
+    private static void LaunchTerminalSsh(string user, string ip, string? remoteCommand = null)
+    {
         try
         {
             var wtPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Microsoft", "WindowsApps", "wt.exe");
             var cmdPath = Path.Combine(Environment.SystemDirectory, "cmd.exe");
+            var psi = new ProcessStartInfo { UseShellExecute = false };
+
             if (File.Exists(wtPath))
             {
-                Process.Start(new ProcessStartInfo
-                {
-                    FileName = wtPath,
-                    Arguments = $"new-tab ssh -t {user}@{ip} \"{remoteScript}\"",
-                    UseShellExecute = true
-                });
+                psi.FileName = wtPath;
+                psi.ArgumentList.Add("new-tab");
+                psi.ArgumentList.Add("ssh");
             }
             else
             {
-                Process.Start(new ProcessStartInfo
-                {
-                    FileName = File.Exists(cmdPath) ? cmdPath : "cmd.exe",
-                    Arguments = $"/k ssh -t {user}@{ip} \"{remoteScript}\"",
-                    UseShellExecute = true
-                });
+                psi.FileName = File.Exists(cmdPath) ? cmdPath : "cmd.exe";
+                psi.ArgumentList.Add("/k");
+                psi.ArgumentList.Add("ssh");
             }
+
+            if (!string.IsNullOrEmpty(remoteCommand))
+                psi.ArgumentList.Add("-t");
+            psi.ArgumentList.Add($"{user}@{ip}");
+            if (!string.IsNullOrEmpty(remoteCommand))
+                psi.ArgumentList.Add(remoteCommand);
+
+            Process.Start(psi);
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"[SshDialog] Failed to launch auto-setup ssh: {ex}");
+            System.Diagnostics.Debug.WriteLine($"[SshDialog] Failed to launch ssh: {ex}");
         }
     }
 

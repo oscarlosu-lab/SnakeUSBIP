@@ -204,6 +204,24 @@ public class UsbIdsAndServicesTests
         Assert.True(MainWindow.TryParseHotkey("Ctrl+Alt+D", out uint mods, out uint vk));
         Assert.Equal(0x0002u | 0x0001u, mods);
         Assert.Equal(0x44u, vk);
+
+        Assert.True(App.TryParseConnectArgs(new[] { "--minimized", "--connect", "192.168.11.115", "7-1" }, out string ip, out string busId));
+        Assert.Equal("192.168.11.115", ip);
+        Assert.Equal("7-1", busId);
+        Assert.True(App.TryParseConnectArgs(new[] { "--attach", "10.0.0.5", "1-2.3" }, out ip, out busId));
+        Assert.Equal("10.0.0.5", ip);
+        Assert.Equal("1-2.3", busId);
+        Assert.False(App.TryParseConnectArgs(new[] { "--connect", "bad host!", "7-1" }, out _, out _));
+
+        var pipeSec = App.CreateRestrictedPipeSecurity();
+        var rules = pipeSec.GetAccessRules(true, true, typeof(System.Security.Principal.SecurityIdentifier))
+            .Cast<System.IO.Pipes.PipeAccessRule>()
+            .ToList();
+        var adminsSid = new System.Security.Principal.SecurityIdentifier(System.Security.Principal.WellKnownSidType.BuiltinAdministratorsSid, null);
+        var worldSid = new System.Security.Principal.SecurityIdentifier(System.Security.Principal.WellKnownSidType.WorldSid, null);
+        var authUsersSid = new System.Security.Principal.SecurityIdentifier(System.Security.Principal.WellKnownSidType.AuthenticatedUserSid, null);
+        Assert.Contains(rules, r => r.IdentityReference == adminsSid && r.AccessControlType == System.Security.AccessControl.AccessControlType.Allow);
+        Assert.DoesNotContain(rules, r => r.IdentityReference == worldSid || r.IdentityReference == authUsersSid);
     }
 
     [Fact]
@@ -327,11 +345,14 @@ public class UsbIdsAndServicesTests
     private sealed class StubUsbipService : IUsbipService
     {
         public Task<List<UsbDevice>> ListRemoteDevicesAsync(string ip, CancellationToken ct = default) => Task.FromResult(new List<UsbDevice>());
-        public Task<bool> AttachDeviceAsync(string ip, string busId, string? receiveMode = null, CancellationToken ct = default) => Task.FromResult(false);
+        public Task<bool> AttachDeviceAsync(string ip, string busId, string? receiveMode = null, CancellationToken ct = default, string? serial = null, bool attachOnce = true) => Task.FromResult(false);
         public Task<bool> DetachDeviceAsync(string port, CancellationToken ct = default) => Task.FromResult(true);
         public Task<int> DetachAllConnectedDevicesAsync(CancellationToken ct = default) => Task.FromResult(0);
         public Task<List<UsbDevice>> ListDevicesAsync(string serverIP) => Task.FromResult(new List<UsbDevice>());
-        public Task<OperationResult> ConnectAsync(string serverIP, string busId, string? receiveMode = null) => Task.FromResult(OperationResult.Fail("offline"));
+        public Task<OperationResult> ConnectAsync(string serverIP, string busId, string? receiveMode = null, string? serial = null, bool attachOnce = true) => Task.FromResult(OperationResult.Fail("offline"));
+        public Task<List<VhciPersistentDevice>> GetKernelPersistentDevicesAsync() => Task.FromResult(new List<VhciPersistentDevice>());
+        public Task<OperationResult> SetKernelPersistentDevicesAsync(IReadOnlyList<VhciPersistentDevice> devices) => Task.FromResult(OperationResult.Ok());
+        public Task<int> StopKernelAttachAttemptsAsync(string? host = null, string? busId = null) => Task.FromResult(0);
         public Task<OperationResult> DisconnectAsync(int port) => Task.FromResult(OperationResult.Ok());
         public Task<List<ConnectedDevice>> GetConnectedDevicesAsync() => Task.FromResult(new List<ConnectedDevice>());
     }
