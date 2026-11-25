@@ -9,12 +9,21 @@
 
 Transforma cualquier dispositivo Linux (o PC Windows) en un Hub USB Virtual de alto rendimiento accesible desde Windows 10 y 11. Compatible con **Raspberry Pi, Orange Pi, Banana Pi, Proxmox/HomeLab, Steam Deck, routers OpenWRT, CrealityBox** y cualquier servidor ARM/x86 con Linux.
 
-[![CI Build & Tests](https://github.com/oscarlosu-lab/SnakeUSBIP/actions/workflows/ci.yml/badge.svg)](https://github.com/oscarlosu-lab/SnakeUSBIP/actions/workflows/ci.yml)
+[![CI Multi-Platform](https://github.com/oscarlosu-lab/SnakeUSBIP/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/oscarlosu-lab/SnakeUSBIP/actions/workflows/ci.yml)
+[![CodeQL SAST](https://github.com/oscarlosu-lab/SnakeUSBIP/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/oscarlosu-lab/SnakeUSBIP/actions/workflows/codeql.yml)
+[![Gitleaks Secret Scan](https://github.com/oscarlosu-lab/SnakeUSBIP/actions/workflows/security.yml/badge.svg?branch=main)](https://github.com/oscarlosu-lab/SnakeUSBIP/actions/workflows/security.yml)
+[![GitHub Pages](https://github.com/oscarlosu-lab/SnakeUSBIP/actions/workflows/pages.yml/badge.svg?branch=main)](https://github.com/oscarlosu-lab/SnakeUSBIP/actions/workflows/pages.yml)
+[![Latest Release](https://img.shields.io/github/v/release/oscarlosu-lab/SnakeUSBIP?style=flat-square&logo=github&color=0ea5e9)](https://github.com/oscarlosu-lab/SnakeUSBIP/releases/latest)
 [![GitHub Downloads](https://img.shields.io/github/downloads/oscarlosu-lab/SnakeUSBIP/total?style=flat-square&logo=github&color=blue)](https://github.com/oscarlosu-lab/SnakeUSBIP/releases)
+[![Last Commit](https://img.shields.io/github/last-commit/oscarlosu-lab/SnakeUSBIP?style=flat-square&color=10b981)](https://github.com/oscarlosu-lab/SnakeUSBIP/commits/main)
+[![Security Policy](https://img.shields.io/badge/Security-Policy%20%26%20Zero--Trust-10b981?style=flat-square&logo=shield&logoColor=white)](SECURITY.md)
+[![Code Signing](https://img.shields.io/badge/Code%20Signing-SignPath%20Foundation-6366f1?style=flat-square&logo=letsencrypt&logoColor=white)](CODE_SIGNING_POLICY.md)
+[![Microsoft WHQL](https://img.shields.io/badge/Drivers-Microsoft%20WHQL%20%7C%20HVCI-0078D6?style=flat-square&logo=windows&logoColor=white)](https://github.com/oscarlosu-lab/SnakeUSBIP)
+[![SHA-256 Verified](https://img.shields.io/badge/Checksums-SHA--256%20Verified-14b8a6?style=flat-square)](https://github.com/oscarlosu-lab/SnakeUSBIP/releases/latest)
 [![GitHub Stars](https://img.shields.io/github/stars/oscarlosu-lab/SnakeUSBIP?style=flat-square&logo=github&color=yellow)](https://github.com/oscarlosu-lab/SnakeUSBIP/stargazers)
-[![Licencia](https://img.shields.io/badge/Licencia-GPLv3-blue.svg?style=flat-square)](https://www.gnu.org/licenses/gpl-3.0)
+[![License](https://img.shields.io/badge/Licencia-GPLv3-blue.svg?style=flat-square)](https://www.gnu.org/licenses/gpl-3.0)
 [![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11%20(x64%20%26%20ARM64)-lightgrey?style=flat-square&logo=windows)](https://github.com/oscarlosu-lab/SnakeUSBIP)
-[![Comunidad Reddit](https://img.shields.io/badge/Reddit-r%2FUsbAnywhere-FF4500?style=flat-square&logo=reddit&logoColor=white)](https://www.reddit.com/r/UsbAnywhere/)
+[![Reddit Community](https://img.shields.io/badge/Reddit-r%2FUsbAnywhere-FF4500?style=flat-square&logo=reddit&logoColor=white)](https://www.reddit.com/r/UsbAnywhere/)
 [![Ko-fi](https://img.shields.io/badge/Ko--fi-Apoyar%20Proyecto-FF5E5B?style=flat-square&logo=ko-fi&logoColor=white)](https://ko-fi.com/oscarlosu)
 
 ---

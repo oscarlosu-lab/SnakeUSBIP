@@ -9,13 +9,15 @@ on:
     - cron: '0 6 * * 1'
 
 permissions:
-  actions: read
   contents: read
-  security-events: write
 
 jobs:
   analyze:
     name: CodeQL (${{ matrix.language }})
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
     runs-on: ${{ matrix.language == 'csharp' && 'windows-latest' || 'ubuntu-latest' }}
     timeout-minutes: 30
 
@@ -30,10 +32,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v4
+        uses: github/codeql-action/init@915412ff23e8b7659517e607487dbeae018f2934 # v4
         with:
           languages: ${{ matrix.language }}
           queries: security-extended
@@ -41,7 +43,7 @@ jobs:
 
       - name: Setup .NET 9 SDK
         if: matrix.language == 'csharp'
-        uses: actions/setup-dotnet@v6
+        uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6
         with:
           dotnet-version: '9.0.x'
 
@@ -54,14 +56,14 @@ jobs:
 
       - name: Set up JDK 17 for Android
         if: matrix.language == 'java-kotlin'
-        uses: actions/setup-java@v6
+        uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # v6
         with:
           java-version: '17'
           distribution: 'temurin'
 
       - name: Setup Gradle
         if: matrix.language == 'java-kotlin'
-        uses: gradle/actions/setup-gradle@v6
+        uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6
         with:
           cache-disabled: true
 
@@ -73,7 +75,7 @@ jobs:
           ./gradlew clean assembleDebug --no-build-cache --no-daemon
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v4
+        uses: github/codeql-action/analyze@915412ff23e8b7659517e607487dbeae018f2934 # v4
         with:
           category: "/language:${{ matrix.language }}"
 
