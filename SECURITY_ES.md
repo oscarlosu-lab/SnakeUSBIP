@@ -8,7 +8,7 @@
 
 | Versión | Estado              | Comentarios |
 | ------- | ------------------- | ----------- |
-| 1.3.0-rc.1 | :white_check_mark: | Release Candidate (Pre-release) |
+| 1.3.0 | :white_check_mark: | Latest Stable Release |
 | 1.2.x   | :white_check_mark:  | Estable Activa (Actual: v1.2.0) |
 | < 1.2   | :x:                 | Sin soporte (Actualizar a SnakeUSBIP v1.2.0+ o USBAnywhere) |
 
@@ -39,7 +39,7 @@
 - **Servidor macOS**: Diseñado mediante **Userspace IOKit** (`IOKit.framework`). Opera sin extensiones de kernel (`.kext`) y preserva la integridad total de **SIP (System Integrity Protection)** en Apple Silicon. El demonio se ejecuta con privilegios controlados mediante `launchd`.
 - **Servidor Linux**: Se ejecuta bajo servicios systemd dedicados (`usbipd.service` + `snakeusbip-autounbind.service`) y restringe la exportación de periféricos mediante reglas udev específicas.
 
-### 6. Endurecimiento del Plano de Control y Webhook (`v1.3.0-rc.1`)
+### 6. Endurecimiento del Plano de Control y Webhook (`v1.3.0`)
 - **Lista Blanca y Token HMAC en TCP `3241`**: `snakeusbip-ctl` y `ControlServer.swift` soportan filtrado `allowed_ips` y autenticación `control_token` HMAC opcional (`policy allow-ip|deny-ip|set-token|clear-token`).
 - **Webhook Sunshine en Android (`3242`)**: `SunshineHandoffServer` aplica límites de cabecera HTTP y autenticación opcional `X-USBAnywhere-Token` / `Authorization: Bearer`.
 

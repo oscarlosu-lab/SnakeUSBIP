@@ -2,7 +2,7 @@
 
 🌐 **Idioma / Language:** [English](README.md) | **Español**
 
-**v1.2.0** (Estable) · **[v1.3.0-rc.1](https://github.com/oscarlosu-lab/SnakeUSBIP/releases/tag/v1.3.0-rc.1)** (Release Candidate) | [🌍 Web Oficial](https://oscarlosu-lab.github.io/SnakeUSBIP/) | [📦 Releases y Descargas](https://github.com/oscarlosu-lab/SnakeUSBIP/releases/latest) | [🌐 USBAnywhere (Producto Final)](https://github.com/oscarlosu-lab/USBAnywhere) | [💬 Comunidad Reddit](https://www.reddit.com/r/UsbAnywhere/) | [📖 Manual de Usuario](docs/USAGE_ES.md) | [🌐 Conexión VPN](docs/VPN_INTERNET_ES.md)
+**v1.3.0** | [🌍 Web Oficial](https://oscarlosu-lab.github.io/SnakeUSBIP/) | [📦 Releases y Descargas](https://github.com/oscarlosu-lab/SnakeUSBIP/releases/latest) | [🌐 USBAnywhere (Producto Final)](https://github.com/oscarlosu-lab/USBAnywhere) | [💬 Comunidad Reddit](https://www.reddit.com/r/UsbAnywhere/) | [📖 Manual de Usuario](docs/USAGE_ES.md) | [🌐 Conexión VPN](docs/VPN_INTERNET_ES.md)
 
 > [!IMPORTANT]
 > **Aviso de Migración — Transición hacia [USBAnywhere](https://github.com/oscarlosu-lab/USBAnywhere):** `SnakeUSBIP` se está migrando a **[USBAnywhere](https://github.com/oscarlosu-lab/USBAnywhere)**. `SnakeUSBIP` es el repositorio donde se prueban e integran primero las mejoras antes de su validación final, mientras que **[USBAnywhere](https://github.com/oscarlosu-lab/USBAnywhere)** es el producto final recomendado.
@@ -83,7 +83,7 @@ Conecta tu grabadora láser diodo (GRBL/Ruida) y tu cámara cenital simultáneam
 
 ---
 
-## 🧪 Novedades en v1.3.0-rc.1 (Release Candidate)
+## 🆕 Novedades en v1.3.0
 
 - 📌 **Persistencia en Kernel al Arrancar y Control de Reintentos (`VhciNativeClient.cs`)** - Persiste dispositivos USB en `usbip2_ude` entre reinicios de Windows y detén reintentos activos desde el menú contextual.
 - 🏷️ **Números de Serie USB Personalizados y Puertos del Hub Virtual (`KernelConfigService.cs`)** - Asigna un `Serial` persistente por dispositivo y ajusta la capacidad USB 2.0 / USB 3.0 del hub virtual (`30` / `30` por defecto).

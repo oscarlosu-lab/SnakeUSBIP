@@ -1,6 +1,6 @@
 # CHANGELOG - SnakeUSBIP
 
-## [1.3.0-rc.1] - 2026-11-26 (Release Candidate)
+## [1.3.0] - 2026-11-26
 
 > **Migration Notice:** `SnakeUSBIP` is being migrated into [USBAnywhere](https://github.com/oscarlosu-lab/USBAnywhere). `SnakeUSBIP` acts as the staging branch for new improvements prior to full stabilization, while `USBAnywhere` is the final production product.
 
@@ -13,6 +13,12 @@
   - Added optional IP allowlist (`allowed_ips`) and constant-time HMAC `control_token` authentication (`policy allow-ip|deny-ip|set-token|clear-token`), plus UAS (`usb-storage` / `uas`) detection warnings for external SSDs.
 - **Android Sunshine Webhook Token Auth & Dynamic Inventory Parser (`SunshineHandoffServer.kt`)**:
   - Added optional webhook bearer/`X-USBAnywhere-Token` authentication, HTTP header size bounds, and structured JSON inventory parsing.
+- **Linux `snakeusbip-ctl` Interactive `sudo`, Dashboard Modes & Client Sleep Guard (PR #10 by @50P15)**:
+  - Preserves `sudo` re-exec properly, adds `client-guard` sleep inhibitor, and adds native Linux unit tests.
+
+### Fixed
+- **Wi-Fi Dynamic Bind Resilience, `0xE102xxxx` Error Mapping & Localization (`UsbipService.cs`, `VhciNativeClient.cs`, `MainWindow.xaml.cs`)**:
+  - Added retry recovery for transient `ST_NA` / `ST_DEV_BUSY` / `ST_NODEV` attach responses, human-readable `0xE102xxxx` error mapping, CLI custom serial forwarding, and ES/EN menu localization.
 
 ## [1.2.0] - 2026-11-15
 
