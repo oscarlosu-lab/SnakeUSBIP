@@ -18,6 +18,9 @@ Interactive Terminal User Interface (TUI) dashboard and CLI management tool with
 - **Protocol Loopback Test**: `snakeusbip-ctl test`
 - **Service Control**: `sudo snakeusbip-ctl start|stop|restart|status`
 - **Device Management**: `snakeusbip-ctl list`, `sudo snakeusbip-ctl share <busid>`
+- **Linux Client Mode (`vhci_hcd`)**: `snakeusbip-ctl scan|remote <ip>`, `sudo snakeusbip-ctl connect|disconnect|ports`
+- **Security Policy (`TCP 3241`)**: `sudo snakeusbip-ctl policy show|allow|deny|protect-hid|allow-ip|deny-ip|set-token|clear-token`
+- **DualSense SBC Fix**: `sudo snakeusbip-ctl fix-dualsense enable|disable|status`
 
 ### 2. `install-server-mac.sh` — 1-Click macOS Server Installer
 Automated installer for macOS (Apple Silicon M1-M4 & Intel x86_64).
@@ -25,7 +28,7 @@ Automated installer for macOS (Apple Silicon M1-M4 & Intel x86_64).
 - Installs `snakeusbip-ctl` to `/usr/local/bin/`.
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/oscarlosu-lab/SnakeUSBIP-Server/main/scripts/install-server-mac.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/oscarlosu-lab/SnakeUSBIP/main/server/scripts/install-server-mac.sh | sudo bash
 ```
 
 ### 3. `install-server-linux.sh` / `install-server.sh` — 1-Click Linux / Raspberry Pi Installer
@@ -36,7 +39,7 @@ Automated installer for Linux distributions and Raspberry Pi OS (Debian/Ubuntu/R
 - Installs `snakeusbip-ctl` to `/usr/local/bin/`.
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/oscarlosu-lab/SnakeUSBIP-Server/main/scripts/install-server-linux.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/oscarlosu-lab/SnakeUSBIP/main/server/scripts/install-server-linux.sh | sudo bash
 ```
 
 ---

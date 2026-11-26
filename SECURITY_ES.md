@@ -2,12 +2,15 @@
 
 🌐 **Idioma / Language:** [English](SECURITY.md) | **Español**
 
+> **Aviso de Migración:** `SnakeUSBIP` se está migrando a [USBAnywhere](https://github.com/oscarlosu-lab/USBAnywhere). Para entornos de producción se recomienda utilizar [USBAnywhere](https://github.com/oscarlosu-lab/USBAnywhere) como producto final.
+
 ## Versiones Soportadas
 
 | Versión | Estado              | Comentarios |
 | ------- | ------------------- | ----------- |
-| 3.0.x   | :white_check_mark:  | Activa (Versión actual: v3.0.1) |
-| < 3.0   | :x:                 | Sin soporte (Actualizar a SnakeUSBIP v3.0.1) |
+| 1.3.0-rc.1 | :white_check_mark: | Release Candidate (Pre-release) |
+| 1.2.x   | :white_check_mark:  | Estable Activa (Actual: v1.2.0) |
+| < 1.2   | :x:                 | Sin soporte (Actualizar a SnakeUSBIP v1.2.0+ o USBAnywhere) |
 
 ---
 
@@ -34,7 +37,11 @@
 ### 5. Modelos de Seguridad en Servidores Multiplataforma
 - **Servidor Windows**: La regla automática del Firewall de Windows para el puerto 3240 se acota exclusivamente a redes **Privadas** y de **Dominio**, evitando la exposición del puerto en redes Wi-Fi públicas no confiables.
 - **Servidor macOS**: Diseñado mediante **Userspace IOKit** (`IOKit.framework`). Opera sin extensiones de kernel (`.kext`) y preserva la integridad total de **SIP (System Integrity Protection)** en Apple Silicon. El demonio se ejecuta con privilegios controlados mediante `launchd`.
-- **Servidor Linux**: Se ejecuta bajo una unidad de servicio systemd aislada y restringe la exportación de periféricos mediante reglas udev específicas.
+- **Servidor Linux**: Se ejecuta bajo servicios systemd dedicados (`usbipd.service` + `snakeusbip-autounbind.service`) y restringe la exportación de periféricos mediante reglas udev específicas.
+
+### 6. Endurecimiento del Plano de Control y Webhook (`v1.3.0-rc.1`)
+- **Lista Blanca y Token HMAC en TCP `3241`**: `snakeusbip-ctl` y `ControlServer.swift` soportan filtrado `allowed_ips` y autenticación `control_token` HMAC opcional (`policy allow-ip|deny-ip|set-token|clear-token`).
+- **Webhook Sunshine en Android (`3242`)**: `SunshineHandoffServer` aplica límites de cabecera HTTP y autenticación opcional `X-USBAnywhere-Token` / `Authorization: Bearer`.
 
 ---
 

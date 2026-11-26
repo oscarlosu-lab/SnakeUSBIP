@@ -2,26 +2,21 @@
 
 🌐 **Language / Idioma:** **English** | [Español](SECURITY_ES.md)
 
+> **Migration Notice:** `SnakeUSBIP` is being migrated into [USBAnywhere](https://github.com/oscarlosu-lab/USBAnywhere). For production deployments, [USBAnywhere](https://github.com/oscarlosu-lab/USBAnywhere) is the recommended final product.
+
 ## Supported Versions
 
 | Version | Supported          | Status |
 | ------- | ------------------ | ------ |
-| 3.0.x   | :white_check_mark: | Active (Current: v3.0.1) |
-| < 3.0   | :x:                | Unsupported (Upgrade to SnakeUSBIP v3.0.1) |
+| 1.3.0-rc.1 | :white_check_mark: | Release Candidate (Pre-release) |
+| 1.2.x   | :white_check_mark: | Active Stable (Current: v1.2.0) |
+| < 1.2   | :x:                | Unsupported (Upgrade to SnakeUSBIP v1.2.0+ or USBAnywhere) |
 
 ---
 
 ## Security Architecture & Zero-Trust Hardening
 
-SnakeUSBIP is designed with a defense-in-depth, Zero-Trust security model across the ecosystem.
-
-The product uses a combination of input validation, restricted process invocation, trusted host allowlists, and signed driver expectations as part of its overall security posture. These controls are intended to reduce the risk of unsafe execution paths and to improve operational trust.
-
----
-
-## Security Architecture & Zero-Trust Hardening
-
-**SnakeUSBIP** is designed with a defense-in-depth, Zero-Trust security model across the entire ecosystem:
+**SnakeUSBIP** is designed with a defense-in-depth, Zero-Trust security model across the entire ecosystem, combining input validation, restricted process invocation, trusted host allowlists, signed driver expectations, and automated CI security scanning.
 
 ### 1. Whitelist Command & Argument Sanitization (`InputValidator`)
 - All IPv4 addresses, domain names, USB `bus-id` strings, and TCP ports are strictly validated against restrictive regular expression whitelists before any shell or system process invocation.
@@ -42,7 +37,11 @@ The product uses a combination of input validation, restricted process invocatio
 ### 5. Multiplatform Server Security Models
 - **Windows Server**: The Windows Firewall rule for port 3240 is restricted exclusively to **Private** and **Domain** network profiles, preventing exposure on untrusted Public Wi-Fi networks.
 - **macOS Server**: Utilizes native Apple **Userspace IOKit** (`IOKit.framework`). Operates without third-party Kernel Extensions (`.kext`) and retains complete compatibility with Apple Silicon **System Integrity Protection (SIP)**. Privileges are managed securely via system `launchd` LaunchDaemons.
-- **Linux Server**: Runs via a dedicated systemd service and confines USB export operations via targeted udev rules.
+- **Linux Server**: Runs via a dedicated systemd service (`usbipd.service` + `snakeusbip-autounbind.service`) and confines USB export operations via targeted udev rules.
+
+### 6. Control Plane & Webhook Hardening (`v1.3.0-rc.1`)
+- **TCP `3241` Allowlist & HMAC Token**: `snakeusbip-ctl` and `ControlServer.swift` support optional `allowed_ips` filtering and constant-time HMAC `control_token` authentication (`policy allow-ip|deny-ip|set-token|clear-token`).
+- **Android Sunshine Webhook (`3242`)**: `SunshineHandoffServer` enforces HTTP header bounds and optional `X-USBAnywhere-Token` / `Authorization: Bearer` authentication.
 
 ---
 

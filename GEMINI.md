@@ -1,6 +1,6 @@
 # SnakeUSBIP Workspace Delta (Local Project Memory)
 - **Monorepo**: Windows Client WPF, Server (.NET 9, macOS Swift, Linux), Android app (`com.snakeusbip`).
-- **Versión Oficial**: Ecosistema estandarizado en versión `1.2.0` (`v1.2.0`) — Cliente Windows (`VhciNativeClient` IOCTL nativo + eventos push overlapped `ReadFile` sobre `\\.\usbip2_ude` con fallback `usbip.exe`, hotkey `Ctrl+Alt+D`, CLI headless), Servidor Windows/Linux/macOS (parches `rpi-dwc-usbip-host` 01-04) y Android (`UrbSession` String/Config sanitization).
+- **Versión Oficial**: `1.2.0` (`v1.2.0` estable) · `1.3.0-rc.1` (`v1.3.0-rc.1` Release Candidate). En migración hacia `USBAnywhere` (rama de pruebas/staging frente al producto final `USBAnywhere`). Incl. `VhciNativeClient` IOCTL + persistencia boot + seriales/hub/diagnóstico, `allowed_ips` + `control_token` HMAC, parches `rpi-dwc-usbip-host` 01-04 y Android webhook auth.
 - **Build Protegida**: ReadyToRun Single-File (`PublishReadyToRun=true`, `PublishSingleFile=true`, sin PDBs).
 - **Incompatibilidad WinForms**: No usar `PublishAot` ni `PublishTrimmed` por `NETSDK1175` en bandeja del sistema.
 - **Inno Setup**: `ISCC.exe` requiere `SourceDir` y `OutputDir` en rutas absolutas normalizadas.

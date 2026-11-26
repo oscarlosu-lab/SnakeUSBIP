@@ -1,6 +1,8 @@
-# 📖 SnakeUSBIP v3.0.1 User Manual
+# 📖 SnakeUSBIP v1.2.0 / v1.3.0-rc.1 User Manual
 
 🌐 **Language / Idioma:** **English** | [Español](USAGE_ES.md)
+
+> **Migration Notice:** `SnakeUSBIP` is migrating into **[USBAnywhere](https://github.com/oscarlosu-lab/USBAnywhere)** (the recommended final production product).
 
 ## Main Interface
 
@@ -96,11 +98,11 @@ SnakeUSBIP client connects transparently to any USB/IP host server:
 
 1. On your Mac (Apple Silicon or Intel), run the 1-click installer:
    `ash
-   curl -fsSL https://raw.githubusercontent.com/oscarlosu-lab/SnakeUSBIP-Server/main/scripts/install-server-mac.sh | sudo bash
+   curl -fsSL https://raw.githubusercontent.com/oscarlosu-lab/SnakeUSBIP/main/server/scripts/install-server-mac.sh | sudo bash
    `
 2. In SnakeUSBIP Client, enter the Mac's IP (e.g. 192.168.1.50) and click **📋 List**.
 3. macOS device attachment is currently unavailable.
-4. See [macOS Server Manual](https://github.com/oscarlosu-lab/SnakeUSBIP-Server/blob/main/docs/USAGE_MACOS_EN.md) for details.
+4. See [macOS Server Manual](../server/docs/USAGE_MACOS_EN.md) for details.
 
 ### 🖥️ Connecting to a Windows Desktop Server
 1. Run SnakeUSBIP-Server.exe on the host PC and click **📤 Share** on desired devices.
@@ -125,28 +127,39 @@ SnakeUSBIP client connects transparently to any USB/IP host server:
 └───────────────────────────────────────────────┘
                         │
                         ▼
-            ┌─────────────────────────┐
-            │ ▶️ Connect              │
-            │ ⏹️ Disconnect           │
-            ├─────────────────────────┤
-            │ ⭐ Add to Favorites     │
-            │ ❌ Remove from Favorites│
-            │ 🗑️ Remove server        │
-            ├─────────────────────────┤
-            │ 📋 Properties           │
-            │ ✏️ Rename               │
-            └─────────────────────────┘
+            ┌───────────────────────────┐
+            │ 🔗 Connect                │
+            │ ❌ Disconnect             │
+            ├───────────────────────────┤
+            │ ⭐ Add to Favorites       │
+            │ ❌ Remove from Favorites  │
+            ├───────────────────────────┤
+            │ 🗑️ Remove server          │
+            │ 📋 Properties             │
+            │ ✏️ Rename                 │
+            │ 🏷️ Set USB Serial...      │
+            │ 📌 Kernel Persistence(Boot)│
+            │ 🛑 Stop Kernel Retries    │
+            ├───────────────────────────┤
+            │ ⚙️ Virtual Hub Ports...   │
+            │ 🩺 Export Diagnostics...  │
+            └───────────────────────────┘
 ```
 
 | Option | Description |
 |--------|-------------|
-| ▶️ Connect | Connects the remote USB device (or favorite) to your PC |
-| ⏹️ Disconnect | Releases the connected USB device |
+| 🔗 Connect | Connects the remote USB device (or favorite) to your PC |
+| ❌ Disconnect | Releases the connected USB device |
 | ⭐ Add to Favorites | Saves the device for quick reconnection |
 | ❌ Remove from Favorites | Removes the device from the favorites list |
 | 🗑️ Remove server | Removes the server from the tree |
 | 📋 Properties | Displays detailed info (`VID:PID`, manufacturer, product, local port) |
 | ✏️ Rename | Assigns a persistent custom friendly name to the device (`VID:PID`) |
+| 🏷️ Set USB Serial... | Assigns a custom USB serial string for stable COM/HID/dongle identity (`v1.3.0-rc.1`) |
+| 📌 Kernel Persistence (Boot) | Toggles `usbip2_ude` kernel-level persistent attach across Windows reboots (`v1.3.0-rc.1`) |
+| 🛑 Stop Kernel Retries | Cancels active kernel-level attach retry attempts (`v1.3.0-rc.1`) |
+| ⚙️ Virtual Hub Ports... | Configures the `usbip2_ude` Virtual Hub USB 2.0 / USB 3.0 port counts (`v1.3.0-rc.1`) |
+| 🩺 Export Diagnostics... | Generates a `.zip` diagnostics bundle with driver, port, hub, and log state (`v1.3.0-rc.1`) |
 
 ## Shortcuts
 
@@ -206,7 +219,7 @@ When closing the application, shutting down Windows (`AutoDetachOnExit: true`), 
 - **[VR_FACIAL_TRACKER_GUIDE_EN.md](VR_FACIAL_TRACKER_GUIDE_EN.md)** - Optimization guide for VR Headsets, HTC Vive Facial Tracker & Webcams (VRChat / VRCFaceTracking)
 - **[README.md](../README.md)** - Installation and main features
 - **[RASPBERRY_PI_SERVER_EN.md](RASPBERRY_PI_SERVER_EN.md)** - Setup server on Raspberry Pi / Linux
-- **[macOS Server Guide](https://github.com/oscarlosu-lab/SnakeUSBIP-Server/blob/main/docs/USAGE_MACOS_EN.md)** - Setup native server on Apple Mac (Apple Silicon & Intel)
+- **[macOS Server Guide](../server/docs/USAGE_MACOS_EN.md)** - Setup native server on Apple Mac (Apple Silicon & Intel)
 - **[Windows ARM64 Guide](README_ARM64.md)** - Test-signing instructions for Snapdragon X Elite / Surface Pro
 - **[VPN_INTERNET_EN.md](VPN_INTERNET_EN.md)** - Remote connection over Internet (Tailscale / ZeroTier / WireGuard)
 - **[CHANGELOG.md](../CHANGELOG.md)** - Complete version history

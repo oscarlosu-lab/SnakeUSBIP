@@ -91,6 +91,13 @@ Connect your diode laser (GRBL/Ruida) and overhead alignment camera simultaneous
 
 ---
 
+## 🧪 What's New in v1.3.0-rc.1 (Release Candidate)
+
+- 📌 **Kernel Boot Persistence & Retry Control (`VhciNativeClient.cs`)** - Persist attached USB devices in `usbip2_ude` across Windows reboots and cancel active kernel attach retries from the context menu.
+- 🏷️ **Custom USB Serial Numbers & Virtual Hub Ports (`KernelConfigService.cs`)** - Assign persistent custom `Serial` strings per device and configure Virtual Hub USB 2.0 / USB 3.0 port capacity (`30` / `30` default).
+- 🩺 **One-Click Diagnostics Bundle (`KernelDiagnosticsService.cs`)** - Export a `.zip` diagnostics archive containing driver state, imported VHCI ports, hub configuration, and logs.
+- 🔒 **Control Plane & Android Hardening (`snakeusbip-ctl`, `ControlServer.swift`, `SunshineHandoffServer.kt`)** - Optional `allowed_ips` whitelist and constant-time HMAC `control_token` on TCP `3241`, UAS external SSD warnings, and optional Sunshine webhook token authentication on Android port `3242`.
+
 ## 🆕 What's New in v1.2.0 (SnakeUSBIP Multiplatform Suite)
 
 - ⚡ **Direct Kernel VHCI IOCTL & Real-Time Push Events (`VhciNativeClient.cs`)** - Communicates directly with the `usbip2_ude` Windows kernel driver via Win32 `DeviceIoControl` and async overlapped `ReadFile` events (eliminating repeated `usbip.exe` process spawns, regex parsing, and per-call SHA-256 checks, with clean CLI fallback and Windows 11 tray icon sizing).

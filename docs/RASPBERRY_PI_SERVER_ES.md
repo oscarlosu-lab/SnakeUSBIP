@@ -16,7 +16,7 @@ Guía paso a paso para configurar un servidor USB/IP en Raspberry Pi OS.
 Ejecuta este único comando en tu Raspberry Pi para instalar `usbip`, configurar el servicio `systemd` y activar la **auto-exportación `udev` hotplug** (cualquier USB que enchufes en la Pi aparecerá automáticamente en Windows igual que en VirtualHere):
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/oscarlosu-lab/SnakeUSBIP-Server/main/scripts/install-server-linux.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/oscarlosu-lab/SnakeUSBIP/main/server/scripts/install-server-linux.sh | sudo bash
 ```
 
 ---
@@ -177,10 +177,9 @@ En ciertos kernels de Linux (especialmente en SBCs ARM64 como la Raspberry Pi Ze
 Si solo necesitas el mando para controles de juego, giroscopio, touchpad y vibración, puedes aislar la interfaz HID del gamepad y desautorizar las interfaces de audio mediante una regla persistente de udev en la Raspberry Pi:
 
 ```bash
-sudo bash -c 'cat << "EOF" > /etc/udev/rules.d/99-dualsense-no-audio.rules
-# Deshabilita interfaces de audio de DualSense (054c:0ce6) para prevenir Oops isócrono en usbip_host
-ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="054c", ATTR{idProduct}=="0ce6", ATTR{bInterfaceNumber}=="01", ATTR{authorized}="0"
-ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="054c", ATTR{idProduct}=="0ce6", ATTR{bInterfaceNumber}=="02", ATTR{authorized}="0"
+sudo bash -c 'cat << "EOF" > /etc/udev/rules.d/99-snakeusbip-dualsense-fix.rules
+# Desautorizar interfaces de audio de DualSense para prevenir Oops isócrono en usbip_host
+ACTION=="add", SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_interface", ATTRS{idVendor}=="054c", ATTR{bInterfaceClass}=="01", ATTR{authorized}="0"
 EOF'
 
 sudo udevadm control --reload-rules && sudo udevadm trigger

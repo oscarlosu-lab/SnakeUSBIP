@@ -16,7 +16,7 @@ Step-by-step guide to configure a USB/IP server on Raspberry Pi OS.
 Run this single command on your Raspberry Pi to automatically install `usbip`, configure the `systemd` daemon, and enable **`udev` hotplug auto-export** (so any USB device you plug into the Pi is shared automatically like VirtualHere):
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/oscarlosu-lab/SnakeUSBIP-Server/main/scripts/install-server-linux.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/oscarlosu-lab/SnakeUSBIP/main/server/scripts/install-server-linux.sh | sudo bash
 ```
 
 ---
@@ -64,7 +64,7 @@ Should show `(attached)` next to the device.
 ## 🔄 Make Persistent (Autostart)
 
 ### Option 1: 1-Click Auto-Installer (Recommended)
-If you used the 1-Click Installer (`install-server.sh`), `snakeusbip.service` and `snakeusbip-autobind.service` are **already installed and enabled automatically**.
+If you used the 1-Click Installer (`install-server-linux.sh`), `usbipd.service` and `snakeusbip-autounbind.service` (On-Demand Dynamic Binding on TCP `3241`) are **already installed and enabled automatically**.
 
 ### Option 2: Create manual systemd service
 
@@ -184,10 +184,9 @@ On certain Linux kernels (especially on low-power ARM64 boards like Raspberry Pi
 If you only need the controller for gaming inputs, motion gyro, touchpad, and vibration, you can isolate the HID gamepad interface and de-authorize the audio streaming interfaces by adding a persistent udev rule on the Pi:
 
 ```bash
-sudo bash -c 'cat << "EOF" > /etc/udev/rules.d/99-dualsense-no-audio.rules
-# Disable DualSense (054c:0ce6) Audio interfaces (interfaces 1 and 2) to prevent usbip_host isochronous Oops
-ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="054c", ATTR{idProduct}=="0ce6", ATTR{bInterfaceNumber}=="01", ATTR{authorized}="0"
-ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="054c", ATTR{idProduct}=="0ce6", ATTR{bInterfaceNumber}=="02", ATTR{authorized}="0"
+sudo bash -c 'cat << "EOF" > /etc/udev/rules.d/99-snakeusbip-dualsense-fix.rules
+# Disable DualSense audio interfaces to prevent usbip_host isochronous Oops
+ACTION=="add", SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_interface", ATTRS{idVendor}=="054c", ATTR{bInterfaceClass}=="01", ATTR{authorized}="0"
 EOF'
 
 sudo udevadm control --reload-rules && sudo udevadm trigger

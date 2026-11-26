@@ -1,6 +1,8 @@
-# 📖 Manual de Usuario de SnakeUSBIP v3.0.1
+# 📖 Manual de Usuario de SnakeUSBIP v1.2.0 / v1.3.0-rc.1
 
 🌐 **Idioma / Language:** [English](USAGE_EN.md) | **Español**
+
+> **Aviso de Migración:** `SnakeUSBIP` se está migrando hacia **[USBAnywhere](https://github.com/oscarlosu-lab/USBAnywhere)** (el producto final recomendado).
 
 ## Interfaz Principal
 
@@ -96,11 +98,11 @@ El cliente SnakeUSBIP se conecta de forma transparente a cualquier servidor USB/
 
 1. En tu Mac (Apple Silicon o Intel), ejecuta el instalador 1-click en Terminal:
    `ash
-   curl -fsSL https://raw.githubusercontent.com/oscarlosu-lab/SnakeUSBIP-Server/main/scripts/install-server-mac.sh | sudo bash
+   curl -fsSL https://raw.githubusercontent.com/oscarlosu-lab/SnakeUSBIP/main/server/scripts/install-server-mac.sh | sudo bash
    `
 2. En SnakeUSBIP Client, introduce la IP del Mac (ej. 192.168.1.50) y pulsa **📋 Listar**.
 3. La conexión de dispositivos desde macOS no está disponible actualmente.
-4. Consulta el [Manual de macOS](https://github.com/oscarlosu-lab/SnakeUSBIP-Server/blob/main/docs/USAGE_MACOS_ES.md) para más opciones.
+4. Consulta el [Manual de macOS](../server/docs/USAGE_MACOS_ES.md) para más opciones.
 
 ### 🖥️ Conexión a un Servidor Windows de Escritorio
 1. Ejecuta SnakeUSBIP-Server.exe en el PC emisor y pulsa **📤 Compartir** en los dispositivos deseados.

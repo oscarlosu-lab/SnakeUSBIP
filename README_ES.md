@@ -83,6 +83,13 @@ Conecta tu grabadora láser diodo (GRBL/Ruida) y tu cámara cenital simultáneam
 
 ---
 
+## 🧪 Novedades en v1.3.0-rc.1 (Release Candidate)
+
+- 📌 **Persistencia en Kernel al Arrancar y Control de Reintentos (`VhciNativeClient.cs`)** - Persiste dispositivos USB en `usbip2_ude` entre reinicios de Windows y detén reintentos activos desde el menú contextual.
+- 🏷️ **Números de Serie USB Personalizados y Puertos del Hub Virtual (`KernelConfigService.cs`)** - Asigna un `Serial` persistente por dispositivo y ajusta la capacidad USB 2.0 / USB 3.0 del hub virtual (`30` / `30` por defecto).
+- 🩺 **Paquete de Diagnóstico en 1 Clic (`KernelDiagnosticsService.cs`)** - Exporta un archivo `.zip` con el estado del driver, puertos VHCI importados, configuración del hub y logs.
+- 🔒 **Endurecimiento de Control y Android (`snakeusbip-ctl`, `ControlServer.swift`, `SunshineHandoffServer.kt`)** - Lista blanca `allowed_ips` y token HMAC `control_token` opcionales en TCP `3241`, avisos `uas` en SSDs externos y autenticación opcional por token en webhook Sunshine (`3242`).
+
 ## 🆕 Novedades en v1.2.0 (Suite Multiplataforma SnakeUSBIP)
 
 - ⚡ **IOCTL Directo al Kernel VHCI y Eventos Push en Tiempo Real (`VhciNativeClient.cs`)** - Comunicación nativa por `DeviceIoControl` y lectura asíncrona `ReadFile` contra `usbip2_ude` (eliminando subprocesos `usbip.exe`, regex y hashes SHA-256 repetidos, con fallback automático a CLI y ajuste de icono en bandeja Windows 11).
