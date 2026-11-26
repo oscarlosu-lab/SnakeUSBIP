@@ -175,7 +175,19 @@
 
   <!-- HERO: INDUSTRIAL CONSOLE -->
   <main>
-  <section class="pt-28 pb-16 border-b border-chassis-700 tech-grid">
+  <div class="pt-20 bg-amber-950/50 border-b border-signal-amber/40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs font-mono">
+      <div class="text-amber-200">
+        <span class="font-bold text-signal-amber uppercase" data-i18n="mig_badge">MIGRATION NOTICE:</span>
+        <span data-i18n="mig_text">SnakeUSBIP is migrating to USBAnywhere. SnakeUSBIP receives new improvements for early testing; USBAnywhere is the final production product.</span>
+      </div>
+      <div class="flex items-center gap-3 shrink-0">
+        <a href="https://github.com/oscarlosu-lab/USBAnywhere" target="_blank" rel="noopener" class="px-2.5 py-1 rounded bg-signal-amber text-chassis-950 font-bold hover:bg-amber-400 transition-colors" data-i18n="mig_cta">Go to USBAnywhere</a>
+        <a href="https://github.com/oscarlosu-lab/SnakeUSBIP/releases/tag/v1.3.0-rc.1" target="_blank" rel="noopener" class="px-2.5 py-1 rounded border border-signal-amber/50 text-signal-amber hover:bg-chassis-850 transition-colors">v1.3.0-rc.1 (RC)</a>
+      </div>
+    </div>
+  </div>
+  <section class="pt-12 pb-16 border-b border-chassis-700 tech-grid">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
@@ -528,7 +540,10 @@
         row_ctrl: "On-Demand Bind / Unbind API",
         row_platforms: "Platforms",
         sec_dl_tag: "05 // OFFICIAL RELEASE BINARIES",
-        sec_dl_title: "SnakeUSBIP v1.2.0 Artifacts"
+        sec_dl_title: "SnakeUSBIP v1.2.0 Artifacts",
+        mig_badge: "MIGRATION NOTICE:",
+        mig_text: "SnakeUSBIP is migrating to USBAnywhere. SnakeUSBIP receives new improvements for early testing; USBAnywhere is the final production product.",
+        mig_cta: "Go to USBAnywhere"
       },
       es: {
         nav_arch: "Arquitectura",
@@ -567,7 +582,10 @@
         row_ctrl: "API Bind / Unbind Bajo Demanda",
         row_platforms: "Plataformas",
         sec_dl_tag: "05 // BINARIOS OFICIALES",
-        sec_dl_title: "Artefactos SnakeUSBIP v1.2.0"
+        sec_dl_title: "Artefactos SnakeUSBIP v1.2.0",
+        mig_badge: "AVISO DE MIGRACIÓN:",
+        mig_text: "SnakeUSBIP se está migrando a USBAnywhere. SnakeUSBIP recibe primero las mejoras sin validar; USBAnywhere es el producto final.",
+        mig_cta: "Ir a USBAnywhere"
       }
     };
 

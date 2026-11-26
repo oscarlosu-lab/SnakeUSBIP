@@ -195,6 +195,20 @@ sudo udevadm control --reload-rules && sudo udevadm trigger
 
 ---
 
+## 🔒 Control API Security (`allowed_ips` & `control_token`) & UAS Storage Notice
+
+Restrict access to the TCP `3241` control plane on Linux hosts using `snakeusbip-ctl`:
+
+```bash
+sudo snakeusbip-ctl policy allow-ip 192.168.1.50
+sudo snakeusbip-ctl policy deny-ip 192.168.1.50
+sudo snakeusbip-ctl policy set-token <secret-token>
+sudo snakeusbip-ctl policy clear-token
+sudo snakeusbip-ctl policy show
+```
+
+- **UAS External SSDs**: External drives using the `uas` (USB Attached SCSI) driver trigger a compatibility warning before binding; standard `usb-storage` mode is recommended if a drive fails to enumerate remotely.
+
 ## 📝 Notes
 
 - The `bus-id` (e.g., `1-1.4`) may change if you reconnect the device

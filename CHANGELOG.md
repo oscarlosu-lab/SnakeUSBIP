@@ -1,5 +1,19 @@
 # CHANGELOG - SnakeUSBIP
 
+## [1.3.0-rc.1] - 2026-11-26 (Release Candidate)
+
+> **Migration Notice:** `SnakeUSBIP` is being migrated into [USBAnywhere](https://github.com/oscarlosu-lab/USBAnywhere). `SnakeUSBIP` acts as the staging branch for new improvements prior to full stabilization, while `USBAnywhere` is the final production product.
+
+### Added
+- **Windows Kernel Boot Persistence & Custom USB Serials (`VhciNativeClient.cs`, `KernelConfigService.cs`)**:
+  - Added native VHCI IOCTL support for kernel-level persistent device attachments across reboots (`SetKernelPersistentDevicesAsync`, `GetKernelPersistentDevicesAsync`), custom per-device USB serial strings, and configurable Virtual Hub USB 2.0 / USB 3.0 port counts.
+- **One-Click Diagnostics Bundle Export (`KernelDiagnosticsService.cs`)**:
+  - Exports a ZIP diagnostics archive containing driver state, imported VHCI ports, hub configuration, and recent logs.
+- **Control Plane Hardening & UAS Storage Detection (`snakeusbip-ctl`, `ControlServer.swift`, `USBIPServer.swift`)**:
+  - Added optional IP allowlist (`allowed_ips`) and constant-time HMAC `control_token` authentication (`policy allow-ip|deny-ip|set-token|clear-token`), plus UAS (`usb-storage` / `uas`) detection warnings for external SSDs.
+- **Android Sunshine Webhook Token Auth & Dynamic Inventory Parser (`SunshineHandoffServer.kt`)**:
+  - Added optional webhook bearer/`X-USBAnywhere-Token` authentication, HTTP header size bounds, and structured JSON inventory parsing.
+
 ## [1.2.0] - 2026-11-15
 
 ### Added

@@ -204,7 +204,7 @@ public struct SettingsView: View {
 
                 // About & Hardware Parity
                 VStack(alignment: .leading, spacing: 8) {
-                    Label("About SnakeUSBIP Server for macOS v1.2.0", systemImage: "info.circle")
+                    Label("About SnakeUSBIP Server for macOS v1.3.0-rc.1", systemImage: "info.circle")
                         .font(.system(size: 13, weight: .semibold))
                         .foregroundColor(neonCyan)
 

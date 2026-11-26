@@ -2,7 +2,10 @@
 
 🌐 **Idioma / Language:** [English](README.md) | **Español**
 
-**v1.2.0** | [🌍 Web Oficial](https://oscarlosu-lab.github.io/SnakeUSBIP/) | [📦 Releases y Descargas](https://github.com/oscarlosu-lab/SnakeUSBIP/releases/latest) | [🌐 SnakeUSBIP Server (Windows & macOS)](https://github.com/oscarlosu-lab/SnakeUSBIP) | [📱 SnakeUSBIP Android](https://github.com/oscarlosu-lab/SnakeUSBIP) | [💬 Comunidad Reddit](https://www.reddit.com/r/UsbAnywhere/) | [📖 Manual de Usuario](docs/USAGE_ES.md) | [🌐 Conexión VPN](docs/VPN_INTERNET_ES.md)
+**v1.2.0** (Estable) · **[v1.3.0-rc.1](https://github.com/oscarlosu-lab/SnakeUSBIP/releases/tag/v1.3.0-rc.1)** (Release Candidate) | [🌍 Web Oficial](https://oscarlosu-lab.github.io/SnakeUSBIP/) | [📦 Releases y Descargas](https://github.com/oscarlosu-lab/SnakeUSBIP/releases/latest) | [🌐 USBAnywhere (Producto Final)](https://github.com/oscarlosu-lab/USBAnywhere) | [💬 Comunidad Reddit](https://www.reddit.com/r/UsbAnywhere/) | [📖 Manual de Usuario](docs/USAGE_ES.md) | [🌐 Conexión VPN](docs/VPN_INTERNET_ES.md)
+
+> [!IMPORTANT]
+> **Aviso de Migración — Transición hacia [USBAnywhere](https://github.com/oscarlosu-lab/USBAnywhere):** `SnakeUSBIP` se está migrando a **[USBAnywhere](https://github.com/oscarlosu-lab/USBAnywhere)**. `SnakeUSBIP` es el repositorio donde se prueban e integran primero las mejoras antes de su validación final, mientras que **[USBAnywhere](https://github.com/oscarlosu-lab/USBAnywhere)** es el producto final recomendado.
 
 > **¿Por qué pagar 49,00 $ por servidor y estar limitado a un único dispositivo USB?**
 > **SnakeUSBIP** conecta **ilimitados** periféricos USB remotos por LAN, Wi-Fi e Internet con **cero licencias**, **drivers certificados WHQL por Microsoft** y **latencia ultrabaja ajustable**.

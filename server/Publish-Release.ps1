@@ -2,7 +2,7 @@
 # Automates the release process for SnakeUSBIP Server v1.0.0
 # (c) 2025-2026 oscarlosu-lab
 
-$version = "1.0.0"
+$version = "1.3.0-rc.1"
 $repoRoot = $PSScriptRoot
 $projectPath = Join-Path $repoRoot "src\SnakeUSBIP.Server"
 $releasePath = Join-Path $repoRoot "release"

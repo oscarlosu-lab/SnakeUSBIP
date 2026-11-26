@@ -1,4 +1,4 @@
-﻿[CmdletBinding()]
+[CmdletBinding()]
 param(
     [string]$Version = "1.0.0",
     [string]$OutputDir = "$PSScriptRoot\..\dist"
@@ -21,6 +21,8 @@ if (Test-Path $OutputDir) { Remove-Item $OutputDir -Recurse -Force }
 New-Item -ItemType Directory -Path "$OutputDir\portable\server" -Force | Out-Null
 New-Item -ItemType Directory -Path "$OutputDir\installer" -Force | Out-Null
 
+$numericVersion = ($Version -split '-')[0]
+
 # 1. Server (.NET 9 ReadyToRun Single-File)
 Write-Host "`n[1/4] Compilando Server con ReadyToRun (x64)..." -ForegroundColor Yellow
 $serverProj = "$PSScriptRoot\..\server\src\SnakeUSBIP.Server\SnakeUSBIP.Server.csproj"
@@ -30,7 +32,7 @@ if (Test-Path $serverProj) {
         /p:IncludeNativeLibrariesForSelfExtract=true `
         /p:EnableCompressionInSingleFile=true `
         /p:PublishReadyToRun=true `
-        /p:Version=$Version /p:AssemblyVersion=$($Version).0 /p:FileVersion=$($Version).0 /p:InformationalVersion=$Version `
+        /p:Version=$Version /p:AssemblyVersion="$numericVersion.0" /p:FileVersion="$numericVersion.0" /p:InformationalVersion=$Version `
         /p:DebugType=none `
         /p:DebugSymbols=false `
         -o "$OutputDir\portable\server"
@@ -46,7 +48,7 @@ if (Test-Path $clientProj) {
         /p:IncludeNativeLibrariesForSelfExtract=true `
         /p:EnableCompressionInSingleFile=true `
         /p:PublishReadyToRun=true `
-        /p:Version=$Version /p:AssemblyVersion=$($Version).0 /p:FileVersion=$($Version).0 /p:InformationalVersion=$Version `
+        /p:Version=$Version /p:AssemblyVersion="$numericVersion.0" /p:FileVersion="$numericVersion.0" /p:InformationalVersion=$Version `
         /p:DebugType=none `
         /p:DebugSymbols=false `
         -o "$OutputDir\portable"

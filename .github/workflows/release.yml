@@ -80,8 +80,16 @@ jobs:
             TAG="v1.0.0"
           fi
           VERSION="${TAG#v}"
+          IS_PRERELEASE="false"
+          RELEASE_TITLE="🐍 SnakeUSBIP ${TAG} — Official Multiplatform Release"
+          if [[ "$TAG" == *-* ]]; then
+            IS_PRERELEASE="true"
+            RELEASE_TITLE="🐍 SnakeUSBIP ${TAG} — Release Candidate (Multiplatform)"
+          fi
           echo "tag=$TAG" >> $GITHUB_OUTPUT
           echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "is_prerelease=$IS_PRERELEASE" >> $GITHUB_OUTPUT
+          echo "release_title=$RELEASE_TITLE" >> $GITHUB_OUTPUT
 
       - name: Build Swift Server (Release)
         run: |
@@ -129,8 +137,16 @@ jobs:
             TAG="v1.0.0"
           fi
           VERSION="${TAG#v}"
+          IS_PRERELEASE="false"
+          RELEASE_TITLE="🐍 SnakeUSBIP ${TAG} — Official Multiplatform Release"
+          if [[ "$TAG" == *-* ]]; then
+            IS_PRERELEASE="true"
+            RELEASE_TITLE="🐍 SnakeUSBIP ${TAG} — Release Candidate (Multiplatform)"
+          fi
           echo "tag=$TAG" >> $GITHUB_OUTPUT
           echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "is_prerelease=$IS_PRERELEASE" >> $GITHUB_OUTPUT
+          echo "release_title=$RELEASE_TITLE" >> $GITHUB_OUTPUT
 
       - name: Package Linux Server Suite
         run: |
@@ -174,8 +190,16 @@ jobs:
             TAG="v1.0.0"
           fi
           VERSION="${TAG#v}"
+          IS_PRERELEASE="false"
+          RELEASE_TITLE="🐍 SnakeUSBIP ${TAG} — Official Multiplatform Release"
+          if [[ "$TAG" == *-* ]]; then
+            IS_PRERELEASE="true"
+            RELEASE_TITLE="🐍 SnakeUSBIP ${TAG} — Release Candidate (Multiplatform)"
+          fi
           echo "tag=$TAG" >> $GITHUB_OUTPUT
           echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "is_prerelease=$IS_PRERELEASE" >> $GITHUB_OUTPUT
+          echo "release_title=$RELEASE_TITLE" >> $GITHUB_OUTPUT
 
       - name: Set up JDK 17
         uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # v6
@@ -245,8 +269,16 @@ jobs:
             TAG="v1.0.0"
           fi
           VERSION="${TAG#v}"
+          IS_PRERELEASE="false"
+          RELEASE_TITLE="🐍 SnakeUSBIP ${TAG} — Official Multiplatform Release"
+          if [[ "$TAG" == *-* ]]; then
+            IS_PRERELEASE="true"
+            RELEASE_TITLE="🐍 SnakeUSBIP ${TAG} — Release Candidate (Multiplatform)"
+          fi
           echo "tag=$TAG" >> $GITHUB_OUTPUT
           echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "is_prerelease=$IS_PRERELEASE" >> $GITHUB_OUTPUT
+          echo "release_title=$RELEASE_TITLE" >> $GITHUB_OUTPUT
 
       - name: Download all build artifacts
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
@@ -274,9 +306,12 @@ jobs:
           tag_name: ${{ steps.vars.outputs.tag }}
           files: |
             final-dist/*
-          name: "🐍 SnakeUSBIP ${{ steps.vars.outputs.tag }} — Official Multiplatform Release"
+          name: "${{ steps.vars.outputs.release_title }}"
           generate_release_notes: true
           body: |
+            > [!IMPORTANT]
+            > **Migration Notice — Moving to [USBAnywhere](https://github.com/oscarlosu-lab/USBAnywhere):** `SnakeUSBIP` is currently being migrated into **USBAnywhere**. `SnakeUSBIP` serves as the staging/testing branch where new improvements are introduced before full stabilization, while **[USBAnywhere](https://github.com/oscarlosu-lab/USBAnywhere)** is the final, recommended production product.
+
             ## 🐍 SnakeUSBIP ${{ steps.vars.outputs.tag }} — Multiplatform Ecosystem
             
             100% Free and Open Source (GNU GPLv3).
@@ -302,4 +337,4 @@ jobs:
             ---
             ☕ **Apoya este proyecto libre**: [Ko-fi](https://ko-fi.com/oscarlosu)
           draft: false
-          prerelease: false
+          prerelease: ${{ steps.vars.outputs.is_prerelease == 'true' }}
