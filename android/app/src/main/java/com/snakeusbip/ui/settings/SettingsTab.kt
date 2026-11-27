@@ -3,6 +3,7 @@ package com.snakeusbip.ui.settings
 import com.snakeusbip.ui.components.TvSwitch
 import com.snakeusbip.ui.components.tvFocusRing
 import androidx.compose.foundation.background
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -187,7 +188,7 @@ fun SettingsTab(viewModel: SettingsViewModel) {
                                 )
                                 Spacer(modifier = Modifier.height(2.dp))
                                 Text(
-                                    text = "All auto-start hooks are strictly disabled by default. SnakeUSBIP never runs silently in the background, never wakes on boot, and never triggers OS popups unless you explicitly opt in.",
+                                    text = "All auto-start hooks are strictly disabled by default. USBAnywhere never runs silently in the background, never wakes on boot, and never triggers OS popups unless you explicitly opt in.",
                                     color = Color.LightGray,
                                     fontSize = 10.5.sp,
                                     lineHeight = 14.sp
@@ -532,7 +533,7 @@ fun SettingsTab(viewModel: SettingsViewModel) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "SnakeUSBIP Android v1.0.0 • Open Source",
+                    text = "USBAnywhere Android v1.0.0 • Open Source",
                     color = Color.Gray,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Medium
@@ -705,7 +706,7 @@ fun WanMeshCard() {
         WanPairingToken.PairingData(
             host = host,
             port = 3240,
-            serverName = "SnakeUSBIP-Android",
+            serverName = "USBAnywhere-Android",
             isTlsEnabled = true,
             tlsPort = 3243,
             pairingCode = pairingCode,
@@ -894,7 +895,13 @@ fun UsbAudioBridgeCard() {
 
 @Composable
 fun CyberQrMatrixView(data: String) {
-    val matrix = remember(data) { CyberQrGenerator.generateMatrix(data) }
+    var matrix by remember(data) { mutableStateOf<Array<BooleanArray>?>(null) }
+    LaunchedEffect(data) {
+        matrix = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Default) {
+            CyberQrGenerator.generateMatrix(data)
+        }
+    }
+    val resolved = matrix ?: return
     val size = CyberQrGenerator.MATRIX_SIZE
 
     androidx.compose.foundation.Canvas(
@@ -906,7 +913,7 @@ fun CyberQrMatrixView(data: String) {
         val cellSize = this.size.width / size
         for (r in 0 until size) {
             for (c in 0 until size) {
-                if (matrix[r][c]) {
+                if (resolved[r][c]) {
                     drawRect(
                         color = Color.Black,
                         topLeft = androidx.compose.ui.geometry.Offset(c * cellSize, r * cellSize),

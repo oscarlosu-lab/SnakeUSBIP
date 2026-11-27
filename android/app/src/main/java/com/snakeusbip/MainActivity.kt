@@ -19,6 +19,9 @@ import com.snakeusbip.gamepad.GamepadInputManager
 import com.snakeusbip.gaming.sunshine.SunshineHandoffManager
 import com.snakeusbip.theme.SnakeUSBIPTheme
 import com.snakeusbip.ui.AppNavHost
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
@@ -29,8 +32,11 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        com.snakeusbip.data.AppPreferences.syncComponentState(applicationContext)
-        UsbDeviceCatalog.initialize(applicationContext)
+        val appCtx = applicationContext
+        CoroutineScope(Dispatchers.IO).launch {
+            com.snakeusbip.data.AppPreferences.syncComponentState(appCtx)
+            UsbDeviceCatalog.initialize(appCtx)
+        }
         SunshineHandoffManager.initialize(applicationContext)
 
         val isTv = isAndroidTv()

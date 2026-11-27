@@ -12,6 +12,12 @@
 - **Smart Favorites `[Rev:XXXX]` Disambiguation, Driver `0.9.8.2` Dual-ABI & macOS `IOUSBHost` (`SnakeUSBIP.Server.Mac`)**:
   - Added hardware revision disambiguation + Server `Rev` column, `IOUSBHost` & `AVAudioEngine` virtual microphone support on macOS, Linux automatic USB autosuspend disablement + systemd `usbipd` drop-ins, and 8-frame square high-DPI `.ico` bundles (`16..256 px`).
 
+### Fixed
+- **Pre-Release E2E & Stress Hardening (`App.xaml.cs`, `LocalControlApiService`, `UsbipService`, `TlsTunnelService`, `DiscoveryResponderService`, `snakeusbip-ctl`, `snakeusbip-mcp.py`, Android)**:
+  - Enabled non-elevated headless `--status --json` / `--doctor --json` execution with pure JSON output, `SemaphoreSlim` concurrency bounds, 5s/10s socket & TLS timeouts, HTTP `400` on malformed JSON, `TOKEN` control header propagation, and bounded `ST_NODEV` attach retries.
+  - Restricted remote `PAIR_CREATE` on Linux TCP `3241` to loopback unless `control_token` is set, persisted pairing state (`0o600`), raised `listen(64)`, added non-blocking `logs` defaults, and isolated MCP `stdout`.
+  - Added strict Android `busId` validation (`^\d+-[\d.]+$`), pairing payload aliases, and off-main-thread UI/QR initialization.
+
 ## [1.3.0] - 2026-11-26
 
 > **Migration Notice:** `SnakeUSBIP` is being migrated into [USBAnywhere](https://github.com/oscarlosu-lab/USBAnywhere). `SnakeUSBIP` acts as the staging branch for new improvements prior to full stabilization, while `USBAnywhere` is the final production product.

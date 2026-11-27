@@ -1,6 +1,6 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // SnakeUSBIP Server - Discovery & Dynamic Control Service (UDP/TCP 3241)
-// Copyright (c) 2025-2026 oscarlosu-lab - https://github.com/oscarlosu-lab/SnakeUSBIP-Server
+// Copyright (c) 2025-2026 oscarlosu-lab - https://github.com/oscarlosu-lab/SnakeUSBIP
 // Licensed under GPL v3
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -13,7 +13,7 @@ using System.Text.Json;
 namespace SnakeUSBIP.Server.Services;
 
 /// <summary>
-/// UDP discovery responder and TCP Dynamic Control API on port 3241 for the SnakeUSBIP v1.0.0 ecosystem.
+/// UDP discovery responder and TCP Dynamic Control API on port 3241 for the SnakeUSBIP v3.2.0 ecosystem.
 /// - UDP 3241: Responds to USBANYWHERE_DISCOVERY_PROBE with USBANYWHERE_SERVER:{MachineName}.
 /// - TCP 3241: Handles LIST, BIND <busid>, UNBIND <busid>, STATUS commands for On-Demand binding.
 /// </summary>
@@ -30,6 +30,7 @@ public class DiscoveryResponderService : IDisposable
     private readonly PairingService _pairingService;
     private readonly Func<string?>? _tlsFingerprintProvider;
     private readonly SemaphoreSlim _clientConcurrency = new(8, 8);
+    private readonly object _pairStateLock = new();
     private UdpClient? _udpClient;
     private TcpListener? _tcpListener;
     private CancellationTokenSource? _cts;
@@ -187,6 +188,13 @@ public class DiscoveryResponderService : IDisposable
                     return;
                 }
 
+                if (SettingsService.Current.WhitelistEnabled &&
+                    client.Client.RemoteEndPoint is IPEndPoint remoteEp &&
+                    !IPAddress.IsLoopback(remoteEp.Address))
+                {
+                    // Allow PAIR before IP whitelist check when an active code exists
+                }
+
                 var stream = client.GetStream();
                 var buffer = new byte[MaxCommandBytes];
                 int totalRead = 0;
@@ -211,23 +219,30 @@ public class DiscoveryResponderService : IDisposable
                     if (_pairingService.TryRedeem(preParts[1]))
                     {
                         var remoteIp = (client.Client.RemoteEndPoint as IPEndPoint)?.Address.ToString();
-                        if (!string.IsNullOrWhiteSpace(remoteIp) &&
-                            SettingsService.Current.WhitelistEnabled &&
-                            !SettingsService.Current.WhitelistedIPs.Contains(remoteIp, StringComparer.OrdinalIgnoreCase))
+                        string controlToken;
+                        lock (_pairStateLock)
                         {
-                            SettingsService.Current.WhitelistedIPs.Add(remoteIp);
+                            if (!string.IsNullOrWhiteSpace(remoteIp) &&
+                                SettingsService.Current.WhitelistEnabled &&
+                                !SettingsService.Current.WhitelistedIPs.Contains(remoteIp, StringComparer.OrdinalIgnoreCase))
+                            {
+                                SettingsService.Current.WhitelistedIPs.Add(remoteIp);
+                            }
+                            if (string.IsNullOrWhiteSpace(SettingsService.Current.ControlToken))
+                            {
+                                SettingsService.Current.ControlToken = PairingService.GenerateControlToken();
+                            }
+                            controlToken = SettingsService.Current.ControlToken;
+                            SettingsService.Save();
                         }
-                        if (string.IsNullOrWhiteSpace(SettingsService.Current.ControlToken))
-                        {
-                            SettingsService.Current.ControlToken = PairingService.GenerateControlToken();
-                        }
-                        SettingsService.Save();
                         var fp = _tlsFingerprintProvider?.Invoke() ?? "";
                         await WriteJsonAsync(stream, new
                         {
                             status = "OK",
                             server = Environment.MachineName,
-                            token = SettingsService.Current.ControlToken,
+                            server_name = Environment.MachineName,
+                            token = controlToken,
+                            control_token = controlToken,
                             usbip_port = 3240,
                             tls_port = SettingsService.Current.TlsPort,
                             tls_fingerprint = fp
@@ -241,10 +256,10 @@ public class DiscoveryResponderService : IDisposable
                 }
 
                 if (SettingsService.Current.WhitelistEnabled &&
-                    client.Client.RemoteEndPoint is IPEndPoint remoteEp &&
-                    !IPAddress.IsLoopback(remoteEp.Address))
+                    client.Client.RemoteEndPoint is IPEndPoint wlEp &&
+                    !IPAddress.IsLoopback(wlEp.Address))
                 {
-                    var remoteIp = remoteEp.Address.ToString();
+                    var remoteIp = wlEp.Address.ToString();
                     if (SettingsService.Current.WhitelistedIPs.Count == 0 ||
                         !SettingsService.Current.WhitelistedIPs.Contains(remoteIp, StringComparer.OrdinalIgnoreCase))
                     {
@@ -366,7 +381,7 @@ public class DiscoveryResponderService : IDisposable
                 else if (cmd == "STATUS")
                 {
                     var devs = _usbipdService != null ? await _usbipdService.GetDevicesAsync() : new();
-                    var version = typeof(DiscoveryResponderService).Assembly.GetName().Version?.ToString(3) ?? "1.3.0";
+                    var version = typeof(DiscoveryResponderService).Assembly.GetName().Version?.ToString(3) ?? "3.4.0";
                     await WriteJsonAsync(stream, new
                     {
                         status = "OK",
@@ -407,7 +422,7 @@ public class DiscoveryResponderService : IDisposable
     public void Stop()
     {
         _cts?.Cancel();
-        try { _tcpListener?.Stop(); } catch { }
+        try { _tcpListener?.Stop(); } catch (Exception ex) { LogService.Debug($"Discovery cleanup: {ex.Message}"); }
         _tcpListener = null;
         _udpClient?.Dispose();
         _udpClient = null;

@@ -44,6 +44,10 @@ class UsbIpServerService : Service() {
         private const val CHANNEL_ID = "usbanywhere_server_channel"
         private const val NOTIFICATION_ID = 3240
         private const val DISCOVERY_PORT = 3241
+        private val BUSID_REGEX = Regex("^\\d+-[\\d.]+$")
+
+        internal fun isValidBusId(busId: String?): Boolean =
+            !busId.isNullOrBlank() && BUSID_REGEX.matches(busId.trim())
         private const val PROBE_MESSAGE = "USBANYWHERE_DISCOVERY_PROBE"
         private const val NSD_SERVICE_TYPE = "_usbanywhere._tcp"
 
@@ -153,7 +157,7 @@ class UsbIpServerService : Service() {
         )
 
         val notification: Notification = NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("SnakeUSBIP Server Active")
+            .setContentTitle("USBAnywhere Server Active")
             .setContentText("Listening on port ${UsbIpConstants.DEFAULT_PORT} (OTG USB/IP)")
             .setSmallIcon(android.R.drawable.stat_sys_upload)
             .setContentIntent(pendingIntent)
@@ -174,12 +178,12 @@ class UsbIpServerService : Service() {
     private fun acquireLocks() {
         try {
             val powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
-            wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "SnakeUSBIP::ServerWakeLock").apply {
+            wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "USBAnywhere::ServerWakeLock").apply {
                 acquire(12 * 60 * 60 * 1000L) // 12 hours timeout
             }
 
             val wifiManager = applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
-            wifiLock = wifiManager.createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, "SnakeUSBIP::ServerWifiLock").apply {
+            wifiLock = wifiManager.createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, "USBAnywhere::ServerWifiLock").apply {
                 acquire()
             }
         } catch (e: Exception) {
@@ -276,7 +280,7 @@ class UsbIpServerService : Service() {
     private fun registerNsdService(port: Int) {
         try {
             nsdManager = getSystemService(Context.NSD_SERVICE) as? NsdManager
-            val rawName = "SnakeUSBIP-${Build.MODEL.replace(" ", "-")}"
+            val rawName = "USBAnywhere-${Build.MODEL.replace(" ", "-")}"
             val serviceInfo = NsdServiceInfo().apply {
                 serviceName = rawName
                 serviceType = NSD_SERVICE_TYPE
@@ -398,8 +402,12 @@ class UsbIpServerService : Service() {
                                     if (!vr.success) {
                                         org.json.JSONObject().put("status", "DENIED").put("message", vr.message).toString()
                                     } else {
+                                        val hostName = android.os.Build.MODEL ?: "Android"
                                         org.json.JSONObject()
                                             .put("status", "OK")
+                                            .put("server", hostName)
+                                            .put("server_name", hostName)
+                                            .put("token", vr.controlToken)
                                             .put("control_token", vr.controlToken)
                                             .put("tls_port", com.snakeusbip.security.TlsSocketFactoryHelper.TLS_PORT)
                                             .put("tls_fingerprint", "")
@@ -421,19 +429,27 @@ class UsbIpServerService : Service() {
                                     org.json.JSONObject().put("devices", arr).toString()
                                 }
                                 "BIND" -> {
-                                    hm.setDeviceShared(arg, true)
-                                    org.json.JSONObject().put("status", "OK").put("busid", arg).toString()
+                                    if (!isValidBusId(arg)) {
+                                        org.json.JSONObject().put("status", "ERROR").put("busid", arg).put("message", "Invalid BusId").toString()
+                                    } else {
+                                        hm.setDeviceShared(arg, true)
+                                        org.json.JSONObject().put("status", "OK").put("busid", arg).toString()
+                                    }
                                 }
                                 "UNBIND" -> {
-                                    hm.setDeviceShared(arg, false)
-                                    org.json.JSONObject().put("status", "OK").put("busid", arg).toString()
+                                    if (!isValidBusId(arg)) {
+                                        org.json.JSONObject().put("status", "ERROR").put("busid", arg).put("message", "Invalid BusId").toString()
+                                    } else {
+                                        hm.setDeviceShared(arg, false)
+                                        org.json.JSONObject().put("status", "OK").put("busid", arg).toString()
+                                    }
                                 }
                                 "STATUS" -> {
                                     val versionName = try {
                                         @Suppress("DEPRECATION")
-                                        packageManager.getPackageInfo(packageName, 0).versionName ?: "1.4.0"
+                                        packageManager.getPackageInfo(packageName, 0).versionName ?: "3.5.0"
                                     } catch (_: Exception) {
-                                        "1.4.0"
+                                        "3.5.0"
                                     }
                                     org.json.JSONObject()
                                         .put("status", "OK")
