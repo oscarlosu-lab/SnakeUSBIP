@@ -13,6 +13,8 @@ import Glibc
 #endif
 
 public final class USBIPServer {
+    public static let usbTransferBackendAvailable = false
+
     private let port: UInt16
     private let bindAddress: String
     private var serverSocket: Int32 = -1

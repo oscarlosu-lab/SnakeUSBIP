@@ -111,7 +111,6 @@ public final class IOUSBHostSession: USBDeviceTransport {
         guard let pipe = resolvePipe(endpointAddress: epAddr) else {
             return nil
         }
-        var bytesTransferred = 0
         if direction == 1 {
             guard let buf = NSMutableData(length: max(1, maxLength)) else { return nil }
             let sem = DispatchSemaphore(value: 0)
