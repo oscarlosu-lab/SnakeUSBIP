@@ -1,5 +1,17 @@
 # CHANGELOG - SnakeUSBIP
 
+## [1.4.0] - 2026-11-27
+
+> **Migration Notice:** `SnakeUSBIP` is being migrated into [USBAnywhere](https://github.com/oscarlosu-lab/USBAnywhere). `SnakeUSBIP` acts as the staging branch for new improvements prior to full stabilization, while `USBAnywhere` is the final production product.
+
+### Added
+- **Zero-Config 6-Digit / `UA2:` Pairing & Pinned TLS 1.3 Tunnel (`PairingService`, `TlsTunnelService`, `PairServerDialog`, `TlsTunnelBridge`)**:
+  - End-to-end 6-digit pairing codes, `UA2:` QR/tokens, SHA-256 certificate pinning, automatic client TLS loopback bridging in `UsbipService`, and `BindAddress` scoping across Windows Client/Server, Linux (`snakeusbip-ctl`), and Android.
+- **Multi-Provider Streaming Handoff, Multi-Session Isolation & Automation (`StreamingSessionMonitor`, `SessionIsolationService`, `LocalControlApiService`, `snakeusbip-mcp.py`)**:
+  - Added support for **Sunshine, Apollo, Vibeshine, Vibepollo, Parsec, and Steam Remote Play**, `only-during-stream` device modes, WTS session isolation, loopback REST API (`127.0.0.1:13241`), 6-tool stdio MCP server, and `docs/HOME_ASSISTANT.md`.
+- **Smart Favorites `[Rev:XXXX]` Disambiguation, Driver `0.9.8.2` Dual-ABI & macOS `IOUSBHost` (`SnakeUSBIP.Server.Mac`)**:
+  - Added hardware revision disambiguation + Server `Rev` column, `IOUSBHost` & `AVAudioEngine` virtual microphone support on macOS, Linux automatic USB autosuspend disablement + systemd `usbipd` drop-ins, and 8-frame square high-DPI `.ico` bundles (`16..256 px`).
+
 ## [1.3.0] - 2026-11-26
 
 > **Migration Notice:** `SnakeUSBIP` is being migrated into [USBAnywhere](https://github.com/oscarlosu-lab/USBAnywhere). `SnakeUSBIP` acts as the staging branch for new improvements prior to full stabilization, while `USBAnywhere` is the final production product.

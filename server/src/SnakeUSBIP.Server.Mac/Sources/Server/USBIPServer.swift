@@ -1,6 +1,6 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // SnakeUSBIP Server for macOS - POSIX TCP Server (Port 3240)
-// Copyright (c) 2025-2026 oscarlosu-lab - https://github.com/oscarlosu-lab/SnakeUSBIP-Server
+// Copyright (c) 2025-2026 oscarlosu-lab - https://github.com/oscarlosu-lab/SnakeUSBIP
 // Licensed under GPL v3
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -13,16 +13,16 @@ import Glibc
 #endif
 
 public final class USBIPServer {
-    public static let usbTransferBackendAvailable = false
-
     private let port: UInt16
+    private let bindAddress: String
     private var serverSocket: Int32 = -1
     private var isRunning: Bool = false
     private let dispatchQueue = DispatchQueue(label: "com.snakeusbip.server.mac", attributes: .concurrent)
     public var onLog: ((String) -> Void)?
     
-    public init(port: UInt16 = USBIPConstants.defaultPort) {
+    public init(port: UInt16 = USBIPConstants.defaultPort, bindAddress: String = "0.0.0.0") {
         self.port = port
+        self.bindAddress = bindAddress
     }
     
     private func emitLog(_ msg: String) {
@@ -42,7 +42,12 @@ public final class USBIPServer {
         var addr = sockaddr_in()
         addr.sin_family = sa_family_t(AF_INET)
         addr.sin_port = port.bigEndian
-        addr.sin_addr.s_addr = in_addr_t(0) // INADDR_ANY
+        var parsedAddr = in_addr()
+        if inet_pton(AF_INET, bindAddress, &parsedAddr) == 1 {
+            addr.sin_addr = parsedAddr
+        } else {
+            addr.sin_addr.s_addr = in_addr_t(0)
+        }
         
         let bindResult = withUnsafePointer(to: &addr) {
             $0.withMemoryRebound(to: sockaddr.self, capacity: 1) {
@@ -69,7 +74,7 @@ public final class USBIPServer {
         DiscoveryResponder.shared.start()
         BonjourPublisher.shared.start(port: Int(port))
 
-        emitLog("🌐 SnakeUSBIP Server (macOS v1.3.0) listening on 0.0.0.0:\(port)")
+        emitLog("🌐 SnakeUSBIP Server (macOS v1.4.0) listening on 0.0.0.0:\(port)")
         emitLog("⚡ Dynamic Control API & Discovery active on TCP/UDP port 3241")
         
         while isRunning {
@@ -151,7 +156,7 @@ public final class USBIPServer {
         _ = readExact(fd: fd, count: 4)
         
         let allDevices = IOKitDeviceManager.shared.enumerateDevices()
-        let exportedDevices = allDevices.filter { $0.isBound && Self.usbTransferBackendAvailable }
+        let exportedDevices = allDevices.filter { $0.isBound }
         
         emitLog("📋 Sending device list: \(exportedDevices.count) exported devices")
         let replyData = USBIPPackets.encodeDevlistReply(devices: exportedDevices)
@@ -164,13 +169,6 @@ public final class USBIPServer {
         let buf = ByteBuffer(data: payload)
         _ = buf.readUInt32() // status
         guard let requestedBusId = buf.readFixedString(length: USBIPConstants.maxBusIdLength) else { return false }
-
-        guard Self.usbTransferBackendAvailable else {
-            emitLog("❌ USB/IP import rejected for '\(requestedBusId)': macOS USB transfer backend is unavailable")
-            let errReply = USBIPPackets.encodeImportReply(device: nil, status: USBIPConstants.statusError)
-            _ = writeExact(fd: fd, data: errReply)
-            return false
-        }
         
         // Check policy and allow on-demand bind if not yet bound
         let policyCheck = IOKitDeviceManager.shared.isDeviceExportAllowed(busId: requestedBusId)
@@ -215,7 +213,7 @@ public final class USBIPServer {
     }
     
     private func enterURBLoop(fd: Int32, device: USBDeviceInfo) {
-        let handler = URBHandler()
+        let handler = URBHandler(device: device)
         emitLog("⚡ Active URB streaming session started for [\(device.busId)]")
         
         while isRunning {

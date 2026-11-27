@@ -352,6 +352,16 @@ fun OtgDeviceCard(
 
             Spacer(modifier = Modifier.height(10.dp))
 
+            val policyCtx = LocalContext.current
+            var handoffPolicy by remember(device.busId) {
+                mutableStateOf(com.snakeusbip.data.AppPreferences.getDeviceHandoffPolicy(policyCtx, device.busId))
+            }
+            val policyLabel = when (handoffPolicy) {
+                com.snakeusbip.gaming.sunshine.DeviceHandoffPolicy.ALWAYS_LOCAL -> "Policy: Local"
+                com.snakeusbip.gaming.sunshine.DeviceHandoffPolicy.ONLY_DURING_STREAM -> "Policy: Stream Only"
+                com.snakeusbip.gaming.sunshine.DeviceHandoffPolicy.ALWAYS_FORWARD -> "Policy: Always PC"
+            }
+
             FlowRow(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -359,6 +369,18 @@ fun OtgDeviceCard(
             ) {
                 BadgeText("BUS ${device.busId}", NeonCyan)
                 BadgeText("VID:${device.vendorHex} PID:${device.productHex}", Color.LightGray)
+                androidx.compose.material3.OutlinedButton(
+                    onClick = {
+                        val entries = com.snakeusbip.gaming.sunshine.DeviceHandoffPolicy.entries
+                        val next = entries[(entries.indexOf(handoffPolicy) + 1) % entries.size]
+                        handoffPolicy = next
+                        com.snakeusbip.data.AppPreferences.setDeviceHandoffPolicy(policyCtx, device.busId, next)
+                    },
+                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp),
+                    modifier = Modifier.defaultMinSize(minWidth = 1.dp, minHeight = 24.dp)
+                ) {
+                    Text(policyLabel, fontSize = 10.sp, color = NeonCyan)
+                }
 
                 if (device.isAttached) {
                     BadgeText("STREAMING", NeonGreen)

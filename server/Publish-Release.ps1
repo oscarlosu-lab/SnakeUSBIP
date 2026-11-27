@@ -2,7 +2,7 @@
 # Automates the release process for SnakeUSBIP Server v1.0.0
 # (c) 2025-2026 oscarlosu-lab
 
-$version = "1.3.0"
+$version = "1.4.0"
 $repoRoot = $PSScriptRoot
 $projectPath = Join-Path $repoRoot "src\SnakeUSBIP.Server"
 $releasePath = Join-Path $repoRoot "release"
@@ -57,7 +57,8 @@ else {
 }
 
 # License, Readme, and Changelog
-Copy-Item "$repoRoot\LICENSE" "$releasePath\temp_x64\Portable\LICENSE" -Force -ErrorAction SilentlyContinue
+$licenseFile = if (Test-Path "$repoRoot\LICENSE") { "$repoRoot\LICENSE" } else { Join-Path (Split-Path $repoRoot -Parent) "LICENSE" }
+Copy-Item $licenseFile "$releasePath\temp_x64\Portable\LICENSE" -Force -ErrorAction SilentlyContinue
 Copy-Item "$repoRoot\README.md" "$releasePath\temp_x64\Portable\README.md" -Force -ErrorAction SilentlyContinue
 Copy-Item "$repoRoot\CHANGELOG.md" "$releasePath\temp_x64\Portable\CHANGELOG.md" -Force -ErrorAction SilentlyContinue
 
@@ -101,7 +102,7 @@ if (Test-Path $iscc) {
     Remove-Item "$releasePath\temp_x64\Portable\.portable", "$releasePath\temp_x64\Portable\portable.flag" -Force -ErrorAction SilentlyContinue
     
     # Copy LICENSE, README and CHANGELOG to temp_x64 root
-    Copy-Item "$repoRoot\LICENSE" "$releasePath\temp_x64\LICENSE" -Force -ErrorAction SilentlyContinue
+    Copy-Item $licenseFile "$releasePath\temp_x64\LICENSE" -Force -ErrorAction SilentlyContinue
     Copy-Item "$repoRoot\README.md" "$releasePath\temp_x64\README.md" -Force -ErrorAction SilentlyContinue
     Copy-Item "$repoRoot\CHANGELOG.md" "$releasePath\temp_x64\CHANGELOG.md" -Force -ErrorAction SilentlyContinue
 

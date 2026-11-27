@@ -2,7 +2,7 @@
 
 🌐 **Idioma / Language:** [English](README.md) | **Español**
 
-**v1.3.0** | [🌍 Web Oficial](https://oscarlosu-lab.github.io/SnakeUSBIP/) | [📦 Releases y Descargas](https://github.com/oscarlosu-lab/SnakeUSBIP/releases/latest) | [🌐 USBAnywhere (Producto Final)](https://github.com/oscarlosu-lab/USBAnywhere) | [💬 Comunidad Reddit](https://www.reddit.com/r/UsbAnywhere/) | [📖 Manual de Usuario](docs/USAGE_ES.md) | [🌐 Conexión VPN](docs/VPN_INTERNET_ES.md)
+**v1.4.0** | [🌍 Web Oficial](https://oscarlosu-lab.github.io/SnakeUSBIP/) | [📦 Releases y Descargas](https://github.com/oscarlosu-lab/SnakeUSBIP/releases/latest) | [🌐 USBAnywhere (Producto Final)](https://github.com/oscarlosu-lab/USBAnywhere) | [💬 Comunidad Reddit](https://www.reddit.com/r/UsbAnywhere/) | [📖 Manual de Usuario](docs/USAGE_ES.md) | [🌐 Conexión VPN](docs/VPN_INTERNET_ES.md)
 
 > [!IMPORTANT]
 > **Aviso de Migración — Transición hacia [USBAnywhere](https://github.com/oscarlosu-lab/USBAnywhere):** `SnakeUSBIP` se está migrando a **[USBAnywhere](https://github.com/oscarlosu-lab/USBAnywhere)**. `SnakeUSBIP` es el repositorio donde se prueban e integran primero las mejoras antes de su validación final, mientras que **[USBAnywhere](https://github.com/oscarlosu-lab/USBAnywhere)** es el producto final recomendado.
@@ -82,6 +82,11 @@ Conecta tu grabadora láser diodo (GRBL/Ruida) y tu cámara cenital simultáneam
 ▶️ **[Ver Tutorial de Láser y Cámara LightBurn en YouTube](https://www.youtube.com/watch?v=xz9jhgLx3pc)**
 
 ---
+
+## 🆕 Novedades en v1.4.0
+- 🔐 **Emparejamiento 6 dígitos / `UA2:` y Túnel TLS 1.3 con Certificate Pinning** - UI y CLI unificados (`PairServerDialog`, `WanMeshCard`, `snakeusbip-ctl pair`), `BindAddress` y puente TLS automático.
+- 🎬 **Handoff Multi-Streaming y Aislamiento Multi-Sesión** - Soporte para **Sunshine, Apollo, Vibeshine, Vibepollo, Parsec y Steam Remote Play**, modos por dispositivo y propiedad de sesión WTS.
+- 🧩 **API REST Local, Servidor MCP y macOS `IOUSBHost`** - API loopback (`127.0.0.1:13241`), `snakeusbip-mcp.py`, `SnakeUSBIP.Server.Mac` con `IOUSBHost` + micro `AVAudioEngine`, Smart Favorites `[Rev:XXXX]` y dual-ABI `0.9.8.2`.
 
 ## 🆕 Novedades en v1.3.0
 

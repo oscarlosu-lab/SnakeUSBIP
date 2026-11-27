@@ -4,7 +4,7 @@
 
 #define MyAppName "SnakeUSBIP Server"
 #ifndef MyAppVersion
-#define MyAppVersion "1.3.0"
+#define MyAppVersion "1.4.0"
 #endif
 #define MyAppPublisher "oscarlosu-lab"
 #define MyAppURL "https://github.com/oscarlosu-lab/SnakeUSBIP-Server"

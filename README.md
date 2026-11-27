@@ -2,7 +2,7 @@
 
 🌐 **Language / Idioma:** **English** | [Español](README_ES.md)
 
-**v1.3.0** | [🌍 Official Website](https://oscarlosu-lab.github.io/SnakeUSBIP/) | [📦 Releases & Downloads](https://github.com/oscarlosu-lab/SnakeUSBIP/releases/latest) | [🌐 USBAnywhere (Final Product)](https://github.com/oscarlosu-lab/USBAnywhere) | [💬 Reddit Community](https://www.reddit.com/r/UsbAnywhere/) | [📖 User Manual](docs/USAGE_EN.md) | [🌐 VPN Connection](docs/VPN_INTERNET_EN.md)
+**v1.4.0** | [🌍 Official Website](https://oscarlosu-lab.github.io/SnakeUSBIP/) | [📦 Releases & Downloads](https://github.com/oscarlosu-lab/SnakeUSBIP/releases/latest) | [🌐 USBAnywhere (Final Product)](https://github.com/oscarlosu-lab/USBAnywhere) | [💬 Reddit Community](https://www.reddit.com/r/UsbAnywhere/) | [📖 User Manual](docs/USAGE_EN.md) | [🌐 VPN Connection](docs/VPN_INTERNET_EN.md)
 
 > [!IMPORTANT]
 > **Migration Notice — Moving to [USBAnywhere](https://github.com/oscarlosu-lab/USBAnywhere):** `SnakeUSBIP` is currently being migrated into **[USBAnywhere](https://github.com/oscarlosu-lab/USBAnywhere)**. `SnakeUSBIP` serves as the staging and testing branch where new improvements are introduced before full validation, while **[USBAnywhere](https://github.com/oscarlosu-lab/USBAnywhere)** is the final, recommended production product.
@@ -90,6 +90,11 @@ Connect your diode laser (GRBL/Ruida) and overhead alignment camera simultaneous
 ▶️ **[Watch Diode Laser & LightBurn Camera Tutorial on YouTube](https://www.youtube.com/watch?v=lyqBBE8xdFQ)**
 
 ---
+
+## 🆕 What's New in v1.4.0
+- 🔐 **Zero-Config 6-Digit / `UA2:` Pairing & Pinned TLS 1.3 Tunneling** - Unified pairing UI/CLI (`PairServerDialog`, `WanMeshCard`, `snakeusbip-ctl pair`), `BindAddress` scoping, and automatic loopback TLS bridging.
+- 🎬 **Multi-Provider Streaming Handoff & Multi-Session Isolation** - Supports **Sunshine, Apollo, Vibeshine, Vibepollo, Parsec, and Steam Remote Play**, `only-during-stream` device modes, and WTS session port ownership.
+- 🧩 **Loopback REST API, 6-Tool MCP Server & macOS `IOUSBHost`** - Local API (`127.0.0.1:13241`), `snakeusbip-mcp.py`, `SnakeUSBIP.Server.Mac` real `IOUSBHost` + `AVAudioEngine` mic, Smart Favorites `[Rev:XXXX]`, and Driver `0.9.8.2` dual-ABI readiness.
 
 ## 🆕 What's New in v1.3.0
 
