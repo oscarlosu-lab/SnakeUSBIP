@@ -2,7 +2,7 @@
 
 🌐 **Idioma / Language:** [English](README.md) | **Español**
 
-**v1.4.0** | [🌍 Web Oficial](https://oscarlosu-lab.github.io/SnakeUSBIP/) | [📦 Releases y Descargas](https://github.com/oscarlosu-lab/SnakeUSBIP/releases/latest) | [🌐 USBAnywhere (Producto Final)](https://github.com/oscarlosu-lab/USBAnywhere) | [💬 Comunidad Reddit](https://www.reddit.com/r/UsbAnywhere/) | [📖 Manual de Usuario](docs/USAGE_ES.md) | [🌐 Conexión VPN](docs/VPN_INTERNET_ES.md)
+**v1.4.1** | [🌍 Web Oficial](https://oscarlosu-lab.github.io/SnakeUSBIP/) | [📦 Releases y Descargas](https://github.com/oscarlosu-lab/SnakeUSBIP/releases/latest) | [🌐 USBAnywhere (Producto Final)](https://github.com/oscarlosu-lab/USBAnywhere) | [💬 Comunidad Reddit](https://www.reddit.com/r/UsbAnywhere/) | [📖 Manual de Usuario](docs/USAGE_ES.md) | [🌐 Conexión VPN](docs/VPN_INTERNET_ES.md)
 
 > [!IMPORTANT]
 > **Aviso de Migración — Transición hacia [USBAnywhere](https://github.com/oscarlosu-lab/USBAnywhere):** `SnakeUSBIP` se está migrando a **[USBAnywhere](https://github.com/oscarlosu-lab/USBAnywhere)**. `SnakeUSBIP` es el repositorio donde se prueban e integran primero las mejoras antes de su validación final, mientras que **[USBAnywhere](https://github.com/oscarlosu-lab/USBAnywhere)** es el producto final recomendado.
@@ -33,7 +33,7 @@ Transforma cualquier dispositivo Linux (o PC Windows) en un Hub USB Virtual de a
 
 ## ⚔️ ¿Por qué cambiar de VirtualHere a SnakeUSBIP?
 
-| Característica | **SnakeUSBIP v1.4.0** | **VirtualHere** | **FlexiHub** | **USB Network Gate** |
+| Característica | **SnakeUSBIP v1.4.1** | **VirtualHere** | **FlexiHub** | **USB Network Gate** |
 | :--- | :---: | :---: | :---: | :---: |
 | **Precio y Licencia** | **100% Gratis y Código Abierto (GPLv3)** | 49,00 USD / Servidor | ~15–30+ USD / mes SaaS | +159,00 USD |
 | **Dispositivos Simultáneos (Free)** | **♾️ Ilimitados** | ⚠️ Solo 1 dispositivo | ❌ Trial 20 min / 1 Conex. | ❌ Trial limitado |
@@ -128,14 +128,14 @@ Conecta tu grabadora láser diodo (GRBL/Ruida) y tu cámara cenital simultáneam
 ## 📦 Instalación
 
 ### Opción 1: Portable (Sin instalación)
-1. Descarga desde [SnakeUSBIP Releases (v1.4.0)](https://github.com/oscarlosu-lab/SnakeUSBIP/releases/tag/v1.4.0):
-   - **Windows x64 (Cliente + Servidor Portable)**: `SnakeUSBIP_v1.4.0_Portable_win-x64.zip`
+1. Descarga desde [SnakeUSBIP Releases (v1.4.1)](https://github.com/oscarlosu-lab/SnakeUSBIP/releases/tag/v1.4.1):
+   - **Windows x64 (Cliente + Servidor Portable)**: `SnakeUSBIP_v1.4.1_Portable_win-x64.zip`
 2. Extrae el ZIP en cualquier carpeta
 3. Ejecuta `SnakeUSBIP.exe` como Administrador
 4. ¡Listo!
 
 ### Opción 2: Instalador (x64 Recomendado)
-1. Descarga `SnakeUSBIP_Setup_v1.4.0.exe` (Cliente) o `SnakeUSBIP-Server_Setup_v1.4.0.exe` (Servidor) desde [SnakeUSBIP Releases (v1.4.0)](https://github.com/oscarlosu-lab/SnakeUSBIP/releases/tag/v1.4.0)
+1. Descarga `SnakeUSBIP_Setup_v1.4.1.exe` (Cliente) o `SnakeUSBIP-Server_Setup_v1.4.1.exe` (Servidor) desde [SnakeUSBIP Releases (v1.4.1)](https://github.com/oscarlosu-lab/SnakeUSBIP/releases/tag/v1.4.1)
 2. Ejecuta el instalador como Administrador
 3. Sigue el asistente de instalación
 

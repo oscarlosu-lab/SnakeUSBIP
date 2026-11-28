@@ -2,8 +2,6 @@
 
 🌐 **Idioma / Language:** [English](USAGE_EN.md) | **Español**
 
-> **Aviso de Migración:** `SnakeUSBIP` se está migrando hacia **[USBAnywhere](https://github.com/oscarlosu-lab/USBAnywhere)** (el producto final recomendado).
-
 ## Interfaz Principal
 
 ```
@@ -94,15 +92,13 @@ Ver [VPN_INTERNET_ES.md](VPN_INTERNET_ES.md) para configuración completa.
 El cliente SnakeUSBIP se conecta de forma transparente a cualquier servidor USB/IP del ecosistema:
 
 ### 🍎 Conexión a un Servidor macOS
-> El servidor macOS actual puede descubrir y listar dispositivos USB, pero todavía no tiene un backend real de transferencia USB. Compartir y conectar dispositivos está desactivado; utiliza un servidor Windows o Linux para transferir dispositivos USB.
-
 1. En tu Mac (Apple Silicon o Intel), ejecuta el instalador 1-click en Terminal:
    `ash
    curl -fsSL https://raw.githubusercontent.com/oscarlosu-lab/SnakeUSBIP/main/server/scripts/install-server-mac.sh | sudo bash
    `
 2. En SnakeUSBIP Client, introduce la IP del Mac (ej. 192.168.1.50) y pulsa **📋 Listar**.
-3. La conexión de dispositivos desde macOS no está disponible actualmente.
-4. Consulta el [Manual de macOS](../server/docs/USAGE_MACOS_ES.md) para más opciones.
+3. Selecciona tu joystick, volante de SimRacing o mando y pulsa **▶️ Conectar**.
+4. Consulta el [Manual de macOS](https://github.com/oscarlosu-lab/SnakeUSBIP-Server/blob/main/docs/USAGE_MACOS_ES.md) para más opciones.
 
 ### 🖥️ Conexión a un Servidor Windows de Escritorio
 1. Ejecuta SnakeUSBIP-Server.exe en el PC emisor y pulsa **📤 Compartir** en los dispositivos deseados.
@@ -144,8 +140,9 @@ El cliente SnakeUSBIP se conecta de forma transparente a cualquier servidor USB/
 |--------|-------------|
 | ▶️ Conectar | Conecta el dispositivo USB remoto (o favorito) a tu PC |
 | ⏹️ Desconectar | Libera el dispositivo USB conectado |
-| ⭐ Añadir a Favoritos | Guarda el dispositivo para reconexión rápida |
+| ⭐ Añadir a Favoritos | Guarda el dispositivo para reconexión rápida (con desambiguación `[Rev:XXXX]`) |
 | ❌ Quitar de Favoritos | Elimina el dispositivo de la lista de favoritos |
+| 🎬 Modo de conexión | Elige `always`, `only-during-stream` (auto-conexión durante stream) o `manual` (`v1.4.0`) |
 | 🗑️ Quitar servidor | Elimina el servidor del árbol |
 | 📋 Propiedades | Muestra información detallada (`VID:PID`, fabricante, producto, puerto local) |
 | ✏️ Renombrar | Asigna un nombre personalizado persistente al dispositivo (`VID:PID`) |
@@ -180,7 +177,8 @@ Al cerrar la aplicación, apagar el PC (`AutoDetachOnExit: true`) o desinstalar 
 - Al **minimizar** (o iniciar con `--minimized` / `-m`), la aplicación se oculta en la bandeja del sistema.
 - **Doble-click** en el icono de la bandeja para restaurar la ventana en cualquier momento.
 - **Click derecho** para menú rápido: `📡 Escanear red`, `🔌 Desconectar todo`, `☑️ Iniciar minimizado en bandeja`, `🔼 Mostrar SnakeUSBIP`, `❌ Salir`.
-- **Comandos CLI Headless (sobre instancia activa):** `--connect <ip> <busid>`, `--disconnect-all`, `--disconnect <puerto>` y `--quit`.
+- **Comandos CLI Headless (sobre instancia activa):** `--connect <ip> <busid>` / `--attach <ip> <busid>` (reenvío IPC a instancia única), `--disconnect-all`, `--disconnect <puerto>` y `--quit`.
+- **Menú Contextual de Kernel y Diagnóstico (`v1.3.0`):** Clic derecho en el árbol de dispositivos para abrir `🏷️ Número de serie USB...`, `📌 Persistencia Kernel (Boot)`, `🛑 Detener reintentos de kernel`, `⚙️ Puertos Hub Virtual...` y `🩺 Exportar diagnóstico...`.
 - **Eventos Kernel en Tiempo Real:** El cliente escucha eventos de estado del driver `usbip2_ude` vía `DeviceIoControl` / `ReadFile` asíncrono para reflejar conexiones y desconexiones al instante sin lanzar subprocesos periódicos.
 
 ## 🔧 Barra de Estado y Ciclo de Vida de Drivers
@@ -200,6 +198,13 @@ Al cerrar la aplicación, apagar el PC (`AutoDetachOnExit: true`) o desinstalar 
 - **Números de Serie USB Personalizados**: Asigna un `Serial` personalizado por dispositivo para mantener estables puertos COM, mandos o dongles de licencia.
 - **Capacidad de Puertos del Hub Virtual**: Configura el número de puertos USB 2.0 y USB 3.0 del hub virtual (`30` / `30` por defecto).
 - **Paquete de Diagnóstico en 1 Clic**: Exporta un archivo `.zip` con el estado del driver, puertos VHCI importados, configuración del hub y logs recientes.
+
+## 🔐 Emparejamiento, TLS 1.3 Pinning, Handoff de Streaming y Automatización (`v1.4.0`)
+
+- **Emparejamiento 6 Dígitos / `UA2:` y Túnel TLS 1.3 (`TCP 3243`)**: Pulsa **🔐 Emparejar** (o ejecuta `SnakeUSBIP.exe --pair <host> <código>`) para vincular servidores Windows, macOS, Linux o Android mediante códigos de 6 dígitos o tokens QR `UA2:`. Una vez emparejado, `UsbipService` abre automáticamente un puente loopback TLS 1.2/1.3 con pinning SHA-256 sobre `TCP 3243`.
+- **Handoff Multi-Proveedor (`only-during-stream`)**: Detecta **Sunshine, Apollo, Vibeshine, Vibepollo, Parsec y Steam Remote Play** y conecta/desconecta automáticamente los favoritos configurados con `only-during-stream`.
+- **Aislamiento Multi-Sesión WTS**: Garantiza que cada puerto conectado pertenezca a la sesión activa de Windows y evita reconexiones automáticas en sesiones bloqueadas o desconectadas.
+- **API REST Local (`127.0.0.1:13241`), Servidor MCP y CLI JSON Headless**: Activa la API local en la barra inferior (`📋 Token` copia el token Bearer), usa `snakeusbip-mcp.py` (6 herramientas), ejecuta `SnakeUSBIP.exe --status --json` / `--doctor --json` sin UAC o consulta [HOME_ASSISTANT.md](HOME_ASSISTANT.md).
 
 ---
 

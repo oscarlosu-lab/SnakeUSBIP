@@ -16,7 +16,7 @@ Step-by-step guide to configure a USB/IP server on Raspberry Pi OS.
 Run this single command on your Raspberry Pi to automatically install `usbip`, configure the `systemd` daemon, and enable **`udev` hotplug auto-export** (so any USB device you plug into the Pi is shared automatically like VirtualHere):
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/oscarlosu-lab/SnakeUSBIP/main/server/scripts/install-server-linux.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/oscarlosu-lab/SnakeUSBIP-Server/main/scripts/install-server-linux.sh | sudo bash
 ```
 
 ---
@@ -64,7 +64,7 @@ Should show `(attached)` next to the device.
 ## 🔄 Make Persistent (Autostart)
 
 ### Option 1: 1-Click Auto-Installer (Recommended)
-If you used the 1-Click Installer (`install-server-linux.sh`), `usbipd.service` and `snakeusbip-autounbind.service` (On-Demand Dynamic Binding on TCP `3241`) are **already installed and enabled automatically**.
+If you used the 1-Click Installer (`install-server.sh`), `usbipd.service` and `usbanywhere-autounbind.service` (On-Demand Dynamic Binding on TCP `3241`) are **already installed and enabled automatically**.
 
 ### Option 2: Create manual systemd service
 
@@ -137,10 +137,10 @@ sudo usbip bind -b 1-1.4
 
 ### "Connection refused" from Windows
 ```bash
-# Verify daemon is running (snakeusbip if 1-click installer, or usbipd if manual)
-sudo systemctl status snakeusbip 2>/dev/null || sudo systemctl status usbipd
+# Verify daemon is running (usbanywhere if 1-click installer, or usbipd if manual)
+sudo systemctl status usbanywhere 2>/dev/null || sudo systemctl status usbipd
 # Or verify process
-ps aux | grep -E 'usbipd|snakeusbip'
+ps aux | grep -E 'usbipd|usbanywhere'
 ```
 
 ## 🔌 Unshare Device
@@ -158,8 +158,8 @@ sudo usbip list -l
 # Active connections
 sudo usbip port
 
-# Logs (use snakeusbip for 1-click installer, or usbipd for manual service)
-journalctl -u snakeusbip -u usbipd -f
+# Logs (use usbanywhere for 1-click installer, or usbipd for manual service)
+journalctl -u usbanywhere -u usbipd -f
 ```
 
 ## 🔥 Firewall
@@ -175,24 +175,37 @@ sudo ufw allow from 192.168.1.0/24 to any port 3240 proto tcp comment 'SnakeUSBI
 
 ---
 
+---
+
 ## 🎮 DualSense & Composite Audio Controllers (Preventing Kernel Oops)
 
-The Sony **DualSense** (`054c:0ce6`) and similar controllers are composite USB devices that bundle both a standard HID gamepad interface and isochronous USB Audio interfaces (mic & speaker).
+The Sony **DualSense** (`054c:0ce6`), **DualSense Edge** (`054c:0df2`), and similar composite gamepads bundle both a standard HID gamepad interface (buttons, triggers, sticks, touchpad, motion gyro, rumble) and isochronous USB Audio interfaces (mic and headset).
 
-On certain Linux kernels (especially on low-power ARM64 boards like Raspberry Pi Zero 2 W), streaming or alternating settings on the isochronous audio endpoints can trigger a kernel Oops in `stub_send_ret_submit` in the kernel's `usbip_host` module.
+On low-power ARM boards (e.g. Raspberry Pi Zero 2 W) running Linux kernel 6.x, streaming or alternating settings on isochronous audio endpoints over USB/IP can trigger a kernel Oops (`stub_send_ret_submit` dereference in `usbip_host`).
 
-If you only need the controller for gaming inputs, motion gyro, touchpad, and vibration, you can isolate the HID gamepad interface and de-authorize the audio streaming interfaces by adding a persistent udev rule on the Pi:
+SnakeUSBIP automatically installs the audio isolation rule during `install-server-linux.sh`. You can also manage it anytime via:
 
 ```bash
-sudo bash -c 'cat << "EOF" > /etc/udev/rules.d/99-snakeusbip-dualsense-fix.rules
+# Enable mitigation (keeps Gamepad HID active, de-authorizes audio endpoints)
+sudo snakeusbip-ctl fix-dualsense enable
+
+# Check status
+snakeusbip-ctl fix-dualsense status
+
+# Disable mitigation
+sudo snakeusbip-ctl fix-dualsense disable
+```
+
+Or manually install the persistent udev rule:
+
+```bash
+sudo bash -c 'cat << "EOF" > /etc/udev/rules.d/99-usbanywhere-dualsense-fix.rules
 # Disable DualSense audio interfaces to prevent usbip_host isochronous Oops
 ACTION=="add", SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_interface", ATTRS{idVendor}=="054c", ATTR{bInterfaceClass}=="01", ATTR{authorized}="0"
 EOF'
 
 sudo udevadm control --reload-rules && sudo udevadm trigger
 ```
-
----
 
 ## 🔒 Control API Security (`allowed_ips` & `control_token`) & UAS Storage Notice
 
@@ -207,6 +220,23 @@ sudo snakeusbip-ctl policy show
 ```
 
 - **UAS External SSDs**: External drives using the `uas` (USB Attached SCSI) driver trigger a compatibility warning before binding; standard `usb-storage` mode is recommended if a drive fails to enumerate remotely.
+
+## 🔐 Pairing, TLS 1.3, `bind_address` & MCP (`v1.4.0`)
+
+```bash
+# Generate single-use 6-digit / UA2: pairing token (syncs with dynamic-daemon)
+sudo snakeusbip-ctl pair --json
+
+# Manage TLS 1.3 tunnel (port 3243) and diagnostics
+sudo snakeusbip-ctl tls-tunnel status
+snakeusbip-ctl status --json
+snakeusbip-ctl doctor --json
+snakeusbip-ctl logs          # last 100 lines (non-blocking); pass -f to follow
+```
+
+- **Scoped `bind_address`**: Set `bind_address` in `/etc/snakeusbip/policy.json` to bind `usbipd` (via systemd drop-in), `TCP 3241`, and `TLS 3243` exclusively to your LAN or VPN interface.
+- **`PAIR_CREATE` Loopback Guard**: Remote `PAIR_CREATE` requests on `TCP 3241` are restricted to loopback unless `control_token` is configured.
+- **6-Tool MCP Server**: Run `python3 /usr/local/bin/snakeusbip-mcp.py` (or from `scripts/snakeusbip-mcp.py`) for stdio JSON-RPC 2.0 automation.
 
 ## 📝 Notes
 

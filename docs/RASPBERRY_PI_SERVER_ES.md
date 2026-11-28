@@ -16,7 +16,7 @@ Guía paso a paso para configurar un servidor USB/IP en Raspberry Pi OS.
 Ejecuta este único comando en tu Raspberry Pi para instalar `usbip`, configurar el servicio `systemd` y activar la **auto-exportación `udev` hotplug** (cualquier USB que enchufes en la Pi aparecerá automáticamente en Windows igual que en VirtualHere):
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/oscarlosu-lab/SnakeUSBIP/main/server/scripts/install-server-linux.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/oscarlosu-lab/SnakeUSBIP-Server/main/scripts/install-server-linux.sh | sudo bash
 ```
 
 ---
@@ -168,24 +168,37 @@ sudo ufw allow 3240/tcp
 
 ---
 
-## 🎮 Mandos DualSense y Dispositivos de Audio Compuestos (Prevención de Kernel Oops)
+---
 
-El mando Sony **DualSense** (`054c:0ce6`) y otros periféricos similares son dispositivos USB compuestos que combinan una interfaz HID estándar para mandos y dos interfaces de Audio USB isócrono (micrófono y altavoz).
+## 🎮 Mandos DualSense y Gamepads con Audio (Prevención de Kernel Oops)
 
-En ciertos kernels de Linux (especialmente en SBCs ARM64 como la Raspberry Pi Zero 2 W), el flujo de datos en los endpoints de audio isócrono puede desencadenar un error crítico (Kernel Oops) en la función `stub_send_ret_submit` del módulo `usbip_host`.
+El Sony **DualSense** (`054c:0ce6`), **DualSense Edge** (`054c:0df2`) y mandos similares son dispositivos USB compuestos que combinan una interfaz HID estándar (botones, gatillos, palancas, touchpad, giroscopio, vibración háptica) con interfaces de audio USB isócrono (micrófono y altavoz).
 
-Si solo necesitas el mando para controles de juego, giroscopio, touchpad y vibración, puedes aislar la interfaz HID del gamepad y desautorizar las interfaces de audio mediante una regla persistente de udev en la Raspberry Pi:
+En placas ARM de bajo consumo (como Raspberry Pi Zero 2 W) con kernel Linux 6.x, el envío de paquetes isócronos a través de USB/IP puede provocar un *Kernel Oops* (`stub_send_ret_submit` en el módulo `usbip_host`).
+
+SnakeUSBIP instala automáticamente la regla de aislamiento de audio durante la ejecución de `install-server-linux.sh`. También puedes gestionarlo en cualquier momento mediante:
 
 ```bash
-sudo bash -c 'cat << "EOF" > /etc/udev/rules.d/99-snakeusbip-dualsense-fix.rules
-# Desautorizar interfaces de audio de DualSense para prevenir Oops isócrono en usbip_host
+# Activar mitigación (mantiene el Gamepad HID activo y desautoriza interfaces de audio)
+sudo snakeusbip-ctl fix-dualsense enable
+
+# Ver estado
+snakeusbip-ctl fix-dualsense status
+
+# Desactivar mitigación
+sudo snakeusbip-ctl fix-dualsense disable
+```
+
+O crear manualmente la regla persistente de udev:
+
+```bash
+sudo bash -c 'cat << "EOF" > /etc/udev/rules.d/99-usbanywhere-dualsense-fix.rules
+# Desautorizar interfaces de audio de DualSense para prevenir Oops en usbip_host
 ACTION=="add", SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_interface", ATTRS{idVendor}=="054c", ATTR{bInterfaceClass}=="01", ATTR{authorized}="0"
 EOF'
 
 sudo udevadm control --reload-rules && sudo udevadm trigger
 ```
-
----
 
 ## 🔒 Seguridad de la API de Control (`allowed_ips` y `control_token`) y Aviso UAS
 
@@ -200,6 +213,23 @@ sudo snakeusbip-ctl policy show
 ```
 
 - **Discos SSD Externos UAS**: Las unidades que usan el driver `uas` (USB Attached SCSI) muestran un aviso de compatibilidad antes de vincularse; si un disco falla al enumerarse en remoto, se recomienda modo `usb-storage`.
+
+## 🔐 Emparejamiento, TLS 1.3, `bind_address` y MCP (`v1.4.0`)
+
+```bash
+# Generar código de 6 dígitos / token UA2: (sincronizado con dynamic-daemon)
+sudo snakeusbip-ctl pair --json
+
+# Consultar túnel TLS 1.3 (puerto 3243) y diagnóstico
+sudo snakeusbip-ctl tls-tunnel status
+snakeusbip-ctl status --json
+snakeusbip-ctl doctor --json
+snakeusbip-ctl logs          # últimas 100 líneas sin bloqueo; usa -f para seguir en vivo
+```
+
+- **`bind_address` Acotado**: Configura `bind_address` en `/etc/snakeusbip/policy.json` para escuchar con `usbipd` (drop-in systemd), `TCP 3241` y `TLS 3243` únicamente en tu interfaz LAN o VPN.
+- **Guardia Loopback en `PAIR_CREATE`**: `PAIR_CREATE` sobre `TCP 3241` queda restringido a loopback salvo que haya un `control_token` configurado.
+- **Servidor MCP (6 herramientas)**: Ejecuta `python3 /usr/local/bin/snakeusbip-mcp.py` para automatización JSON-RPC 2.0 por stdio.
 
 ## 📝 Notas
 

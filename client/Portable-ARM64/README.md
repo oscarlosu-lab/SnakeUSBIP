@@ -2,15 +2,27 @@
 
 🌐 **Language / Idioma:** **English** | [Español](README_ES.md)
 
-**v1.2.0** | [🌍 Official Website](https://oscarlosu-lab.github.io/SnakeUSBIP/) | [📦 Releases & Downloads](https://github.com/oscarlosu-lab/SnakeUSBIP/releases/latest) | [🌐 SnakeUSBIP Server (Windows & macOS)](https://github.com/oscarlosu-lab/SnakeUSBIP) | [📱 SnakeUSBIP Android](https://github.com/oscarlosu-lab/SnakeUSBIP) | [💬 Reddit Community](https://www.reddit.com/r/UsbAnywhere/) | [📖 User Manual](docs/USAGE_EN.md) | [🌐 VPN Connection](docs/VPN_INTERNET_EN.md)
+**v1.4.1** | [🌍 Official Website](https://oscarlosu-lab.github.io/SnakeUSBIP/) | [📦 Releases & Downloads](https://github.com/oscarlosu-lab/SnakeUSBIP/releases/latest) | [🌐 USBAnywhere (Final Product)](https://github.com/oscarlosu-lab/USBAnywhere) | [💬 Reddit Community](https://www.reddit.com/r/UsbAnywhere/) | [📖 User Manual](docs/USAGE_EN.md) | [🌐 VPN Connection](docs/VPN_INTERNET_EN.md)
+
+> [!IMPORTANT]
+> **Migration Notice — Moving to [USBAnywhere](https://github.com/oscarlosu-lab/USBAnywhere):** `SnakeUSBIP` is currently being migrated into **[USBAnywhere](https://github.com/oscarlosu-lab/USBAnywhere)**. `SnakeUSBIP` serves as the staging and testing branch where new improvements are introduced before full validation, while **[USBAnywhere](https://github.com/oscarlosu-lab/USBAnywhere)** is the final, recommended production product.
 
 > **Why pay $49.00 per server and be restricted to a single USB device?**
 > **SnakeUSBIP** connects **unlimited** remote USB peripherals over LAN, Wi-Fi, and Internet with **zero licensing fees**, **Microsoft WHQL-certified drivers**, and **tunable ultra-low latency**.
 
 Transform any Linux device (or Windows PC) into a high-performance Virtual USB Hub accessible from Windows 10 and 11. Compatible with **Raspberry Pi, Orange Pi, Banana Pi, Proxmox/HomeLab, Steam Deck, OpenWRT routers, CrealityBox**, and any ARM/x86 Linux server.
 
-[![CI Build & Tests](https://github.com/oscarlosu-lab/SnakeUSBIP/actions/workflows/ci.yml/badge.svg)](https://github.com/oscarlosu-lab/SnakeUSBIP/actions/workflows/ci.yml)
+[![CI Multi-Platform](https://github.com/oscarlosu-lab/SnakeUSBIP/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/oscarlosu-lab/SnakeUSBIP/actions/workflows/ci.yml)
+[![CodeQL SAST](https://github.com/oscarlosu-lab/SnakeUSBIP/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/oscarlosu-lab/SnakeUSBIP/actions/workflows/codeql.yml)
+[![Gitleaks Secret Scan](https://github.com/oscarlosu-lab/SnakeUSBIP/actions/workflows/security.yml/badge.svg?branch=main)](https://github.com/oscarlosu-lab/SnakeUSBIP/actions/workflows/security.yml)
+[![GitHub Pages](https://github.com/oscarlosu-lab/SnakeUSBIP/actions/workflows/pages.yml/badge.svg?branch=main)](https://github.com/oscarlosu-lab/SnakeUSBIP/actions/workflows/pages.yml)
+[![Latest Release](https://img.shields.io/github/v/release/oscarlosu-lab/SnakeUSBIP?style=flat-square&logo=github&color=0ea5e9)](https://github.com/oscarlosu-lab/SnakeUSBIP/releases/latest)
 [![GitHub Downloads](https://img.shields.io/github/downloads/oscarlosu-lab/SnakeUSBIP/total?style=flat-square&logo=github&color=blue)](https://github.com/oscarlosu-lab/SnakeUSBIP/releases)
+[![Last Commit](https://img.shields.io/github/last-commit/oscarlosu-lab/SnakeUSBIP?style=flat-square&color=10b981)](https://github.com/oscarlosu-lab/SnakeUSBIP/commits/main)
+[![Security Policy](https://img.shields.io/badge/Security-Policy%20%26%20Zero--Trust-10b981?style=flat-square&logo=shield&logoColor=white)](SECURITY.md)
+[![Code Signing](https://img.shields.io/badge/Code%20Signing-SignPath%20Foundation-6366f1?style=flat-square&logo=letsencrypt&logoColor=white)](CODE_SIGNING_POLICY.md)
+[![Microsoft WHQL](https://img.shields.io/badge/Drivers-Microsoft%20WHQL%20%7C%20HVCI-0078D6?style=flat-square&logo=windows&logoColor=white)](https://github.com/oscarlosu-lab/SnakeUSBIP)
+[![SHA-256 Verified](https://img.shields.io/badge/Checksums-SHA--256%20Verified-14b8a6?style=flat-square)](https://github.com/oscarlosu-lab/SnakeUSBIP/releases/latest)
 [![GitHub Stars](https://img.shields.io/github/stars/oscarlosu-lab/SnakeUSBIP?style=flat-square&logo=github&color=yellow)](https://github.com/oscarlosu-lab/SnakeUSBIP/stargazers)
 [![License](https://img.shields.io/badge/License-GPLv3-blue.svg?style=flat-square)](https://www.gnu.org/licenses/gpl-3.0)
 [![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11%20(x64%20%26%20ARM64)-lightgrey?style=flat-square&logo=windows)](https://github.com/oscarlosu-lab/SnakeUSBIP)
@@ -29,7 +41,7 @@ The project continues to evolve through a mix of usability, interoperability, an
 
 ## ⚔️ Why Switch from VirtualHere to SnakeUSBIP?
 
-| Feature | **SnakeUSBIP v1.2.0** | **VirtualHere** | **FlexiHub** | **USB Network Gate** |
+| Feature | **SnakeUSBIP v1.4.1** | **VirtualHere** | **FlexiHub** | **USB Network Gate** |
 | :--- | :---: | :---: | :---: | :---: |
 | **Price & License** | **100% Free & Open Source (GPLv3)** | $49.00 USD / Server | ~$15–$30+ / mo SaaS | $159.00+ USD |
 | **Simultaneous Devices (Free)** | **♾️ Unlimited** | ⚠️ 1 Device Only | ❌ 20-min Trial / 1 Conn | ❌ Trial Expired |
@@ -79,6 +91,18 @@ Connect your diode laser (GRBL/Ruida) and overhead alignment camera simultaneous
 
 ---
 
+## 🆕 What's New in v1.4.0
+- 🔐 **Zero-Config 6-Digit / `UA2:` Pairing & Pinned TLS 1.3 Tunneling** - Unified pairing UI/CLI (`PairServerDialog`, `WanMeshCard`, `snakeusbip-ctl pair`), `BindAddress` scoping, and automatic loopback TLS bridging.
+- 🎬 **Multi-Provider Streaming Handoff & Multi-Session Isolation** - Supports **Sunshine, Apollo, Vibeshine, Vibepollo, Parsec, and Steam Remote Play**, `only-during-stream` device modes, and WTS session port ownership.
+- 🧩 **Loopback REST API, 6-Tool MCP Server & macOS `IOUSBHost`** - Local API (`127.0.0.1:13241`), `snakeusbip-mcp.py`, `SnakeUSBIP.Server.Mac` real `IOUSBHost` + `AVAudioEngine` mic, Smart Favorites `[Rev:XXXX]`, and Driver `0.9.8.2` dual-ABI readiness.
+
+## 🆕 What's New in v1.3.0
+
+- 📌 **Kernel Boot Persistence & Retry Control (`VhciNativeClient.cs`)** - Persist attached USB devices in `usbip2_ude` across Windows reboots and cancel active kernel attach retries from the context menu.
+- 🏷️ **Custom USB Serial Numbers & Virtual Hub Ports (`KernelConfigService.cs`)** - Assign persistent custom `Serial` strings per device and configure Virtual Hub USB 2.0 / USB 3.0 port capacity (`30` / `30` default).
+- 🩺 **One-Click Diagnostics Bundle (`KernelDiagnosticsService.cs`)** - Export a `.zip` diagnostics archive containing driver state, imported VHCI ports, hub configuration, and logs.
+- 🔒 **Control Plane & Android Hardening (`snakeusbip-ctl`, `ControlServer.swift`, `SunshineHandoffServer.kt`)** - Optional `allowed_ips` whitelist and constant-time HMAC `control_token` on TCP `3241`, UAS external SSD warnings, and optional Sunshine webhook token authentication on Android port `3242`.
+
 ## 🆕 What's New in v1.2.0 (SnakeUSBIP Multiplatform Suite)
 
 - ⚡ **Direct Kernel VHCI IOCTL & Real-Time Push Events (`VhciNativeClient.cs`)** - Communicates directly with the `usbip2_ude` Windows kernel driver via Win32 `DeviceIoControl` and async overlapped `ReadFile` events (eliminating repeated `usbip.exe` process spawns, regex parsing, and per-call SHA-256 checks, with clean CLI fallback and Windows 11 tray icon sizing).
@@ -112,14 +136,14 @@ Connect your diode laser (GRBL/Ruida) and overhead alignment camera simultaneous
 ## 📦 Installation
 
 ### Option 1: Portable (No installation required)
-1. Download from [SnakeUSBIP Releases (v1.2.0)](https://github.com/oscarlosu-lab/SnakeUSBIP/releases/tag/v1.2.0):
-   - **Windows x64 (Client + Server Portable)**: `SnakeUSBIP_v1.2.0_Portable_win-x64.zip`
+1. Download from [SnakeUSBIP Releases (v1.4.1)](https://github.com/oscarlosu-lab/SnakeUSBIP/releases/tag/v1.4.1):
+   - **Windows x64 (Client + Server Portable)**: `SnakeUSBIP_v1.4.1_Portable_win-x64.zip`
 2. Extract the ZIP to any folder
 3. Run `SnakeUSBIP.exe` as Administrator
 4. Done!
 
 ### Option 2: Installer (x64 Recommended)
-1. Download `SnakeUSBIP_Setup_v1.2.0.exe` (Client) or `SnakeUSBIP-Server_Setup_v1.2.0.exe` (Server) from [SnakeUSBIP Releases (v1.2.0)](https://github.com/oscarlosu-lab/SnakeUSBIP/releases/tag/v1.2.0)
+1. Download `SnakeUSBIP_Setup_v1.4.1.exe` (Client) or `SnakeUSBIP-Server_Setup_v1.4.1.exe` (Server) from [SnakeUSBIP Releases (v1.4.1)](https://github.com/oscarlosu-lab/SnakeUSBIP/releases/tag/v1.4.1)
 2. Run the installer as Administrator
 3. Follow the installation wizard
 
@@ -162,14 +186,15 @@ sudo snakeusbip-ctl ports                 # List currently attached virtual USB 
 sudo snakeusbip-ctl disconnect all        # Detach client port(s) & release back to remote host
 ```
 
-### 🎮 Moonlight / Sunshine / Playnite CLI Automation & Hotkey
-Automate controller, wheel, or headset attachment when starting a game stream, and detach cleanly on stream exit (or press `Ctrl+Alt+D` at any time):
+### 🎮 Moonlight / Sunshine / Playnite CLI Automation & Global Hotkey
+Automate controller, wheel, or headset attachment & instant emergency teardown:
 ```powershell
-SnakeUSBIP.exe --minimized --connect 192.168.1.50 1-1.4
-SnakeUSBIP.exe --disconnect 01          # Detach specific virtual VHCI port headlessly
-SnakeUSBIP.exe --disconnect-all         # Detach all active remote USB devices
-SnakeUSBIP.exe --disconnect-all --quit  # Clean stream-exit teardown & close background client
+SnakeUSBIP.exe --minimized --connect 192.168.1.50 1-1.4   # Connect silently in tray
+SnakeUSBIP.exe --disconnect-all                           # Detach all ports cleanly
+SnakeUSBIP.exe --disconnect 1                             # Detach specific VHCI port
+SnakeUSBIP.exe --quit                                     # Graceful detach & exit running instance
 ```
+> ⌨️ **Global Emergency Hotkey:** Press **`Ctrl+Alt+D`** anytime (configurable via `DisconnectAllHotkey` in `config.json`) or right-click the Tray icon → **Disconnect all** to immediately release every remote device and cancel pending reconnects.
 
 ### 🌐 Internet Connection (VPN)
 1. Install **[Tailscale](https://tailscale.com/download)** on Windows and your server

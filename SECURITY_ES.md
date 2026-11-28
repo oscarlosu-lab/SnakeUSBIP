@@ -8,9 +8,9 @@
 
 | Versión | Estado              | Comentarios |
 | ------- | ------------------- | ----------- |
-| 1.3.0 | :white_check_mark: | Latest Stable Release |
-| 1.2.x   | :white_check_mark:  | Estable Activa (Actual: v1.2.0) |
-| < 1.2   | :x:                 | Sin soporte (Actualizar a SnakeUSBIP v1.2.0+ o USBAnywhere) |
+| 1.4.1 | :white_check_mark: | Latest Stable Release |
+| 1.3.x | :white_check_mark:  | Estable Activa |
+| < 1.3 | :x:                 | Sin soporte (Actualizar a SnakeUSBIP v1.4.1 o USBAnywhere) |
 
 ---
 
@@ -39,7 +39,9 @@
 - **Servidor macOS**: Diseñado mediante **Userspace IOKit** (`IOKit.framework`). Opera sin extensiones de kernel (`.kext`) y preserva la integridad total de **SIP (System Integrity Protection)** en Apple Silicon. El demonio se ejecuta con privilegios controlados mediante `launchd`.
 - **Servidor Linux**: Se ejecuta bajo servicios systemd dedicados (`usbipd.service` + `snakeusbip-autounbind.service`) y restringe la exportación de periféricos mediante reglas udev específicas.
 
-### 6. Endurecimiento del Plano de Control y Webhook (`v1.3.0`)
+### 6. Endurecimiento del Plano de Control (`TCP 3241`), TLS 1.3 (`TCP 3243`) y Webhook (`v1.4.1`)
+- **Emparejamiento 6 Dígitos / `UA2:` y TLS 1.3 Pinning SHA-256**: `PairingClientService` y `TlsTunnelBridge` validan la huella del certificado en tiempo constante; en Linux `PAIR_CREATE` sobre `TCP 3241` está restringido a loopback salvo que exista `control_token`; Android `UsbIpServerService` valida `busId` (`^\d+-[\d.]+$`).
+- **API REST Local (`127.0.0.1:13241`) con Token Bearer y Aislamiento WTS**: API HTTP acotada a loopback con token Bearer; el aislamiento WTS impide adjuntar dispositivos desde sesiones inactivas.
 - **Lista Blanca y Token HMAC en TCP `3241`**: `snakeusbip-ctl` y `ControlServer.swift` soportan filtrado `allowed_ips` y autenticación `control_token` HMAC opcional (`policy allow-ip|deny-ip|set-token|clear-token`).
 - **Webhook Sunshine en Android (`3242`)**: `SunshineHandoffServer` aplica límites de cabecera HTTP y autenticación opcional `X-USBAnywhere-Token` / `Authorization: Bearer`.
 

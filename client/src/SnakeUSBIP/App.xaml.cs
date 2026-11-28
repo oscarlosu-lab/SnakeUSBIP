@@ -373,7 +373,7 @@ public partial class App : System.Windows.Application
                 };
                 var connected = await usbip.GetConnectedDevicesAsync();
                 var favCount = cfg.Favorites?.Count ?? 0;
-                var ver = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "1.4.0";
+                var ver = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "1.4.1";
                 bool portable = false;
                 try
                 {

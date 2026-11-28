@@ -1,5 +1,16 @@
 # CHANGELOG - SnakeUSBIP
 
+## [1.4.1] - 2026-11-28
+
+> **Migration Notice:** `SnakeUSBIP` is being migrated into [USBAnywhere](https://github.com/oscarlosu-lab/USBAnywhere). `SnakeUSBIP` acts as the staging branch for new improvements prior to full stabilization, while `USBAnywhere` is the final production product.
+
+### Fixed
+- **Windows Client `MainWindow` Layout & ES/EN Localization (`MainWindow.xaml`, `MainWindow.xaml.cs`, `LocalizationService.cs`)**:
+  - Expanded window dimensions to `780x820` (`MinWidth=760`, `MinHeight=780`), converted the title bar to a 3-column responsive grid, widened the server IP box/toolbar buttons, and separated bottom status-bar checkboxes (`chkSessionIsolation` on its own row) from `btnReceiveMode` / driver buttons to eliminate overlapping controls.
+  - Added full ES/EN localization for `btnPair`, `chkLocalApi`, `btnCopyApiToken`, `chkSessionIsolation`, and the `menuAttachMode` context submenu.
+- **GitHub Pages & Documentation Parity (`docs/index.html`, `docs/*.md`, `SECURITY*.md`)**:
+  - Updated GitHub Pages, refreshed `capture_01_mainwindow_dark.png`, and updated all user/security manuals for `v1.4.0`/`v1.4.1`.
+
 ## [1.4.0] - 2026-11-27
 
 > **Migration Notice:** `SnakeUSBIP` is being migrated into [USBAnywhere](https://github.com/oscarlosu-lab/USBAnywhere). `SnakeUSBIP` acts as the staging branch for new improvements prior to full stabilization, while `USBAnywhere` is the final production product.

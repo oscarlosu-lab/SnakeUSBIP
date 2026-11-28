@@ -2,8 +2,6 @@
 
 🌐 **Language / Idioma:** **English** | [Español](USAGE_ES.md)
 
-> **Migration Notice:** `SnakeUSBIP` is migrating into **[USBAnywhere](https://github.com/oscarlosu-lab/USBAnywhere)** (the recommended final production product).
-
 ## Main Interface
 
 ```
@@ -94,15 +92,13 @@ See [VPN_INTERNET_EN.md](VPN_INTERNET_EN.md) for complete configuration.
 SnakeUSBIP client connects transparently to any USB/IP host server:
 
 ### 🍎 Connecting to a macOS Server
-> The current macOS server can discover and list USB devices, but does not yet have a real USB transfer backend. Device sharing and attachment are disabled; connect to a Windows or Linux server for USB transfers.
-
 1. On your Mac (Apple Silicon or Intel), run the 1-click installer:
    `ash
    curl -fsSL https://raw.githubusercontent.com/oscarlosu-lab/SnakeUSBIP/main/server/scripts/install-server-mac.sh | sudo bash
    `
 2. In SnakeUSBIP Client, enter the Mac's IP (e.g. 192.168.1.50) and click **📋 List**.
-3. macOS device attachment is currently unavailable.
-4. See [macOS Server Manual](../server/docs/USAGE_MACOS_EN.md) for details.
+3. Select your joystick, SimRacing wheel, or controller and click **▶️ Connect**.
+4. See [macOS Server Manual](https://github.com/oscarlosu-lab/SnakeUSBIP/blob/main/README.md) for details.
 
 ### 🖥️ Connecting to a Windows Desktop Server
 1. Run SnakeUSBIP-Server.exe on the host PC and click **📤 Share** on desired devices.
@@ -150,8 +146,9 @@ SnakeUSBIP client connects transparently to any USB/IP host server:
 |--------|-------------|
 | 🔗 Connect | Connects the remote USB device (or favorite) to your PC |
 | ❌ Disconnect | Releases the connected USB device |
-| ⭐ Add to Favorites | Saves the device for quick reconnection |
+| ⭐ Add to Favorites | Saves the device for quick reconnection (with `[Rev:XXXX]` hardware revision disambiguation) |
 | ❌ Remove from Favorites | Removes the device from the favorites list |
+| 🎬 Attach Mode | Choose `always`, `only-during-stream` (auto-attach during active streaming), or `manual` (`v1.4.0`) |
 | 🗑️ Remove server | Removes the server from the tree |
 | 📋 Properties | Displays detailed info (`VID:PID`, manufacturer, product, local port) |
 | ✏️ Rename | Assigns a persistent custom friendly name to the device (`VID:PID`) |
@@ -191,7 +188,7 @@ When closing the application, shutting down Windows (`AutoDetachOnExit: true`), 
 - When **minimizing** (or launching with `--minimized` / `-m`), the app hides to the system tray.
 - **Double-click** on the tray icon to restore the window at any time.
 - **Right-click** for quick menu: `📡 Scan network`, `🔌 Disconnect all`, `☑️ Start minimized to tray`, `🔼 Show SnakeUSBIP`, `❌ Exit`.
-- **Headless CLI Commands (to running instance):** `--connect <ip> <busid>`, `--disconnect-all`, `--disconnect <port>`, and `--quit`.
+- **Headless CLI Commands (to running instance):** `--connect <ip> <busid>` / `--attach <ip> <busid>` (single-instance IPC forwarding), `--disconnect-all`, `--disconnect <port>`, and `--quit`.
 - **Real-Time Kernel Push Events:** The Windows client listens directly to `usbip2_ude` state transitions over asynchronous `ReadFile` / `DeviceIoControl` so connected device status updates immediately without polling subprocesses.
 
 ## 🔧 Status Bar & Driver Lifecycle
@@ -208,9 +205,16 @@ When closing the application, shutting down Windows (`AutoDetachOnExit: true`), 
 ## 🛡️ Kernel Boot Persistence, Custom Serials, Hub Ports & Diagnostics (`v1.3.0`)
 
 - **Kernel Boot Persistence**: Save attached USB devices directly in the `usbip2_ude` kernel driver configuration so they automatically re-attach at Windows boot before user login.
-- **Custom USB Serial Numbers**: Assign a custom `Serial` string per remote device to keep COM ports, game controllers, or licenses consistent across reconnections.
-- **Virtual Hub Port Count**: Adjust the virtual USB 2.0 and USB 3.0 port capacity (`30` / `30` by default) from the kernel configuration dialog.
-- **One-Click Diagnostics Bundle**: Export a `.zip` bundle containing driver status, imported VHCI ports, Virtual Hub configuration, and recent logs.
+- **Custom USB Serial Numbers**: Assign a custom `Serial` string per remote device (via Properties / Persistent config) to keep COM ports, game controllers, or licenses consistent across reconnections.
+- **Virtual Hub Port Count**: Adjust the virtual USB 2.0 and USB 3.0 port capacity (`30` / `30` by default) from the status bar / kernel configuration dialog.
+- **One-Click Diagnostics Bundle**: Export a `.zip` bundle containing driver status, imported VHCI ports, Virtual Hub configuration, and recent logs for troubleshooting.
+
+## 🔐 Pairing, Pinned TLS 1.3, Streaming Handoff & Automation (`v1.4.0`)
+
+- **6-Digit / `UA2:` Zero-Config Pairing & Pinned TLS 1.3 (`TCP 3243`)**: Click **🔐 Pair** (or run `SnakeUSBIP.exe --pair <host> <code>`) to pair with Windows, macOS, Linux, or Android hosts using single-use 6-digit codes or `UA2:` QR tokens. Once paired, `UsbipService` automatically establishes a certificate-pinned TLS 1.2/1.3 loopback bridge over `TCP 3243`.
+- **Multi-Provider Streaming Handoff (`only-during-stream`)**: Detects **Sunshine, Apollo, Vibeshine, Vibepollo, Parsec, and Steam Remote Play** and automatically attaches/detaches favorites configured with `only-during-stream`.
+- **Windows Multi-Session Isolation**: Enforces WTS session ownership for attached ports and suppresses background auto-connects when your Windows session is locked or disconnected.
+- **Local HTTP REST API (`127.0.0.1:13241`), 6-Tool MCP Server & Headless JSON CLI**: Enable the local API from the bottom status bar (`📋 Token` copies the Bearer token), run `snakeusbip-mcp.py` for AI/MCP clients, query `SnakeUSBIP.exe --status --json` / `--doctor --json` without UAC prompts, or integrate with Home Assistant via [HOME_ASSISTANT.md](HOME_ASSISTANT.md).
 
 ---
 
@@ -219,7 +223,7 @@ When closing the application, shutting down Windows (`AutoDetachOnExit: true`), 
 - **[VR_FACIAL_TRACKER_GUIDE_EN.md](VR_FACIAL_TRACKER_GUIDE_EN.md)** - Optimization guide for VR Headsets, HTC Vive Facial Tracker & Webcams (VRChat / VRCFaceTracking)
 - **[README.md](../README.md)** - Installation and main features
 - **[RASPBERRY_PI_SERVER_EN.md](RASPBERRY_PI_SERVER_EN.md)** - Setup server on Raspberry Pi / Linux
-- **[macOS Server Guide](../server/docs/USAGE_MACOS_EN.md)** - Setup native server on Apple Mac (Apple Silicon & Intel)
+- **[macOS Server Guide](https://github.com/oscarlosu-lab/SnakeUSBIP/blob/main/README.md)** - Setup native server on Apple Mac (Apple Silicon & Intel)
 - **[Windows ARM64 Guide](README_ARM64.md)** - Test-signing instructions for Snapdragon X Elite / Surface Pro
 - **[VPN_INTERNET_EN.md](VPN_INTERNET_EN.md)** - Remote connection over Internet (Tailscale / ZeroTier / WireGuard)
 - **[CHANGELOG.md](../CHANGELOG.md)** - Complete version history

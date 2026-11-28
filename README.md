@@ -2,7 +2,7 @@
 
 🌐 **Language / Idioma:** **English** | [Español](README_ES.md)
 
-**v1.4.0** | [🌍 Official Website](https://oscarlosu-lab.github.io/SnakeUSBIP/) | [📦 Releases & Downloads](https://github.com/oscarlosu-lab/SnakeUSBIP/releases/latest) | [🌐 USBAnywhere (Final Product)](https://github.com/oscarlosu-lab/USBAnywhere) | [💬 Reddit Community](https://www.reddit.com/r/UsbAnywhere/) | [📖 User Manual](docs/USAGE_EN.md) | [🌐 VPN Connection](docs/VPN_INTERNET_EN.md)
+**v1.4.1** | [🌍 Official Website](https://oscarlosu-lab.github.io/SnakeUSBIP/) | [📦 Releases & Downloads](https://github.com/oscarlosu-lab/SnakeUSBIP/releases/latest) | [🌐 USBAnywhere (Final Product)](https://github.com/oscarlosu-lab/USBAnywhere) | [💬 Reddit Community](https://www.reddit.com/r/UsbAnywhere/) | [📖 User Manual](docs/USAGE_EN.md) | [🌐 VPN Connection](docs/VPN_INTERNET_EN.md)
 
 > [!IMPORTANT]
 > **Migration Notice — Moving to [USBAnywhere](https://github.com/oscarlosu-lab/USBAnywhere):** `SnakeUSBIP` is currently being migrated into **[USBAnywhere](https://github.com/oscarlosu-lab/USBAnywhere)**. `SnakeUSBIP` serves as the staging and testing branch where new improvements are introduced before full validation, while **[USBAnywhere](https://github.com/oscarlosu-lab/USBAnywhere)** is the final, recommended production product.
@@ -41,7 +41,7 @@ The project continues to evolve through a mix of usability, interoperability, an
 
 ## ⚔️ Why Switch from VirtualHere to SnakeUSBIP?
 
-| Feature | **SnakeUSBIP v1.4.0** | **VirtualHere** | **FlexiHub** | **USB Network Gate** |
+| Feature | **SnakeUSBIP v1.4.1** | **VirtualHere** | **FlexiHub** | **USB Network Gate** |
 | :--- | :---: | :---: | :---: | :---: |
 | **Price & License** | **100% Free & Open Source (GPLv3)** | $49.00 USD / Server | ~$15–$30+ / mo SaaS | $159.00+ USD |
 | **Simultaneous Devices (Free)** | **♾️ Unlimited** | ⚠️ 1 Device Only | ❌ 20-min Trial / 1 Conn | ❌ Trial Expired |
@@ -136,14 +136,14 @@ Connect your diode laser (GRBL/Ruida) and overhead alignment camera simultaneous
 ## 📦 Installation
 
 ### Option 1: Portable (No installation required)
-1. Download from [SnakeUSBIP Releases (v1.4.0)](https://github.com/oscarlosu-lab/SnakeUSBIP/releases/tag/v1.4.0):
-   - **Windows x64 (Client + Server Portable)**: `SnakeUSBIP_v1.4.0_Portable_win-x64.zip`
+1. Download from [SnakeUSBIP Releases (v1.4.1)](https://github.com/oscarlosu-lab/SnakeUSBIP/releases/tag/v1.4.1):
+   - **Windows x64 (Client + Server Portable)**: `SnakeUSBIP_v1.4.1_Portable_win-x64.zip`
 2. Extract the ZIP to any folder
 3. Run `SnakeUSBIP.exe` as Administrator
 4. Done!
 
 ### Option 2: Installer (x64 Recommended)
-1. Download `SnakeUSBIP_Setup_v1.4.0.exe` (Client) or `SnakeUSBIP-Server_Setup_v1.4.0.exe` (Server) from [SnakeUSBIP Releases (v1.4.0)](https://github.com/oscarlosu-lab/SnakeUSBIP/releases/tag/v1.4.0)
+1. Download `SnakeUSBIP_Setup_v1.4.1.exe` (Client) or `SnakeUSBIP-Server_Setup_v1.4.1.exe` (Server) from [SnakeUSBIP Releases (v1.4.1)](https://github.com/oscarlosu-lab/SnakeUSBIP/releases/tag/v1.4.1)
 2. Run the installer as Administrator
 3. Follow the installation wizard
 
